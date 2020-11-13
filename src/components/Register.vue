@@ -15,7 +15,7 @@
 
 <script>
 import firebase from 'firebase'
-//import db from '../plugins/firebase'
+import db from '../plugins/firebase'
 
    export default {
       name: 'Register',
@@ -35,10 +35,24 @@ import firebase from 'firebase'
       methods:{
          registerUser(){
             firebase.auth().createUserWithEmailAndPassword(this.userData.email, this.userData.password)
-               .then(user => {
-                  console.log(user);
-               })
-               .catch(err => {
+               .then(() => {
+                  firebase.auth().currentUser.updateProfile({
+                     displayName: this.userData.username
+                  }).then(() => {
+                     db.collection('users').add({
+                        firstname: this.userData.firstname,
+                        lastname: this.userData.lastname,
+                        username: this.userData.username,
+                        email: this.userData.email,
+                     }).then(() => {
+                        this.$router.replace('home');
+                     }).catch(err => {
+                        this.errorMessage = err.message;
+                     });
+                  }).catch(err => {
+                     this.errorMessage = err.message;
+                  });
+               }).catch(err => {
                   this.errorMessage = err.message
                });
          }
