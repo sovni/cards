@@ -12,6 +12,7 @@
     "firebase": "^8.0.2",
     "leaflet": "^1.7.1",
     "vue": "^2.6.11",
+    "vue-router": "^3.4.9",
     "vue2-leaflet": "^2.6.0",
     "vuefire": "^2.2.4"
   },
