@@ -1,9 +1,7 @@
 import firebaseConfig from "../config/firebase";
-import firebase from "firebase/app";
-import "firebase/database";
-import Vue from "vue";
+import firebase from "firebase";
+import 'firebase/firestore'
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const db = firebaseApp.database();
-
-Vue.prototype.$db = db;
+const firestore = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+export default db;

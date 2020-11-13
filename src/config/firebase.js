@@ -11,4 +11,4 @@
     measurementId: "G-YVKD56EG3R"
   };
 
-  export default config;
+  export default firebaseConfig;
