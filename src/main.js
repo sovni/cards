@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import "./plugins/vue2-leaflet";
+import "./plugins/firebase";
 
 Vue.config.productionTip = false
 
