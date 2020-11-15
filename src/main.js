@@ -8,6 +8,7 @@ import "./plugins/firebase";
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
 
 Vue.use(VueRouter);
 Vue.config.productionTip = false
