@@ -22,14 +22,10 @@
                </div>
             </div>
             <div class="p-mb-2">
-                  <Button>Login</Button>
+                  <Button type="submit" label="Login" />
             </div>
          </div>
-
      </form>
-                  <InputText type="text" placeholder="Test"  v-model="usertest"/>
-
-                        <Button label="Test" v-on:click="debugButton()" />
    </div>
 </template>
 

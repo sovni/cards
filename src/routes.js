@@ -5,7 +5,7 @@ import Dashboard from './components/Dashboard'
 
 export const routes = [
    {
-      path: '*',
+      path: '/:catchAll(.*)',
       redirect: '/login'
    },{
       path: '/',

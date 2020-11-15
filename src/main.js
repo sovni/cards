@@ -1,8 +1,9 @@
-import Vue from 'vue'
+import { createApp } from 'vue';
 import App from './App.vue'
-import VueRouter from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from './routes'
-import store from './store/store'
+import { createStore } from 'vuex'
+import authStore from './store/modules/authStore'
 import firebase from 'firebase'
 import "./plugins/firebase";
 import 'primevue/resources/themes/saga-blue/theme.css';
@@ -10,10 +11,8 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 
-Vue.use(VueRouter);
-Vue.config.productionTip = false
-const router = new VueRouter({
-  mode: 'history',
+const router = createRouter({
+  history: createWebHistory(),
   routes
 });
 router.beforeEach((to, from, next) => {
@@ -24,13 +23,15 @@ router.beforeEach((to, from, next) => {
   else next();
 });
 
+const store = createStore({
+  modules: {
+     authStore
+  }
+});
+
 let app = '';
 firebase.auth().onAuthStateChanged(function() {
   if(!app){
-    new Vue({
-      router,
-      store,
-      render: h => h(App),
-    }).$mount('#app')
+    createApp(App).use(router).use(store).mount('#app')
   }
 });
