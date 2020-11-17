@@ -1,5 +1,4 @@
 <template>
-
    <div class="wrapper">
       <h1>Login Component</h1>
      <form @submit.prevent="login">
@@ -26,6 +25,8 @@
             </div>
          </div>
      </form>
+     <Button label="Google" @click="glogin"/>
+
    </div>
 </template>
 
@@ -42,7 +43,7 @@ import Button from 'primevue/button';
          return{
             useremail: '',
             userpassword: '',
-            usertest: '',
+            usertoken: '',
             successMessage: '',
             errorMessage: '',
             counter: 1
@@ -62,6 +63,27 @@ import Button from 'primevue/button';
                .catch(err => {
                   this.errorMessage = err.message
                });
+         },
+         glogin(){
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).then(function(result) {
+               // This gives you a Google Access Token. You can use it to access the Google API.
+               //this.usertoken = result.credential.accessToken;
+               // The signed-in user info.
+               this.useremail = result.user;
+               console.log("Login done : " + this.useremail);
+               // ...
+            }).catch(function(error) {
+               // Handle Errors here.
+               //var errorCode = error.code;
+               //this.errorMessage = error.message;
+               // The email of the user's account used.
+               //var email = error.email;
+               // The firebase.auth.AuthCredential type that was used.
+               //var credential = error.credential;
+               // ...
+               console.log("Login failed : " + error);
+            });
          },
          debugButton(){
             console.log("Test pressed : "+this.useremail);
