@@ -15,14 +15,12 @@
                </Card>
             </div>
             <div class="p-mr-2" style="max-width:800px;height:800px;">
-               <Card style="max-width:800px;height:800px;">
+               <Card style="width:800px;height:800px;">
                   <template v-slot:title>
                      Center
                   </template>
                   <template v-slot:content>
                      <Playground />
-                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                     quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
                   </template>   
                </Card>
             </div>

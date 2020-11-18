@@ -1,7 +1,11 @@
 <template>
    <div class="p-grid">
+      <div class="p-col-12">
       <Deck id="mydeck" :myhand="myhand"/>
+      </div>
+      <div class="p-col-12">
       <Button label="Start" @click="startGame" />
+      </div>
    </div>
 </template>
 
