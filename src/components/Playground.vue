@@ -6,6 +6,9 @@
       <div class="p-col-12">
       <Button label="Start" @click="startGame" />
       </div>
+      <div class="p-col-12">
+      <Button label="Add" @click="addCard" />
+      </div>      
    </div>
 </template>
 
@@ -13,6 +16,8 @@
 import Button from 'primevue/button';
 import Deck from './Deck'
 
+const { decks } = require('cards');
+const deck = new decks.PiquetDeck();
 
    export default {
       name: 'Playground',
@@ -27,16 +32,16 @@ import Deck from './Deck'
       },
       methods: {
          startGame() {
-            const { decks } = require('cards');
-
-            // Create a standard 52 card deck + 2 jokers
-            const deck = new decks.PiquetDeck();
 
             // Shuffle the deck
             deck.shuffleAll();
 
             this.myhand = deck.draw(5);
             console.log(this.myhand);
+         },
+         addCard() {
+            this.myhand.push(...deck.draw(1));
+
          }
       }
    }       
