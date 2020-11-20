@@ -1,5 +1,5 @@
 <template>
-    <div class="hand active-hand fan" data-bind='fan: {radius: 200, spacing: 0.4, width: 90, cards: cards}' style="width:400px;height:400px;">
+    <div class="hand active-hand fan" data-bind='fan: {radius: 200, spacing: 0.4, width: 90, cards: cards}' style="width:400px;height:200px;">
         <img class='card' v-for="(card, index) in myhand" v-bind:key="card" v-bind:src="getImg(card)" v-bind:style="getStyle(card, index)"/>
 
     </div>
