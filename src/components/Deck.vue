@@ -1,6 +1,6 @@
 <template>
     <div class="hand active-hand fan"  style="width:400px;height:200px;">
-        <img class='card' v-for="(card, index) in myhand" v-bind:key="card" v-bind:src="getImg(card)" v-bind:style="getStyle(card, index)"/>
+        <img class='card' v-for="(card, index) in myhand" v-bind:key="card" v-bind:src="getImg(card)" v-bind:style="getStyle(card, index)" @mouseover="setTop"/>
 
     </div>
 </template>
@@ -81,7 +81,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
         name: 'Deck',
       data(){
             return {
-                cwidth: 110,
+                cwidth: 76,
                 cspacing: 0.24,
                 cradius: 166,
                 c2C: c2C,

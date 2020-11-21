@@ -31,13 +31,13 @@
                   </template>
                   <template v-slot:content>
                         <div class="p-grid">
-                           <div class="p-col-4">
+                           <div class="p-col-12">
                               <Button label="Start" @click="startGame" />
                            </div>
-                           <div class="p-col-4">
+                           <div class="p-col-12">
                               <Button label="Draw" @click="drawCards" />
                            </div>                  
-                           <div class="p-col-4">
+                           <div class="p-col-12">
                               <Button label="Add" @click="addCard" />
                            </div>  
                         </div>          
@@ -45,43 +45,6 @@
                </Card>
             </div>                        
          </div>
-      </div>
-      <div class="p-col-3">
-         <Card>
-            <template v-slot:title>
-               Left
-            </template>
-            <template v-slot:content>
-               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-               quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
-            </template>   
-         </Card>
-      </div>
-      <div class="p-col-6">
-         <div class="p-d-inline-flex"  p-jc-center>
-         <Card style="width:600px;height=800px;">
-            <template v-slot:title>
-               Center
-            </template>
-
-            <template v-slot:content>
-               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-               quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
-            </template>   
-         </Card>
-      </div>
-      </div>
-      <div class="p-col-3">
-         <Card>
-            <template v-slot:title>
-               Right
-            </template>
-
-            <template v-slot:content>
-               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-               quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
-            </template>   
-         </Card>
       </div>
    </div>
 </template>
@@ -101,15 +64,13 @@ import Button from 'primevue/button';
       },
       methods: {
          startGame() {
-            this.$root.$emit('start-game');
+            this.emitter.emit("start-game");
          },
          drawCards() {
-            this.$root.$emit('draw-cards', 5);
-
+            this.emitter.emit("draw-cards");
          },
          addCard() {
-            this.$root.$emit('add-cards', 3);
-
+            this.emitter.emit("add-cards", 3);
          }
       }      
    }       

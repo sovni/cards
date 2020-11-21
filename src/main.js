@@ -11,6 +11,9 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import './style/cards.min.css'
+import mitt from 'mitt';
+
+const emitter = mitt();
 
 const router = createRouter({
   history: createWebHistory(),
@@ -33,6 +36,8 @@ const store = createStore({
 let app = '';
 firebase.auth().onAuthStateChanged(function() {
   if(!app){
-    createApp(App).use(router).use(store).mount('#app')
+    app = createApp(App).use(router).use(store);
+    app.config.globalProperties.emitter = emitter;
+    app.mount('#app');
   }
 });
