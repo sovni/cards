@@ -10,16 +10,16 @@
       <Button label="Add" @click="addCard" />
       </div>            
       <div class="p-col-6">
-      <Deck id="deck1" :myhand="hand1"/>
+      <Deck id="deck1" :myhand="hand1" :activeUser="true"/>
       </div>
       <div class="p-col-6">
-      <Deck id="deck2" :myhand="hand2"/>
+      <Deck id="deck2" :myhand="hand2" :activeUser="false"/>
       </div>
       <div class="p-col-6">
-      <Deck id="deck3" :myhand="hand3"/>
+      <Deck id="deck3" :myhand="hand3" :activeUser="false"/>
       </div>
       <div class="p-col-6">
-      <Deck id="deck4" :myhand="hand4"/>
+      <Deck id="deck4" :myhand="hand4" :activeUser="false"/>
       </div>                  
 
    </div>
@@ -46,6 +46,11 @@ const deck = new decks.PiquetDeck();
          Button,
          Deck
       },
+      mounted(){
+         this.$root.$on('start-game', () => {
+            this.startGame();
+         });
+      },
       methods: {
          startGame() {
 
@@ -61,7 +66,10 @@ const deck = new decks.PiquetDeck();
             this.hand4 = deck.draw(5);
          },
          addCard() {
-            this.myhand.push(...deck.draw(1));
+            this.hand1.push(...deck.draw(3));
+            this.hand2.push(...deck.draw(3));
+            this.hand3.push(...deck.draw(3));
+            this.hand4.push(...deck.draw(3));
 
          }
       }

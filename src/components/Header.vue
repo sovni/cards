@@ -1,6 +1,10 @@
 <template>
    <header>
-      <Menubar :model="items" />
+      <Menubar :model="items" >
+         <template #end>
+            {{ getUserName() }}
+         </template>
+      </Menubar>
    </header>
 </template>
 
@@ -51,6 +55,12 @@
             firebase.auth().signOut().then(() => {
                this.$router.replace('login');
             });
+         },
+         getUserName(){
+            const currentUser = firebase.auth().currentUser;
+            if (!currentUser)
+               return "";
+            return currentUser.displayName;
          }
       }
    }

@@ -4,7 +4,7 @@
       <div class=p-col-12 >
          <div class="p-d-flex  p-jc-center">
             <div class="p-mr-2" style="max-width:200px;height:800px;">
-               <Card style="max-width:200px;height:800px;">
+               <Card style="max-width:400px;height:800px;">
                   <template v-slot:title>
                      Left
                   </template>
@@ -30,8 +30,17 @@
                      Right
                   </template>
                   <template v-slot:content>
-                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                     quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
+                        <div class="p-grid">
+                           <div class="p-col-4">
+                              <Button label="Start" @click="startGame" />
+                           </div>
+                           <div class="p-col-4">
+                              <Button label="Draw" @click="drawCards" />
+                           </div>                  
+                           <div class="p-col-4">
+                              <Button label="Add" @click="addCard" />
+                           </div>  
+                        </div>          
                   </template>   
                </Card>
             </div>                        
@@ -80,14 +89,28 @@
 <script>
 import Card from 'primevue/card';
 import Playground from './Playground'
-
+import Button from 'primevue/button';
 
 
    export default {
       name: 'Dashboard',
       components: {
          Card,
-         Playground
-      }
+         Playground,
+         Button
+      },
+      methods: {
+         startGame() {
+            this.$root.$emit('start-game');
+         },
+         drawCards() {
+            this.$root.$emit('draw-cards', 5);
+
+         },
+         addCard() {
+            this.$root.$emit('add-cards', 3);
+
+         }
+      }      
    }       
 </script>

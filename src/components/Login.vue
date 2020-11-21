@@ -42,6 +42,7 @@ import Button from 'primevue/button';
       data(){
          return{
             useremail: '',
+            username: '',
             userpassword: '',
             usertoken: '',
             successMessage: '',
@@ -59,6 +60,9 @@ import Button from 'primevue/button';
             firebase.auth().signInWithEmailAndPassword(this.useremail, this.userpassword)
                .then(user => {
                   console.log(user);
+                  this.username = user.user.displayName;
+                  console.log("Login name :" + this.username);
+
                })
                .catch(err => {
                   this.errorMessage = err.message
@@ -70,8 +74,10 @@ import Button from 'primevue/button';
                // This gives you a Google Access Token. You can use it to access the Google API.
                //this.usertoken = result.credential.accessToken;
                // The signed-in user info.
-               this.useremail = result.user;
-               console.log("Login done : " + this.useremail);
+               console.log(result);
+               //this.username = result.user.displayName;
+               //this.useremail = result.user.email;
+               //console.log("Login done : " + this.useremail);
                // ...
             }).catch(function(error) {
                // Handle Errors here.
