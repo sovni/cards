@@ -143,7 +143,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 cBB : cBB
             }
         },
-        props: ['myhand','activeUser'],      
+        props: ['myhand','activeUser','indexUser'],      
         components: {
         },
         methods: {
@@ -184,7 +184,11 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
                 var rotationAngle = Math.round(coords[index].angle);
-                return "width:"+width+"px; left:"+ coords[index].x + "px;top:" + coords[index].y + "px; transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
+                if (this.indexUser == 1)
+                    coords[index].y += 100;
+                else if (this.indexUser == 2 || this.indexUser == 4 )
+                    coords[index].x += 50;
+                return "width:"+width+"px; left:"+ coords[index].x + "px;top:" + coords[index].y+ "px; transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 
             },
             calculateCoords(numCards, arcRadius, cardWidth, cardHeight, direction, cardSpacing, box) {
@@ -194,6 +198,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
+                startAngle = startAngle + (this.indexUser -1) * 90;
 
                 var coords = [];
                 var i;
