@@ -23,32 +23,8 @@ import firebase from 'firebase';
 import Deck from './Deck'
 import '../plugins/firebase'
 import db from '../plugins/firebase';
-
-class FirePlayGround {
-    constructor (players, tricks, state) {
-        this.players = players;
-        this.tricks = tricks;
-        this.state = state;
-    }
-    //toString() {
-    //    return this.name + ', ' + this.state + ', ' + this.country;
-    //}
-}
-
-// Firestore data converter
-var playGroundConverter = {
-    toFirestore: function(playground) {
-        return {
-            players: playground.players,
-            tricks: playground.tricks,
-            state: playground.state
-            }
-    },
-    fromFirestore: function(snapshot, options){
-        const data = snapshot.data(options);
-        return new FirePlayGround(data.players, data.tricks, data.state)
-    }
-}
+import FirePlayGround from '../plugins/fireplayground';
+import playGroundConverter from '../plugins/fireplayground';
 
 const { decks } = require('cards');
 const deck = new decks.PiquetDeck();
@@ -61,7 +37,7 @@ const deck = new decks.PiquetDeck();
                 hand2: [],
                 hand3: [],
                 hand4: [],
-                firePlayground: new FirePlayGround([], [], 'not started'),
+                firePlayground: new FirePlayGround([], [], 'not started', []),
                 playGroundID: -1,
                 currentGame: "belote"
             }
@@ -73,18 +49,21 @@ const deck = new decks.PiquetDeck();
          const currentUser = firebase.auth().currentUser;
          this.firePlayground.players.push(currentUser.uid);
 
-         db.collection("games").doc(this.currentGame).collection("plays").where("players", "array-contains", currentUser.uid)
-         .get()
-         .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                  // doc.data() is never undefined for query doc snapshots
-                  console.log(doc.id, " => ", doc.data());
-                  this.playGroundID = doc.id;
+         db.collection("games").doc(this.currentGame)
+            .collection("plays")
+            .where("players", "array-contains", currentUser.uid)
+            .where("state", "==", "not started")
+            .get()
+            .then((querySnapshot) => {
+               querySnapshot.forEach((doc) => {
+                     // doc.data() is never undefined for query doc snapshots
+                     console.log(doc.id, " => ", doc.data());
+                     this.playGroundID = doc.id;
+               });
+            })
+            .catch(function(error) {
+               console.log("Error getting documents: ", error);
             });
-         })
-         .catch(function(error) {
-            console.log("Error getting documents: ", error);
-         });
       },
       mounted(){
          this.emitter.on("start-game", () => {
@@ -115,12 +94,22 @@ const deck = new decks.PiquetDeck();
             else {
                console.log("Existing Play : " + this.playGroundID);
             }
-            var playGround = db.collection("games")
+            /*db.collection("games")
                .doc(this.currentGame)
                .collection("plays")
                .doc(this.playGroundID)
-               .withConverter(playGroundConverter).get();
-            console.log("Status:" + playGround.state);
+               .withConverter(playGroundConverter).get().then((doc) => {
+                  if (doc.exists){
+                     // Convert to City object
+                     var playGround = doc.data();
+                     // Use a City instance method
+                     console.log("State: " + playGround.state);
+                  } else {
+                     console.log("No such document!")
+                  }}).catch(function(error) {
+                     console.log("Error getting document:", error)
+                  });*/
+            //console.log("Status:" + playGround.state);
 
             // Shuffle the deck
             deck.shuffleAll();

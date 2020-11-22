@@ -25,7 +25,7 @@
                </Card>
             </div>
             <div class="p-mr-2" style="max-width:200px;height:800px;">
-               <Card style="max-width:200px;height:800px;">
+               <Card style="width:400px;height:800px;">
                   <template v-slot:title>
                      Right
                   </template>
