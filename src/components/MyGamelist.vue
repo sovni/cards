@@ -1,5 +1,5 @@
 <template>
-   <DataTable :value="games">
+   <DataTable :value="mygames" selectionMode="single" >
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
@@ -18,10 +18,10 @@ import Column from 'primevue/column';
 
 
    export default {
-      name: 'Gamelist',
+      name: 'MyGamelist',
       data() {
             return {
-                games: []
+                mygames: []
             }
       },      
       components: {
@@ -36,21 +36,13 @@ import Column from 'primevue/column';
 
          db.collection("games").doc("belote")
             .collection("plays")
-            .where("state", "==", "not started")
+            .where("players", "array-contains", currentUser.uid)
             .get()
             .then((querySnapshot) => {
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots
-                     console.log("Gamelist : " +doc.id, " => ", doc.data());
-                     var found = false;
-                     for (var i = 0; i < doc.data().players.length; i++) {
-                        if (doc.data().players[i] == currentUser.uid) {
-                           found = true;
-                           break;
-                        }
-                     }
-                     if (!found)
-                        this.games.push({"name": "belote", "players": doc.data().players.length, "state": doc.data().state});
+                    console.log("Gamelist : " +doc.id, " => ", doc.data());
+                    this.mygames.push({"name": "belote", "players": doc.data().players.length, "state": doc.data().state});
                });
             })
             .catch(function(error) {

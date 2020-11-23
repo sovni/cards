@@ -24,7 +24,8 @@ import Deck from './Deck'
 import '../plugins/firebase'
 import db from '../plugins/firebase';
 import FirePlayGround from '../plugins/fireplayground';
-import playGroundConverter from '../plugins/fireplayground';
+import { playGroundConverter } from '../plugins/fireplayground';
+
 
 const { decks } = require('cards');
 const deck = new decks.PiquetDeck();
@@ -37,7 +38,7 @@ const deck = new decks.PiquetDeck();
                 hand2: [],
                 hand3: [],
                 hand4: [],
-                firePlayground: new FirePlayGround([], [], 'not started', []),
+                firePlayground: new FirePlayGround([], [], [], 'not started', []),
                 playGroundID: -1,
                 currentGame: "belote"
             }
@@ -47,11 +48,15 @@ const deck = new decks.PiquetDeck();
       },
       created(){
          const currentUser = firebase.auth().currentUser;
+         //this.firePlayground.players.push({"id":currentUser.uid, "name": currentUser.displayName});
+         //this.firePlayground.players[currentUser.uid] = currentUser.displayName;
          this.firePlayground.players.push(currentUser.uid);
+         this.firePlayground.playersName.push(currentUser.displayName);
+
 
          db.collection("games").doc(this.currentGame)
             .collection("plays")
-            .where("players", "array-contains", currentUser.uid)
+            .where("players.id", "array-contains", currentUser.uid)
             .where("state", "==", "not started")
             .get()
             .then((querySnapshot) => {
@@ -79,7 +84,6 @@ const deck = new decks.PiquetDeck();
       methods: {
          startGame() {
             if (this.playGroundID == -1) {
-               // Set with cityConverter
                db.collection("games").doc(this.currentGame).collection("plays")
                .withConverter(playGroundConverter)
                .add(this.firePlayground)
