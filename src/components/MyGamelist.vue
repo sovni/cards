@@ -33,21 +33,15 @@ import Column from 'primevue/column';
       mounted(){
          const currentUser = firebase.auth().currentUser;
 
-
-         db.collection("games").doc("belote")
-            .collection("plays")
+         db.collection("plays")
             .where("players", "array-contains", currentUser.uid)
-            .get()
-            .then((querySnapshot) => {
+            .onSnapshot((querySnapshot) => {
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
                     this.mygames.push({"name": "belote", "players": doc.data().players.length, "state": doc.data().state});
                });
-            })
-            .catch(function(error) {
-               console.log("Error getting documents: ", error);
-            }); 
+            });
       },
       methods: {
 

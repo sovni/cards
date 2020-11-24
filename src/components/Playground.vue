@@ -38,7 +38,7 @@ const deck = new decks.PiquetDeck();
                 hand2: [],
                 hand3: [],
                 hand4: [],
-                firePlayground: new FirePlayGround([], [], [], 'not started', []),
+                firePlayground: new FirePlayGround([], [], 'belote', [], 'not started', []),
                 playGroundID: -1,
                 currentGame: "belote"
             }
@@ -54,8 +54,7 @@ const deck = new decks.PiquetDeck();
          this.firePlayground.playersName.push(currentUser.displayName);
 
 
-         db.collection("games").doc(this.currentGame)
-            .collection("plays")
+         db.collection("plays")
             .where("players.id", "array-contains", currentUser.uid)
             .where("state", "==", "not started")
             .get()
@@ -84,7 +83,7 @@ const deck = new decks.PiquetDeck();
       methods: {
          startGame() {
             if (this.playGroundID == -1) {
-               db.collection("games").doc(this.currentGame).collection("plays")
+               db.collection("plays")
                .withConverter(playGroundConverter)
                .add(this.firePlayground)
                .then((docRef) => {

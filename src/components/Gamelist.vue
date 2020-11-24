@@ -34,11 +34,9 @@ import Column from 'primevue/column';
          const currentUser = firebase.auth().currentUser;
 
 
-         db.collection("games").doc("belote")
-            .collection("plays")
+         db.collection("plays")
             .where("state", "==", "not started")
-            .get()
-            .then((querySnapshot) => {
+            .onSnapshot((querySnapshot) => {
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots
                      console.log("Gamelist : " +doc.id, " => ", doc.data());
@@ -50,12 +48,9 @@ import Column from 'primevue/column';
                         }
                      }
                      if (!found)
-                        this.games.push({"name": "belote", "players": doc.data().players.length, "state": doc.data().state});
+                        this.games.push({"name": doc.data().game, "players": doc.data().players.length, "state": doc.data().state});
                });
-            })
-            .catch(function(error) {
-               console.log("Error getting documents: ", error);
-            }); 
+            });
       },
       methods: {
 
