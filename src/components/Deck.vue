@@ -143,7 +143,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 cBB : cBB
             }
         },
-        props: ['myhand','activeUser','indexUser'],      
+        props: ['myhand','activeUser','indexUser','playID'],      
         components: {
         },
         methods: {

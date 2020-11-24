@@ -15,8 +15,6 @@ import db from '../plugins/firebase';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
-
-
    export default {
       name: 'Gamelist',
       data() {
@@ -37,6 +35,7 @@ import Column from 'primevue/column';
          db.collection("plays")
             .where("state", "==", "not started")
             .onSnapshot((querySnapshot) => {
+               this.games = [];
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots
                      console.log("Gamelist : " +doc.id, " => ", doc.data());

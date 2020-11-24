@@ -30,6 +30,9 @@ import { playGroundConverter } from '../plugins/fireplayground';
 const { decks } = require('cards');
 const deck = new decks.PiquetDeck();
 
+var unsubscribeRound;
+var unsubscribePlay;
+
    export default {
       name: 'Playground',
       data() {
@@ -38,11 +41,12 @@ const deck = new decks.PiquetDeck();
                 hand2: [],
                 hand3: [],
                 hand4: [],
-                firePlayground: new FirePlayGround([], [], 'belote', [], 'not started', []),
+                firePlayground: new FirePlayGround([], [], 'belote', 'not started', []),
                 playGroundID: -1,
+                roundID: -1,
                 currentGame: "belote"
             }
-      },      
+      }, 
       components: {
          Deck
       },
@@ -70,6 +74,35 @@ const deck = new decks.PiquetDeck();
             });
       },
       mounted(){
+         this.emitter.on("select-play", (uid) => {
+            if (this.playGroundID != -1)
+               unsubscribePlay();
+           if (this.roundID != -1)
+               unsubscribeRound();               
+            this.playGroundID = uid;
+
+            unsubscribePlay = db.collection("plays").docRef(this.playGroundID)
+               .onSnapshot((doc) => {
+                  if (doc.data().players.length == 4 && doc.data().state == "not started") {
+                     // draw cards
+                  }
+
+               });
+
+            unsubscribeRound = db.collection("rounds")
+               .where("state", "==", 1)
+               .where("play", "==", this.playGroundID)
+               .onSnapshot((querySnapshot) => {
+                     querySnapshot.forEach(function(doc) {
+                        if (doc.hands.length == 4) {
+                           this.hand1 = doc.hands[0];
+                           this.hand2 = doc.hands[1];
+                           this.hand3 = doc.hands[2];
+                           this.hand4 = doc.hands[3];
+                        }
+                     });
+               });
+         });
          this.emitter.on("start-game", () => {
             this.startGame();
          });
@@ -87,16 +120,31 @@ const deck = new decks.PiquetDeck();
                .withConverter(playGroundConverter)
                .add(this.firePlayground)
                .then((docRef) => {
-                  console.log("Document successfully written with ID: ", docRef.id);
+                  console.log("Play successfully written with ID: ", docRef.id);
                   this.playGroundID = docRef.id;
                })
                .catch(function(error) {
                   console.error("Error writing document: ", error);
                });
+
+               db.collection("rounds").add({
+                  play: this.playGroundID,
+                  index: 0,
+                  state: 1,
+                  hands: []
+               })
+               .then(function(docRef) {
+                  console.log("Round written with ID: ", docRef.id);
+                  this.roundID = docRef.id;
+               })
+               .catch(function(error) {
+                  console.error("Error adding document: ", error);
+               });               
             }
             else {
                console.log("Existing Play : " + this.playGroundID);
             }
+
             /*db.collection("games")
                .doc(this.currentGame)
                .collection("plays")

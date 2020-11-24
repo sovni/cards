@@ -1,5 +1,6 @@
 <template>
    <DataTable :value="mygames" selectionMode="single" >
+      <Column filed="uid" header="Id" style="display: none;" renderer="false"></Column>
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
@@ -36,10 +37,11 @@ import Column from 'primevue/column';
          db.collection("plays")
             .where("players", "array-contains", currentUser.uid)
             .onSnapshot((querySnapshot) => {
+               this.mygames = [];
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
-                    this.mygames.push({"name": "belote", "players": doc.data().players.length, "state": doc.data().state});
+                    this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
                });
             });
       },

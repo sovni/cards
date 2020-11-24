@@ -19,7 +19,7 @@
                      Current Game
                   </template>
                   <template v-slot:content>
-                     <Playground />
+                     <Playground :playid="playId"/>
                   </template>   
                </Card>
             </div>
@@ -61,6 +61,11 @@ import MyGamelist from './MyGamelist'
 
    export default {
       name: 'Dashboard',
+      data() {
+            return {
+                playId: -1
+            }
+      },            
       components: {
          Card,
          Playground,
@@ -70,7 +75,8 @@ import MyGamelist from './MyGamelist'
       },
       methods: {
          startGame() {
-            this.emitter.emit("start-game");
+            this.playId = "sdfsdfsf";
+            //this.emitter.emit("start-game");
          },
          drawCards() {
             this.emitter.emit("draw-cards");
