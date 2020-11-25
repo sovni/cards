@@ -4,14 +4,28 @@
       <div class="p-col-12 p-mt-2">
          <div class="p-d-flex  p-jc-center">
             <div class="p-mr-2" style="max-width:400px;height:800px;">
-               <Card style="width:400px;height:800px;">
-                  <template v-slot:title>
-                     My Games
-                  </template>
-                  <template v-slot:content>
-                     <MyGamelist />
-                  </template>   
-               </Card>
+               <div class="p-d-flex p-flex-column">
+                  <div class="p-mb-2">
+                     <Card style="width:400px;height:380px;">
+                        <template v-slot:title>
+                           Current Game
+                        </template>
+                        <template v-slot:content>
+                           <CurrentGame :playerUid="playerUid" :playerName="playerName"/>
+                        </template>   
+                     </Card>
+                  </div>
+                  <div class="p-mb-2">
+                     <Card style="width:400px;height:380px;">
+                        <template v-slot:title>
+                           My Games
+                        </template>
+                        <template v-slot:content>
+                           <MyGamelist  :playerUid="playerUid" :playerName="playerName"/>
+                        </template>   
+                     </Card>
+                  </div>
+               </div>
             </div>
             <div class="p-mr-2" style="max-width:800px;height:800px;">
                <Card style="width:800px;height:800px;">
@@ -19,7 +33,7 @@
                      Current Game
                   </template>
                   <template v-slot:content>
-                     <Playground :playid="playId"/>
+                     <Playground  :playerUid="playerUid" :playerName="playerName"/>
                   </template>   
                </Card>
             </div>
@@ -31,8 +45,9 @@
                   <template v-slot:content>
                         <div class="p-grid">
                           <div class="p-col-12">
-                              <Gamelist />
-                           </div>                             <div class="p-col-12">
+                              <Gamelist  :playerUid="playerUid" :playerName="playerName"/>
+                           </div>
+                           <div class="p-col-12">
                               <Button label="Start" @click="startGame" />
                            </div>
                            <div class="p-col-12">
@@ -52,10 +67,13 @@
 </template>
 
 <script>
+import firebase from 'firebase';
+import '../plugins/firebase'
 import Card from 'primevue/card';
 import Playground from './Playground'
 import Button from 'primevue/button';
 import Gamelist from './Gamelist'
+import CurrentGame from './CurrentGame'
 import MyGamelist from './MyGamelist'
 
 
@@ -63,15 +81,22 @@ import MyGamelist from './MyGamelist'
       name: 'Dashboard',
       data() {
             return {
-                playId: -1
+               playerUid: -1,
+               playerName: ""
             }
       },            
       components: {
          Card,
          Playground,
          Gamelist,
+         CurrentGame,
          MyGamelist,
          Button
+      },
+      created() {
+         var currentUser = firebase.auth().currentUser;
+         this.playerUid = currentUser.uid;
+         this.playerName = currentUser.displayName;
       },
       methods: {
          startGame() {

@@ -5,7 +5,6 @@
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
    </DataTable>
-   <Button class="p-button-raised p-button-rounded" icon="pi pi-plus" @click="startGame()"/>
 </template>
 
 <script>
@@ -14,60 +13,66 @@ import db from '../plugins/firebase';
 //import playGroundConverter from '../plugins/fireplayground';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Button from 'primevue/button';
 
-
+const { decks } = require('cards');
 
    export default {
       name: 'MyGamelist',
       data() {
             return {
-                mygames: []
+                mygames: [],
+                deck: null
             }
       },      
       props: ['playerUid','playerName'],      
       components: {
          DataTable,
-         Column,
-         Button
+         Column
       },
       created(){
       },
       mounted(){
-         console.log("MyGameList :" + this.playerUid);
          db.collection("plays")
             .where("players", "array-contains", this.playerUid)
-            .where("state", "==", "not started")
+            .where("state", "!=", "not started")
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
-                     if (doc.data().players.length == 4) {
-                        db.collection("plays").doc(doc.id).set({state:"starting"}, { merge: true });
-                     }
-               });
+                    if (doc.data().state == "starting" && doc.data().creator == this.playerUid) {
+                        this.drawCards(doc.id);
+                        console.log("starting game");
+                    }
+                });
             });
       },
       methods: {
          startGame() {
                db.collection("plays").add({
                   players: [this.playerUid],
-                  playersName: [{id: this.playerUid, name: this.playerName}],
+                  playersName: [{id: this.playerUid, name: this.displayName}],
                   game: "belote",
                   state: "not started",
                   creator: this.playerUid
                })
                .then(function(docRef) {
                   console.log("Plays written with ID: ", docRef.id);
-                  //this.roundID = docRef.id;
                })
                .catch(function(error) {
                   console.error("Error adding document: ", error);
                });                           
-         }
+         },
+        drawCards(playId) {
+            this.deck = new decks.PiquetDeck();
+            this.deck.shuffleAll();
+            console.log("Draw cards " + playId);
 
+            /*this.hand1 = deck.draw(5);
+
+            db.collection("rounds");*/
+        }
       }
    }       
 </script>

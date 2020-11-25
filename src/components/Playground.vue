@@ -47,6 +47,7 @@ var unsubscribePlay;
                 currentGame: "belote"
             }
       }, 
+      props: ['playerUid','playerName'],
       components: {
          Deck
       },

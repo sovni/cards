@@ -21,7 +21,8 @@ import Column from 'primevue/column';
             return {
                 games: []
             }
-      },      
+      },
+      props: ['playerUid','playerName'],      
       components: {
          DataTable,
          Column
@@ -29,8 +30,6 @@ import Column from 'primevue/column';
       created(){
       },
       mounted(){
-         const currentUser = firebase.auth().currentUser;
-
 
          db.collection("plays")
             .where("state", "==", "not started")
@@ -41,7 +40,7 @@ import Column from 'primevue/column';
                      console.log("Gamelist : " +doc.id, " => ", doc.data());
                      var found = false;
                      for (var i = 0; i < doc.data().players.length; i++) {
-                        if (doc.data().players[i] == currentUser.uid) {
+                        if (doc.data().players[i] == this.playerUid) {
                            found = true;
                            break;
                         }
