@@ -27,3 +27,4 @@ export var playGroundConverter = {
         return new FirePlayGround(data.players, data.playersName, data.game, data.state, data.score)
     }
 }
+

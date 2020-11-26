@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import firebase from 'firebase';
+import '../plugins/firebase'
 import db from '../plugins/firebase';
 //import FirePlayGround from '../plugins/fireplayground';
 //import playGroundConverter from '../plugins/fireplayground';
@@ -21,7 +23,7 @@ const { decks } = require('cards');
       data() {
             return {
                 mygames: [],
-                deck: null
+                roundId: -1
             }
       },      
       props: ['playerUid','playerName'],      
@@ -42,7 +44,7 @@ const { decks } = require('cards');
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
                     if (doc.data().state == "starting" && doc.data().creator == this.playerUid) {
-                        this.drawCards(doc.id);
+                        this.drawCards(doc.id, doc.data().players);
                         console.log("starting game");
                     }
                 });
@@ -55,7 +57,8 @@ const { decks } = require('cards');
                   playersName: [{id: this.playerUid, name: this.displayName}],
                   game: "belote",
                   state: "not started",
-                  creator: this.playerUid
+                  creator: this.playerUid,
+                  creationDate: firebase.firestore.FieldValue.serverTimestamp()
                })
                .then(function(docRef) {
                   console.log("Plays written with ID: ", docRef.id);
@@ -64,15 +67,62 @@ const { decks } = require('cards');
                   console.error("Error adding document: ", error);
                });                           
          },
-        drawCards(playId) {
-            this.deck = new decks.PiquetDeck();
-            this.deck.shuffleAll();
+        drawCards(playId, players) {
+            var deck;
+            this.roundId = -1;
+            deck = new decks.PiquetDeck();
+            deck.shuffleAll();
             console.log("Draw cards " + playId);
+            db.collection("plays").doc(playId).set({state:"distrib-1"}, { merge: true });
 
-            /*this.hand1 = deck.draw(5);
+            db.collection("rounds").add({
+               play: playId,
+               index: 1,
+               state: "distrib-1",
+               choice: [],
+               deck: [],
+               scores: []
+            })
+            .then((docRef) => {
+               this.roundId = docRef.id;
+               console.log("Round this written with ID: ", docRef.id);
 
-            db.collection("rounds");*/
-        }
+               for (var i = 0; i < players.length; i++) {
+                  db.collection("hands").doc(this.roundId+players[i]).set({
+                     play: playId,
+                     round: this.roundId,
+                     player: players[i],
+                     handOn: this.getHand(deck, 3),
+                     handNext: [],
+                     handOff: []
+                  });
+               }
+               db.collection("round").doc(this.roundId).update({
+                  choice: firebase.firestore.FieldValue.arrayUnion(this.getHand(deck, 1))
+               });
+               for (i = 0; i < players.length; i++) {
+                  db.collection("hands").doc(this.roundId+players[i]).update({
+                     handOn: firebase.firestore.FieldValue.arrayUnion(this.getHand(deck, 2))
+                  });
+               }              
+               db.collection("round").doc(this.roundId).update({
+                  deck: firebase.firestore.FieldValue.arrayUnion(this.getHand(deck, 11))
+               });          
+            })
+            .catch((error) => {
+               console.error("Error adding Round: ", error);
+               this.roundId = -1;
+            }); 
+            console.log("Round Id : " + this.roundId);
+         },
+         getHand(deck, nb) {
+            var hand = deck.draw(nb);
+            var handArray = [];
+            for (var j = 0; j < hand.length; j++) {
+               handArray.push(hand[j].suit.name +":" + hand[j].rank.shortName);
+            }    
+            return handArray;           
+         }
       }
    }       
 </script>
