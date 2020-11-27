@@ -1,15 +1,15 @@
 <template>
    <div class="p-grid">
       <div class="p-col-4 p-offset-4">
-      <Deck id="deck1" :myhand="hand3" :activeUser="false" :indexUser="3"/>
+      <Deck id="deck1" :myhand="hand3" :activeUser="true" :indexUser="3"/>
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Deck id="deck2" :myhand="hand2" :activeUser="false" :indexUser="2"/>
+      <Deck id="deck2" :myhand="hand2" :activeUser="true" :indexUser="2"/>
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Deck id="deck3" :myhand="hand4" :activeUser="false" :indexUser="4"/>
+      <Deck id="deck3" :myhand="hand4" :activeUser="true" :indexUser="4"/>
       </div>
       <div class="p-col-4 p-offset-4">
       <Deck id="deck4" :myhand="hand1" :activeUser="true" :indexUser="1"/>
@@ -31,7 +31,7 @@ const { decks } = require('cards');
 const deck = new decks.PiquetDeck();
 
 var unsubscribeRound;
-var unsubscribePlay;
+//var unsubscribePlay;
 
    export default {
       name: 'Playground',
@@ -41,6 +41,7 @@ var unsubscribePlay;
                 hand2: [],
                 hand3: [],
                 hand4: [],
+                hands: [],
                 firePlayground: new FirePlayGround([], [], 'belote', 'not started', []),
                 playGroundID: -1,
                 roundID: -1,
@@ -76,22 +77,41 @@ var unsubscribePlay;
       },
       mounted(){
          this.emitter.on("select-play", (uid) => {
-            if (this.playGroundID != -1)
-               unsubscribePlay();
+            console.log("receive event play : " + uid);
+            //if (this.playGroundID != -1)
+            //   unsubscribePlay();
            if (this.roundID != -1)
                unsubscribeRound();               
             this.playGroundID = uid;
 
-            unsubscribePlay = db.collection("plays").docRef(this.playGroundID)
+            /*unsubscribePlay = db.collection("plays").docRef(this.playGroundID)
                .onSnapshot((doc) => {
                   if (doc.data().players.length == 4 && doc.data().state == "not started") {
                      // draw cards
                   }
-
+               });*/
+            var handArray = [];
+            var i = 0;
+            var active = 0;
+            db.collection("hands")
+               .where("play", "==", this.playGroundID)
+               .onSnapshot((querySnapshot) => {
+                     querySnapshot.forEach(function(doc) {
+                        console.log("doc : " + doc.data().handOn)
+                        handArray[i] = doc.data().handOn;
+                        if (doc.data().player == firebase.auth().currentUser.uid)
+                           active=i;
+                        i++;
+                     });
+                  console.log("hand : " + this.hand1);
+                  this.hand1 = handArray[active];
+                  this.hand2 = handArray[(active+1)%4];
+                  this.hand3 = handArray[(active+2)%4];
+                  this.hand4 = handArray[(active+3)%4];
                });
 
-            unsubscribeRound = db.collection("rounds")
-               .where("state", "==", 1)
+            /*unsubscribeRound = db.collection("rounds")
+               .where("state", "!=", "not started")
                .where("play", "==", this.playGroundID)
                .onSnapshot((querySnapshot) => {
                      querySnapshot.forEach(function(doc) {
@@ -102,7 +122,7 @@ var unsubscribePlay;
                            this.hand4 = doc.hands[3];
                         }
                      });
-               });
+               });*/
          });
          this.emitter.on("start-game", () => {
             this.startGame();
@@ -112,7 +132,7 @@ var unsubscribePlay;
          });
          this.emitter.on("add-cards", (nb) => {
             this.addCard(nb);
-         });                  
+         });               
       },
       methods: {
          startGame() {

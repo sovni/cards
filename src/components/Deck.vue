@@ -151,7 +151,9 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 if (this.activeUser == false)
                     return this.cBB;
               var suit;
-              switch (card.suit.name) {
+              //switch (card.suit.name) {
+              switch (card.suit) {
+
                     case 'spades':
                         suit = "S";
                         break;
@@ -168,10 +170,9 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                         suit = 'J';
                         break;
                 }
-                //if (card.rank.shortName != "7" && card.rank.shortName != "8")
-                //   card.rank.shortName = "7";
-                return eval("this.c"+card.rank.shortName+suit)
-                //return "./assets/cards/" + card.rank.shortName + suit + '.svg';  
+                //return eval("this.c"+card.rank.shortName+suit);
+                return eval("this.c"+card.rank+suit);
+
             },
             getStyle(card, index) {
                 console.log("index " + index);

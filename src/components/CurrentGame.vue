@@ -1,6 +1,6 @@
 <template>
-   <DataTable :value="mygames" selectionMode="single" >
-      <Column filed="uid" header="Id" style="display: none;" renderer="false"></Column>
+   <DataTable :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-click="selectPlay">
+      <Column filed="uid" header="Id" ></Column>
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
@@ -23,7 +23,8 @@ const { decks } = require('cards');
       data() {
             return {
                 mygames: [],
-                roundId: -1
+                roundId: -1,
+                selectedPlay: []
             }
       },      
       props: ['playerUid','playerName'],      
@@ -122,7 +123,7 @@ const { decks } = require('cards');
             for (var j = 0; j < hand.length; j++) {
                console.log("add card - player : " + playerId);
                db.collection("hands").doc(this.roundId+playerId).update({
-                  handOn: firebase.firestore.FieldValue.arrayUnion(hand[j].suit.name +":" + hand[j].rank.shortName)
+                  handOn: firebase.firestore.FieldValue.arrayUnion({suit: hand[j].suit.name, rank: hand[j].rank.shortName})
                });
 
                //handArray.push(hand[j].suit.name +":" + hand[j].rank.shortName);
@@ -133,10 +134,16 @@ const { decks } = require('cards');
             var hand = deck.draw(nb);
             var handArray = [];
             for (var j = 0; j < hand.length; j++) {
-               handArray.push(hand[j].suit.name +":" + hand[j].rank.shortName);
+               handArray.push({suit: hand[j].suit.name, rank: hand[j].rank.shortName});
             }    
             return handArray;           
-         }      
+         },
+         selectPlay(){
+            if (this.selectedPlay.uid)
+               this.emitter.emit("select-play", this.selectedPlay.uid);
+
+            console.log("selected " + this.selectedPlay.uid)
+         }
       }
    }       
 </script>
