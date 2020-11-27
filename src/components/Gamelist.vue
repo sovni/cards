@@ -7,8 +7,6 @@
 </template>
 
 <script>
-import firebase from 'firebase';
-import '../plugins/firebase'
 import db from '../plugins/firebase';
 //import FirePlayGround from '../plugins/fireplayground';
 //import playGroundConverter from '../plugins/fireplayground';

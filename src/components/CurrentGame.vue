@@ -97,16 +97,17 @@ const { decks } = require('cards');
                      handOff: []
                   });
                }
-               db.collection("round").doc(this.roundId).update({
-                  choice: firebase.firestore.FieldValue.arrayUnion(this.getHand(deck, 1))
-               });
+               console.log("Second draw turn");
                for (i = 0; i < players.length; i++) {
-                  db.collection("hands").doc(this.roundId+players[i]).update({
-                     handOn: firebase.firestore.FieldValue.arrayUnion(this.getHand(deck, 2))
-                  });
-               }              
-               db.collection("round").doc(this.roundId).update({
-                  deck: firebase.firestore.FieldValue.arrayUnion(this.getHand(deck, 11))
+                  this.drawHand(deck, 2, players[i]);
+               }          
+               console.log("Draw atout");
+               db.collection("rounds").doc(this.roundId).update({
+                  choice: this.getHand(deck, 1)
+               });
+               console.log("Store remaining deck");
+               db.collection("rounds").doc(this.roundId).update({
+                  deck: this.getHand(deck, 11)
                });          
             })
             .catch((error) => {
@@ -115,6 +116,19 @@ const { decks } = require('cards');
             }); 
             console.log("Round Id : " + this.roundId);
          },
+         drawHand(deck, nb, playerId) {
+            var hand = deck.draw(nb);
+            var handArray = [];
+            for (var j = 0; j < hand.length; j++) {
+               console.log("add card - player : " + playerId);
+               db.collection("hands").doc(this.roundId+playerId).update({
+                  handOn: firebase.firestore.FieldValue.arrayUnion(hand[j].suit.name +":" + hand[j].rank.shortName)
+               });
+
+               //handArray.push(hand[j].suit.name +":" + hand[j].rank.shortName);
+            }    
+            return handArray;           
+         },
          getHand(deck, nb) {
             var hand = deck.draw(nb);
             var handArray = [];
@@ -122,7 +136,7 @@ const { decks } = require('cards');
                handArray.push(hand[j].suit.name +":" + hand[j].rank.shortName);
             }    
             return handArray;           
-         }
+         }      
       }
    }       
 </script>
