@@ -5,9 +5,10 @@
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Hand id="deck2" :myhand="hand2" :activeUser="true" :indexUser="2"/>
+      <Hand id="deck2" :myhand="hand2" :activeUser="false" :indexUser="2"/>
       </div>
-      <div class="p-col-4" />
+      <div class="p-col-4" >
+      </div>
       <div class="p-col-4">
       <Hand id="deck3" :myhand="hand4" :activeUser="true" :indexUser="4"/>
       </div>

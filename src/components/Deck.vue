@@ -1,5 +1,5 @@
 <template>
-    <div class="hhand active-hand fan"  style="width:400px;height:200px;">
+    <div class="hhand active-hand"  style="width:400px;height:200px;">
         <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
     </div>
 </template>
@@ -13,9 +13,8 @@ import CBCard from './CBCard'
 require('cards');
 
 
-
    export default {
-        name: 'Hand',
+        name: 'Deck',
       data(){
             return {
                 cwidth: 76,
@@ -164,4 +163,3 @@ require('cards');
         }         
     }    
 </script>
-
