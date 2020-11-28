@@ -78,7 +78,7 @@ const cTS = require('../assets/cards/TS.svg');
 const cBB = require('../assets/cards/BLUE_BACK.svg');
 
    export default {
-        name: 'Deck',
+        name: 'Hand',
       data(){
             return {
                 cwidth: 76,

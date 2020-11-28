@@ -1,18 +1,18 @@
 <template>
    <div class="p-grid">
       <div class="p-col-4 p-offset-4">
-      <Deck id="deck1" :myhand="hand3" :activeUser="true" :indexUser="3"/>
+      <Hand id="deck1" :myhand="hand3" :activeUser="true" :indexUser="3"/>
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Deck id="deck2" :myhand="hand2" :activeUser="true" :indexUser="2"/>
+      <Hand id="deck2" :myhand="hand2" :activeUser="true" :indexUser="2"/>
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Deck id="deck3" :myhand="hand4" :activeUser="true" :indexUser="4"/>
+      <Hand id="deck3" :myhand="hand4" :activeUser="true" :indexUser="4"/>
       </div>
       <div class="p-col-4 p-offset-4">
-      <Deck id="deck4" :myhand="hand1" :activeUser="true" :indexUser="1"/>
+      <Hand id="deck4" :myhand="hand1" :activeUser="true" :indexUser="1"/>
       </div>                  
       <div class="p-col-4" />
    </div>
@@ -20,7 +20,7 @@
 
 <script>
 import firebase from 'firebase';
-import Deck from './Deck'
+import Hand from './Hand'
 import '../plugins/firebase'
 import db from '../plugins/firebase';
 import FirePlayGround from '../plugins/fireplayground';
@@ -50,7 +50,7 @@ var unsubscribeRound;
       }, 
       props: ['playerUid','playerName'],
       components: {
-         Deck
+         Hand
       },
       created(){
          const currentUser = firebase.auth().currentUser;
