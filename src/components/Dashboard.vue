@@ -47,16 +47,6 @@
                           <div class="p-col-12">
                               <Gamelist  :playerUid="playerUid" :playerName="playerName"/>
                            </div>
-                           <div class="p-col-12">
-                              <Button label="Start" @click="startGame" />
-                           </div>
-                           <div class="p-col-12">
-                              <Button label="Draw" @click="drawCards" />
-                           </div>                  
-                           <div class="p-col-12">
-                              <Button label="Add" @click="addCard" />
-                           </div>  
- 
                         </div>          
                   </template>   
                </Card>
@@ -71,7 +61,6 @@ import firebase from 'firebase';
 import '../plugins/firebase'
 import Card from 'primevue/card';
 import Playground from './Playground'
-import Button from 'primevue/button';
 import Gamelist from './Gamelist'
 import CurrentGame from './CurrentGame'
 import MyGamelist from './MyGamelist'
@@ -90,8 +79,7 @@ import MyGamelist from './MyGamelist'
          Playground,
          Gamelist,
          CurrentGame,
-         MyGamelist,
-         Button
+         MyGamelist
       },
       created() {
          var currentUser = firebase.auth().currentUser;
@@ -99,16 +87,6 @@ import MyGamelist from './MyGamelist'
          this.playerName = currentUser.displayName;
       },
       methods: {
-         startGame() {
-            this.playId = "sdfsdfsf";
-            //this.emitter.emit("start-game");
-         },
-         drawCards() {
-            this.emitter.emit("draw-cards");
-         },
-         addCard() {
-            this.emitter.emit("add-cards", 3);
-         }
       }      
    }       
 </script>

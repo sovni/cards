@@ -9,10 +9,9 @@ img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img
 
 <script>
 import CBCard from './CBCard'
+import db from '../plugins/firebase';
 
 require('cards');
-
-
 
    export default {
         name: 'Hand',
@@ -20,12 +19,26 @@ require('cards');
             return {
                 cwidth: 98,
                 cspacing: 0.24,
-                cradius: 166
+                cradius: 166,
+                myhand: []
             }
         },
-        props: ['myhand','activeUser','indexUser','playID'],      
+        props: ['handId','activeUser','indexUser','playID'],      
         components: {
             CBCard
+        },
+        watch: { 
+            handId: function(newVal, oldVal) { // watch it
+                console.log(
+                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.myround);
+                if (this.myround != -1) {
+                    db.collection("hands").doc(this.handId)
+                        .onSnapshot((doc) => {
+                            console.log("Deck: round : " + this.myround);
+                            this.myhand = doc.data().handOn;
+                        });
+                }
+            }
         },
         methods: {
             getStyle(card, index) {

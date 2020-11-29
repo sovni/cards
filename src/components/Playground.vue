@@ -1,20 +1,20 @@
 <template>
    <div class="p-grid">
       <div class="p-col-4 p-offset-4">
-      <Hand id="hand3" :myhand="hand3" :activeUser="true" :indexUser="3"/>
+      <Hand id="hand3" :handId="hand3" :playerId="player3" :activeUser="true" :indexUser="3"/>
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Hand id="hand2" :myhand="hand2" :activeUser="false" :indexUser="2"/>
+      <Hand id="hand2" :handId="hand2" :playerId="player2" :activeUser="false" :indexUser="2"/>
       </div>
       <div class="p-col-4" >
          <Deck id="deck" :myround="roundID" />
       </div>
       <div class="p-col-4">
-      <Hand id="hand4" :myhand="hand4" :activeUser="true" :indexUser="4"/>
+      <Hand id="hand4" :handId="hand4" :playerId="player4" :activeUser="true" :indexUser="4"/>
       </div>
       <div class="p-col-4 p-offset-4">
-      <Hand id="hand1" :myhand="hand1" :activeUser="true" :indexUser="1"/>
+      <Hand id="hand1" :handId="hand1" :playerId="player1" :activeUser="true" :indexUser="1"/>
       </div>                  
       <div class="p-col-4" />
    </div>
@@ -26,12 +26,10 @@ import Hand from './Hand'
 import Deck from './Deck'
 import '../plugins/firebase'
 import db from '../plugins/firebase';
-import FirePlayGround from '../plugins/fireplayground';
-import { playGroundConverter } from '../plugins/fireplayground';
 
 
-const { decks } = require('cards');
-const deck = new decks.PiquetDeck();
+//const { decks } = require('cards');
+//const deck = new decks.PiquetDeck();
 
 var unsubscribeRound;
 //var unsubscribePlay;
@@ -44,8 +42,7 @@ var unsubscribeRound;
                 hand2: [],
                 hand3: [],
                 hand4: [],
-                hands: [],
-                firePlayground: new FirePlayGround([], [], 'belote', 'not started', []),
+                hands: [[],[],[],[]],
                 playGroundID: -1,
                 roundID: -1,
                 currentGame: "belote"
@@ -57,27 +54,6 @@ var unsubscribeRound;
          Deck
       },
       created(){
-         const currentUser = firebase.auth().currentUser;
-         //this.firePlayground.players.push({"id":currentUser.uid, "name": currentUser.displayName});
-         //this.firePlayground.players[currentUser.uid] = currentUser.displayName;
-         this.firePlayground.players.push(currentUser.uid);
-         this.firePlayground.playersName.push(currentUser.displayName);
-
-
-         db.collection("plays")
-            .where("players.id", "array-contains", currentUser.uid)
-            .where("state", "==", "not started")
-            .get()
-            .then((querySnapshot) => {
-               querySnapshot.forEach((doc) => {
-                     // doc.data() is never undefined for query doc snapshots
-                     console.log(doc.id, " => ", doc.data());
-                     this.playGroundID = doc.id;
-               });
-            })
-            .catch(function(error) {
-               console.log("Error getting documents: ", error);
-            });
       },
       mounted(){
          this.emitter.on("select-play", (uid) => {
@@ -101,9 +77,9 @@ var unsubscribeRound;
             db.collection("hands")
                .where("play", "==", this.playGroundID)
                .onSnapshot((querySnapshot) => {
-                     querySnapshot.forEach(function(doc) {
+                     querySnapshot.forEach((doc) => {
                         console.log("doc : " + doc.data().handOn)
-                        handArray[i] = doc.data().handOn;
+                        handArray[i] = doc.id;// data().handOn;
                         if (doc.data().player == firebase.auth().currentUser.uid) {
                            active=i;
                            round = doc.data().round;
@@ -119,20 +95,6 @@ var unsubscribeRound;
                   console.log("hand : " + this.hand1);
 
                });
-
-            /*unsubscribeRound = db.collection("rounds")
-               .where("state", "!=", "not started")
-               .where("play", "==", this.playGroundID)
-               .onSnapshot((querySnapshot) => {
-                     querySnapshot.forEach(function(doc) {
-                        if (doc.hands.length == 4) {
-                           this.hand1 = doc.hands[0];
-                           this.hand2 = doc.hands[1];
-                           this.hand3 = doc.hands[2];
-                           this.hand4 = doc.hands[3];
-                        }
-                     });
-               });*/
          });
          this.emitter.on("start-game", () => {
             this.startGame();
@@ -145,75 +107,6 @@ var unsubscribeRound;
          });               
       },
       methods: {
-         startGame() {
-            if (this.playGroundID == -1) {
-               db.collection("plays")
-               .withConverter(playGroundConverter)
-               .add(this.firePlayground)
-               .then((docRef) => {
-                  console.log("Play successfully written with ID: ", docRef.id);
-                  this.playGroundID = docRef.id;
-               })
-               .catch(function(error) {
-                  console.error("Error writing document: ", error);
-               });
-
-               db.collection("rounds").add({
-                  play: this.playGroundID,
-                  index: 0,
-                  state: 1,
-                  hands: []
-               })
-               .then(function(docRef) {
-                  console.log("Round written with ID: ", docRef.id);
-                  this.roundID = docRef.id;
-               })
-               .catch(function(error) {
-                  console.error("Error adding document: ", error);
-               });               
-            }
-            else {
-               console.log("Existing Play : " + this.playGroundID);
-            }
-
-            /*db.collection("games")
-               .doc(this.currentGame)
-               .collection("plays")
-               .doc(this.playGroundID)
-               .withConverter(playGroundConverter).get().then((doc) => {
-                  if (doc.exists){
-                     // Convert to City object
-                     var playGround = doc.data();
-                     // Use a City instance method
-                     console.log("State: " + playGround.state);
-                  } else {
-                     console.log("No such document!")
-                  }}).catch(function(error) {
-                     console.log("Error getting document:", error)
-                  });*/
-            //console.log("Status:" + playGround.state);
-
-            // Shuffle the deck
-            deck.shuffleAll();
-
-            this.hand1 = deck.draw(5);
-            this.hand2 = [];
-            this.hand3 = [];
-            this.hand4 = [];
-            console.log(this.hand1);
-         },
-         drawCards() {
-            this.hand2 = deck.draw(5);
-            this.hand3 = deck.draw(5);
-            this.hand4 = deck.draw(5);
-         },
-         addCard(nb) {
-            this.hand1.push(...deck.draw(nb));
-            this.hand2.push(...deck.draw(nb));
-            this.hand3.push(...deck.draw(nb));
-            this.hand4.push(...deck.draw(nb));
-
-         }
       }
    }       
 </script>
