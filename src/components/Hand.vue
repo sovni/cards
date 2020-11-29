@@ -8,7 +8,8 @@ img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img
 </style>
 
 <script>
-import CBCard from './CBCard'
+import firebase from 'firebase';
+import CBCard from './CBCard';
 import db from '../plugins/firebase';
 
 require('cards');
@@ -20,10 +21,11 @@ require('cards');
                 cwidth: 98,
                 cspacing: 0.24,
                 cradius: 166,
-                myhand: []
+                myhand: [],
+                activeUser: false
             }
         },
-        props: ['handId','activeUser','indexUser','playID'],      
+        props: ['handId','playerId', 'indexUser','playID'],      
         components: {
             CBCard
         },
@@ -37,6 +39,14 @@ require('cards');
                             console.log("Deck: round : " + this.myround);
                             this.myhand = doc.data().handOn;
                         });
+                }
+            },
+            playerId: function() {
+                if (firebase.auth().currentUser.uid == this.playerId) {
+                    this.activeUser = true;
+                }
+                else {
+                    this.activeUser = false;
                 }
             }
         },
