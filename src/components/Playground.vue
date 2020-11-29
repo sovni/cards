@@ -1,20 +1,20 @@
 <template>
    <div class="p-grid">
       <div class="p-col-4 p-offset-4">
-      <Hand id="hand3" :handId="hands[2]" :playerId="players[2]" :activeUser="true" />
+      <Hand id="hand3" :handId="hands[2]" :playerId="players[2]" :indexUser="3" :activeUser="true" />
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Hand id="hand2" :handId="hands[1]" :playerId="players[1]" :activeUser="false" />
+      <Hand id="hand2" :handId="hands[1]" :playerId="players[1]" :indexUser="2" :activeUser="false" />
       </div>
       <div class="p-col-4" >
          <Deck id="deck" :myround="roundID" />
       </div>
       <div class="p-col-4">
-      <Hand id="hand4" :handId="hands[3]" :playerId="players[3]" :activeUser="true" />
+      <Hand id="hand4" :handId="hands[3]" :playerId="players[3]" :indexUser="4" :activeUser="true" />
       </div>
       <div class="p-col-4 p-offset-4">
-      <Hand id="hand1" :handId="hands[0]" :playerId="players[0]" :activeUser="true" />
+      <Hand id="hand1" :handId="hands[0]" :playerId="players[0]" :indexUser="1" :activeUser="true" />
       </div>                  
       <div class="p-col-4" />
    </div>
