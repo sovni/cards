@@ -6,62 +6,64 @@
 
 require('cards');
 
-const c2C = require('../assets/cards/2C.svg');
-const c2D = require('../assets/cards/2D.svg');
-const c2H = require('../assets/cards/2H.svg');
-const c2S = require('../assets/cards/2S.svg');
-const c3C = require('../assets/cards/3C.svg');
-const c3D = require('../assets/cards/3D.svg');
-const c3H = require('../assets/cards/3H.svg');
-const c3S = require('../assets/cards/3S.svg');
-const c4C = require('../assets/cards/4C.svg');
-const c4D = require('../assets/cards/4D.svg');
-const c4H = require('../assets/cards/4H.svg');
-const c4S = require('../assets/cards/4S.svg');
-const c5C = require('../assets/cards/5C.svg');
-const c5D = require('../assets/cards/5D.svg');
-const c5H = require('../assets/cards/5H.svg');
-const c5S = require('../assets/cards/5S.svg');
-const c6C = require('../assets/cards/6C.svg');
-const c6D = require('../assets/cards/6D.svg');
-const c6H = require('../assets/cards/6H.svg');
-const c6S = require('../assets/cards/6S.svg');
-const c7C = require('../assets/cards/7C.svg');
-const c7D = require('../assets/cards/7D.svg');
-const c7H = require('../assets/cards/7H.svg');
-const c7S = require('../assets/cards/7S.svg');
-const c8C = require('../assets/cards/8C.svg');
-const c8D = require('../assets/cards/8D.svg');
-const c8H = require('../assets/cards/8H.svg');
-const c8S = require('../assets/cards/8S.svg');
-const c9C = require('../assets/cards/9C.svg');
-const c9D = require('../assets/cards/9D.svg');
-const c9H = require('../assets/cards/9H.svg');
-const c9S = require('../assets/cards/9S.svg');
-const c10C = require('../assets/cards/10C.svg');
-const c10D = require('../assets/cards/10D.svg');
-const c10H = require('../assets/cards/10H.svg');
-const c10S = require('../assets/cards/10S.svg');
-const cAC = require('../assets/cards/AC.svg');
-const cAD = require('../assets/cards/AD.svg');
-const cAH = require('../assets/cards/AH.svg');
-const cAS = require('../assets/cards/AS.svg');
-const cJC = require('../assets/cards/JC.svg');
-const cJD = require('../assets/cards/JD.svg');
-const cJH = require('../assets/cards/JH.svg');
-const cJS = require('../assets/cards/JS.svg');
-const cKC = require('../assets/cards/KC.svg');
-const cKD = require('../assets/cards/KD.svg');
-const cKH = require('../assets/cards/KH.svg');
-const cKS = require('../assets/cards/KS.svg');
-const cQC = require('../assets/cards/QC.svg');
-const cQD = require('../assets/cards/QD.svg');
-const cQH = require('../assets/cards/QH.svg');
-const cQS = require('../assets/cards/QS.svg');
-const cTC = require('../assets/cards/TC.svg');
-const cTD = require('../assets/cards/TD.svg');
-const cTH = require('../assets/cards/TH.svg');
-const cTS = require('../assets/cards/TS.svg');
+//var dirCards = "../assets/cards/";
+
+const c2C = require('../assets/cards-belote/2C.svg');
+const c2D = require('../assets/cards-belote/2D.svg');
+const c2H = require('../assets/cards-belote/2H.svg');
+const c2S = require('../assets/cards-belote/2S.svg');
+const c3C = require('../assets/cards-belote/3C.svg');
+const c3D = require('../assets/cards-belote/3D.svg');
+const c3H = require('../assets/cards-belote/3H.svg');
+const c3S = require('../assets/cards-belote/3S.svg');
+const c4C = require('../assets/cards-belote/4C.svg');
+const c4D = require('../assets/cards-belote/4D.svg');
+const c4H = require('../assets/cards-belote/4H.svg');
+const c4S = require('../assets/cards-belote/4S.svg');
+const c5C = require('../assets/cards-belote/5C.svg');
+const c5D = require('../assets/cards-belote/5D.svg');
+const c5H = require('../assets/cards-belote/5H.svg');
+const c5S = require('../assets/cards-belote/5S.svg');
+const c6C = require('../assets/cards-belote/6C.svg');
+const c6D = require('../assets/cards-belote/6D.svg');
+const c6H = require('../assets/cards-belote/6H.svg');
+const c6S = require('../assets/cards-belote/6S.svg');
+const c7C = require('../assets/cards-belote/7C.svg');
+const c7D = require('../assets/cards-belote/7D.svg');
+const c7H = require('../assets/cards-belote/7H.svg');
+const c7S = require('../assets/cards-belote/7S.svg');
+const c8C = require('../assets/cards-belote/8C.svg');
+const c8D = require('../assets/cards-belote/8D.svg');
+const c8H = require('../assets/cards-belote/8H.svg');
+const c8S = require('../assets/cards-belote/8S.svg');
+const c9C = require('../assets/cards-belote/9C.svg');
+const c9D = require('../assets/cards-belote/9D.svg');
+const c9H = require('../assets/cards-belote/9H.svg');
+const c9S = require('../assets/cards-belote/9S.svg');
+const c10C = require('../assets/cards-belote/10C.svg');
+const c10D = require('../assets/cards-belote/10D.svg');
+const c10H = require('../assets/cards-belote/10H.svg');
+const c10S = require('../assets/cards-belote/10S.svg');
+const cAC = require('../assets/cards-belote/AC.svg');
+const cAsD = require('../assets/cards-belote/AD.svg');
+const cAH = require('../assets/cards-belote/AH.svg');
+const cAS = require('../assets/cards-belote/AS.svg');
+const cJC = require('../assets/cards-belote/JC.svg');
+const cJD = require('../assets/cards-belote/JD.svg');
+const cJH = require('../assets/cards-belote/JH.svg');
+const cJS = require('../assets/cards-belote/JS.svg');
+const cKC = require('../assets/cards-belote/KC.svg');
+const cKD = require('../assets/cards-belote/KD.svg');
+const cKH = require('../assets/cards-belote/KH.svg');
+const cKS = require('../assets/cards-belote/KS.svg');
+const cQC = require('../assets/cards-belote/QC.svg');
+const cQD = require('../assets/cards-belote/QD.svg');
+const cQH = require('../assets/cards-belote/QH.svg');
+const cQS = require('../assets/cards-belote/QS.svg');
+const cTC = require('../assets/cards-belote/TC.svg');
+const cTD = require('../assets/cards-belote/TD.svg');
+const cTH = require('../assets/cards-belote/TH.svg');
+const cTS = require('../assets/cards-belote/TS.svg');
 const cBB = require('../assets/cards/BLUE_BACK.svg');
 
 
@@ -115,7 +117,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 cQH: cQH,
                 cQS: cQS,
                 cAC: cAC,
-                cAD: cAD,
+                cAD: cAsD,
                 cAH: cAH,
                 cAS: cAS,
                 cJC: cJC,

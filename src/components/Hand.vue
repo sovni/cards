@@ -18,7 +18,7 @@ require('cards');
         name: 'Hand',
       data(){
             return {
-                cwidth: 76,
+                cwidth: 98,
                 cspacing: 0.24,
                 cradius: 166
             }

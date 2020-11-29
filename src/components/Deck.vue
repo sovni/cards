@@ -1,6 +1,6 @@
 <template>
     <div class="hhand active-hand"  style="width:400px;height:200px;">
-        <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
+        <CBCard v-for="(mycard, index) in mydeck" v-bind:key="mycard" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
     </div>
 </template>
 <style>
@@ -9,6 +9,7 @@ img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img
 
 <script>
 import CBCard from './CBCard'
+import db from '../plugins/firebase';
 
 require('cards');
 
@@ -17,19 +18,45 @@ require('cards');
         name: 'Deck',
       data(){
             return {
-                cwidth: 76,
+                cwidth: 98,
                 cspacing: 0.24,
-                cradius: 166
+                cradius: 166,
+                mydeck: []
             }
         },
-        props: ['myhand','activeUser','indexUser','playID'],      
+        props: ['myround'],      
         components: {
             CBCard
         },
+        watch: { 
+            myround: function(newVal, oldVal) { // watch it
+                console.log(
+                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.myround);
+                if (this.myround != -1) {
+                    db.collection("rounds").doc(this.myround)
+                        .onSnapshot((doc) => {
+                            console.log("Deck: round : " + this.myround);
+                            this.mydeck = doc.data().choice;
+                        });
+                }
+            }
+        },
         methods: {
+            mounted(){
+                //if (this.myround != -1) {
+                    db.collection("rounds").doc(this.myround)
+                        .onSnapshot(function(doc) {
+                            console.log("Deck: round : " + this.myround);
+                            this.mydeck = doc.data().choice;
+                        });
+
+                //}
+            },
+            
+
             getStyle(card, index) {
                 console.log("index " + index);
-                var n = this.myhand.length;
+                var n = this.mydeck.length;
                 if (n === 0) {
                     return;
                 }

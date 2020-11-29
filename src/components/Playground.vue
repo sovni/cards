@@ -1,19 +1,20 @@
 <template>
    <div class="p-grid">
       <div class="p-col-4 p-offset-4">
-      <Hand id="deck1" :myhand="hand3" :activeUser="true" :indexUser="3"/>
+      <Hand id="hand3" :myhand="hand3" :activeUser="true" :indexUser="3"/>
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Hand id="deck2" :myhand="hand2" :activeUser="false" :indexUser="2"/>
+      <Hand id="hand2" :myhand="hand2" :activeUser="false" :indexUser="2"/>
       </div>
       <div class="p-col-4" >
+         <Deck id="deck" :myround="roundID" />
       </div>
       <div class="p-col-4">
-      <Hand id="deck3" :myhand="hand4" :activeUser="true" :indexUser="4"/>
+      <Hand id="hand4" :myhand="hand4" :activeUser="true" :indexUser="4"/>
       </div>
       <div class="p-col-4 p-offset-4">
-      <Hand id="deck4" :myhand="hand1" :activeUser="true" :indexUser="1"/>
+      <Hand id="hand1" :myhand="hand1" :activeUser="true" :indexUser="1"/>
       </div>                  
       <div class="p-col-4" />
    </div>
@@ -22,6 +23,7 @@
 <script>
 import firebase from 'firebase';
 import Hand from './Hand'
+import Deck from './Deck'
 import '../plugins/firebase'
 import db from '../plugins/firebase';
 import FirePlayGround from '../plugins/fireplayground';
@@ -51,7 +53,8 @@ var unsubscribeRound;
       }, 
       props: ['playerUid','playerName'],
       components: {
-         Hand
+         Hand,
+         Deck
       },
       created(){
          const currentUser = firebase.auth().currentUser;
@@ -94,21 +97,27 @@ var unsubscribeRound;
             var handArray = [];
             var i = 0;
             var active = 0;
+            var round = -1;
             db.collection("hands")
                .where("play", "==", this.playGroundID)
                .onSnapshot((querySnapshot) => {
                      querySnapshot.forEach(function(doc) {
                         console.log("doc : " + doc.data().handOn)
                         handArray[i] = doc.data().handOn;
-                        if (doc.data().player == firebase.auth().currentUser.uid)
+                        if (doc.data().player == firebase.auth().currentUser.uid) {
                            active=i;
+                           round = doc.data().round;
+                        }
                         i++;
                      });
-                  console.log("hand : " + this.hand1);
+                  console.log("round : " + round);
+                  this.roundID = round;
                   this.hand1 = handArray[active];
                   this.hand2 = handArray[(active+1)%4];
                   this.hand3 = handArray[(active+2)%4];
                   this.hand4 = handArray[(active+3)%4];
+                  console.log("hand : " + this.hand1);
+
                });
 
             /*unsubscribeRound = db.collection("rounds")
