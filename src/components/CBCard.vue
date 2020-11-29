@@ -45,7 +45,7 @@ const c10D = require('../assets/cards-belote/10D.svg');
 const c10H = require('../assets/cards-belote/10H.svg');
 const c10S = require('../assets/cards-belote/10S.svg');
 const cAC = require('../assets/cards-belote/AC.svg');
-const cAsD = require('../assets/cards-belote/AD.svg');
+const cAsD = require('../assets/cards-belote/AsD.svg');
 const cAH = require('../assets/cards-belote/AH.svg');
 const cAS = require('../assets/cards-belote/AS.svg');
 const cJC = require('../assets/cards-belote/JC.svg');
@@ -117,7 +117,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 cQH: cQH,
                 cQS: cQS,
                 cAC: cAC,
-                cAD: cAsD,
+                cAsD: cAsD,
                 cAH: cAH,
                 cAS: cAS,
                 cJC: cJC,
@@ -152,6 +152,8 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                         break;     
                     case 'diamonds':
                         suit = "D";
+                        if (card.rank == "A")
+                            card.rank = "As";
                         break;     
                     default :
                         suit = 'J';
