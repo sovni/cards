@@ -105,6 +105,7 @@ const { decks } = require('cards');
                      play: playId,
                      round: this.roundId,
                      player: players[(i+dealer)%players.length],
+                     playerIndex: (i+dealer)%players.length,
                      handOn: this.getHand(deck, 3),
                      handNext: [],
                      handOff: []

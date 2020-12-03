@@ -25,10 +25,13 @@ require('cards');
                 cspacing: 0.24,
                 cradius: 166,
                 myhand: [],
+                myindex: -1,
+                choose: false,
                 activeUser: false,
+                roundId: -1
             }
         },
-        props: ['handId','playerId', 'indexUser','playID','choose'],      
+        props: ['handId','playerId', 'indexUser','playID'],      
         components: {
             CBCard,
             Button
@@ -42,34 +45,32 @@ require('cards');
                         .onSnapshot((doc) => {
                             console.log("Hand: round : " + this.myround);
                             this.myhand = doc.data().handOn;
+                            this.myindex = doc.data().playerIndex;
+                            this.roundId = doc.data().round;
                         });
                 }
             },
             playerId: function() {
                 if (firebase.auth().currentUser.uid == this.playerId) {
                     this.activeUser = true;
-                     
-                    /*var players = db.collection("plays").doc(db.collection("hands").doc(this.handId).data().play);
-                    for (var i=0;i<players.length;i++) {
-                        if (players[i].)
-                    }*/
-
                 }
                 else {
                     this.activeUser = false;
                 }
             }
         },
-        /*mounted() {
-            db.collection("play").doc(this.playGroundID)
+        mounted() {
+            db.collection("rounds").doc(this.roundId)
                 .where("state", "==", "choice-1")
                 .onSnapshot((doc) => {
-                if (doc.data().index == this.myIndex)  {
-                    
-                }
-
+                    if (doc.data().index%4 == this.myindex)  {
+                        this.choose = true;
+                    }
+                    else {
+                        this.choose = false;
+                    }
                 });    
-        },*/
+        },
         methods: {
             getStyle(card, index) {
                 console.log("index " + index);
