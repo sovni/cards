@@ -36,7 +36,7 @@ import Button from 'primevue/button';
       mounted(){
          console.log("MyGameList :" + this.playerUid);
          db.collection("plays")
-            .where("players", "array-contains", this.playerUid)
+            .where("creator", "==", this.playerUid)
             .where("state", "==", "created")
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
@@ -45,7 +45,7 @@ import Button from 'primevue/button';
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
                      if (doc.data().players.length == 4) {
-                        db.collection("plays").doc(doc.id).set({state:"prep"}, { merge: true });
+                        db.collection("plays").doc(doc.id).update({state:"prep"});
                      }
                });
             });
@@ -57,7 +57,8 @@ import Button from 'primevue/button';
                   playersName: [{id: this.playerUid, name: this.playerName}],
                   game: "belote",
                   state: "created",
-                  creator: this.playerUid
+                  creator: this.playerUid,
+                  roundIndex: 0
                })
                .then(function(docRef) {
                   console.log("Plays written with ID: ", docRef.id);

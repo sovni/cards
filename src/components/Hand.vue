@@ -26,10 +26,9 @@ require('cards');
                 cradius: 166,
                 myhand: [],
                 activeUser: false,
-                choose: false
             }
         },
-        props: ['handId','playerId', 'indexUser','playID'],      
+        props: ['handId','playerId', 'indexUser','playID','choose'],      
         components: {
             CBCard,
             Button
@@ -49,12 +48,28 @@ require('cards');
             playerId: function() {
                 if (firebase.auth().currentUser.uid == this.playerId) {
                     this.activeUser = true;
+                     
+                    /*var players = db.collection("plays").doc(db.collection("hands").doc(this.handId).data().play);
+                    for (var i=0;i<players.length;i++) {
+                        if (players[i].)
+                    }*/
+
                 }
                 else {
                     this.activeUser = false;
                 }
             }
         },
+        /*mounted() {
+            db.collection("play").doc(this.playGroundID)
+                .where("state", "==", "choice-1")
+                .onSnapshot((doc) => {
+                if (doc.data().index == this.myIndex)  {
+                    
+                }
+
+                });    
+        },*/
         methods: {
             getStyle(card, index) {
                 console.log("index " + index);
@@ -67,9 +82,9 @@ require('cards');
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
                 var rotationAngle = Math.round(coords[index].angle);
-                if (this.indexUser == 1)
+                if (this.indexUser == 0)
                     coords[index].y += 100;
-                else if (this.indexUser == 2 || this.indexUser == 4 )
+                else if (this.indexUser == 1 || this.indexUser == 3 )
                     coords[index].x += 50;
                 return "width:"+width+"px; left:"+ coords[index].x + "px;top:" + coords[index].y+ "px; transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 
@@ -81,7 +96,7 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                startAngle = startAngle + (this.indexUser -1) * 90;
+                startAngle = startAngle + (this.indexUser) * 90;
 
                 var coords = [];
                 var i;

@@ -1,11 +1,11 @@
 <template>
    <div class="p-grid">
       <div class="p-col-4 p-offset-4">
-      <Hand id="hand3" :handId="hands[2]" :playerId="players[2]" :indexUser="3" :activeUser="true" />
+      <Hand id="hand3" :handId="hands[2]" :playerId="players[2]" :indexUser="2" :activeUser="true" :choose="false"/>
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Hand id="hand2" :handId="hands[1]" :playerId="players[1]" :indexUser="2" :activeUser="false" />
+      <Hand id="hand2" :handId="hands[1]" :playerId="players[1]" :indexUser="1" :activeUser="false"  :choose="false"/>
       </div>
       <div class="p-col-4" >
          <div class="p-d-flex p-jc-center">
@@ -13,10 +13,10 @@
          </div>
       </div>
       <div class="p-col-4">
-      <Hand id="hand4" :handId="hands[3]" :playerId="players[3]" :indexUser="4" :activeUser="true" />
+      <Hand id="hand4" :handId="hands[3]" :playerId="players[3]" :indexUser="3" :activeUser="true"  :choose="false"/>
       </div>
       <div class="p-col-4 p-offset-4">
-      <Hand id="hand1" :handId="hands[0]" :playerId="players[0]" :indexUser="1" :activeUser="true" />
+      <Hand id="hand1" :handId="hands[0]" :playerId="players[0]" :indexUser="0" :activeUser="true"  :choose="false"/>
       </div>                  
       <div class="p-col-4" />
    </div>
@@ -48,7 +48,8 @@ var unsubscribeRound;
                 players: ["","","",""],
                 playGroundID: -1,
                 roundID: -1,
-                currentGame: "belote"
+                currentGame: "belote",
+                myIndex: -1
             }
       }, 
       props: ['playerUid','playerName'],
@@ -93,28 +94,15 @@ var unsubscribeRound;
                      });
                   console.log("round : " + round);
                   this.roundID = round;
+                  this.myIndex == active;
                   for (var j=0;j<this.hands.length;j++) {
-                     this.hands[j] = handArray[(active+j)%4];
-                     this.players[j] = playerArray[(active+j)%4];
+                     this.hands[j] = handArray[(active+j)%this.hands.length];
+                     this.players[j] = playerArray[(active+j)%this.hands.length];
 
                   }
-                  /*this.hands[0] = handArray[active];
-                  this.hand2 = handArray[(active+1)%4];
-                  this.hand3 = handArray[(active+2)%4];
-                  this.hand4 = handArray[(active+3)%4];
-                  console.log("hand : " + this.hand1);*/
-
                });
          });
-         this.emitter.on("start-game", () => {
-            this.startGame();
-         });
-         this.emitter.on("draw-cards", () => {
-            this.drawCards();
-         });
-         this.emitter.on("add-cards", (nb) => {
-            this.addCard(nb);
-         });               
+  
       },
       methods: {
       }

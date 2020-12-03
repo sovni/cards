@@ -36,45 +36,55 @@ const { decks } = require('cards');
       },
       mounted(){
          db.collection("plays")
-            .where("players", "array-contains", this.playerUid)
-            .where("state", "==", "prep")
+            .where("creator", "==", this.playerUid)
+            .where("state", "!=", "created")
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
-                     // doc.data() is never undefined for query doc snapshots
-                    console.log("Gamelist : " +doc.id, " => ", doc.data());
-                    this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
-                    if (doc.data().state == "starting" && doc.data().creator == this.playerUid) {
-                        this.drawCards(doc.id, doc.data().players);
-                        console.log("starting game");
-                    }
-                });
+                  this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
+               });
             });
-      },
+         db.collection("plays")
+            .where("creator", "==", this.playerUid)
+            .where("state", "==", "prep")
+            .onSnapshot((querySnapshot) => {
+               querySnapshot.forEach((doc) => {
+                  console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
+                  db.collection("plays").doc(doc.id).update({state:"start-play"});
+                  console.log("starting game");
+               });
+            });
+         db.collection("plays")
+            .where("creator", "==", this.playerUid)
+            .where("state", "==", "start-play")
+            .onSnapshot((querySnapshot) => {
+               querySnapshot.forEach((doc) => {
+                     console.log("CurrentGame start-play state : " +doc.id, " => ", doc.data());
+                     db.collection("plays").doc(doc.id).update({state:"start-round"});
+                     console.log("starting round");
+                });
+            });            
+         db.collection("plays")
+            .where("creator", "==", this.playerUid)
+            .where("state", "==", "start-round")
+            .onSnapshot((querySnapshot) => {
+               querySnapshot.forEach((doc) => {
+                     console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
+                     db.collection("plays").doc(doc.id).update({state:"distrib-1"});
+                     this.drawCards(doc.id, doc.data().players,doc.data().roundIndex);
+                     console.log("distribute cards round 1");
+                     db.collection("plays").doc(doc.id).update({state:"playing"});
+
+                });
+            });              },
       methods: {
-         startGame() {
-               db.collection("plays").add({
-                  players: [this.playerUid],
-                  playersName: [{id: this.playerUid, name: this.displayName}],
-                  game: "belote",
-                  state: "created",
-                  creator: this.playerUid,
-                  creationDate: firebase.firestore.FieldValue.serverTimestamp()
-               })
-               .then(function(docRef) {
-                  console.log("Plays written with ID: ", docRef.id);
-               })
-               .catch(function(error) {
-                  console.error("Error adding document: ", error);
-               });                           
-         },
-        drawCards(playId, players) {
+        drawCards(playId, players, dealer) {
             var deck;
             this.roundId = -1;
             deck = new decks.PiquetDeck();
             deck.shuffleAll();
             console.log("Draw cards " + playId);
-            db.collection("plays").doc(playId).set({state:"distrib-1"}, { merge: true });
+            db.collection("plays").doc(playId).update({state:"distrib-1"});
 
             db.collection("rounds").add({
                play: playId,
@@ -88,12 +98,13 @@ const { decks } = require('cards');
             .then((docRef) => {
                this.roundId = docRef.id;
                console.log("Round this written with ID: ", docRef.id);
+               db.collection("plays").doc(playId).update({round: this.roundId});
 
                for (var i = 0; i < players.length; i++) {
-                  db.collection("hands").doc(this.roundId+players[i]).set({
+                  db.collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
                      play: playId,
                      round: this.roundId,
-                     player: players[i],
+                     player: players[(i+dealer)%players.length],
                      handOn: this.getHand(deck, 3),
                      handNext: [],
                      handOff: []
@@ -101,7 +112,7 @@ const { decks } = require('cards');
                }
                console.log("Second draw turn");
                for (i = 0; i < players.length; i++) {
-                  this.drawHand(deck, 2, players[i]);
+                  this.drawHand(deck, 2, players[(i+dealer)%players.length]);
                }          
                console.log("Draw atout");
                db.collection("rounds").doc(this.roundId).update({
@@ -109,7 +120,7 @@ const { decks } = require('cards');
                });
                console.log("Store remaining deck");
                db.collection("rounds").doc(this.roundId).update({
-                  deck: this.getHand(deck, 11)
+                  deck: this.getHand(deck, 11), state: "choice-1"
                });          
             })
             .catch((error) => {
