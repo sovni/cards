@@ -8,7 +8,7 @@ img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img
 </style>
 
 <script>
-import CBCard from './CBCard'
+import CBCard from './CBCard';
 import db from '../plugins/firebase';
 
 require('cards');

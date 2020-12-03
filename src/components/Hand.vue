@@ -2,6 +2,8 @@
     <div class="hhand active-hand fan"  style="width:400px;height:200px;">
         <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
     </div>
+   <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
+   <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
 </template>
 <style>
 img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img.card{margin:0;padding:0}.active-hand img.card{cursor:pointer}.hhand{display:inline-block}.hhand img.card{padding-top:10px}.hhand.active-hand img.card:hover{padding-top:0;padding-bottom:10px}.vhand{display:block}.vhand img.card{padding-right:10px}.vhand.active-hand img.card:hover{padding-right:0;padding-left:10px}.hhand-compact{display:inline-block}.hhand-compact img.card:first-child{margin-left:0;padding-top:10px}.hhand-compact img.card{margin-left:-52px;padding-top:10px}.hhand-compact.active-hand img.card:hover{padding-top:0;padding-bottom:10px}.vhand-compact{display:inline-block;vertical-align:top}.vhand-compact img.card:first-child{display:block;margin-top:0;padding-right:10px}.vhand-compact img.card{display:block;margin-top:-80px;padding-right:10px}.active-hand .vhand-compact img.card:hover,.vhand-compact.active-hand img.card:hover{display:block;padding-right:0;padding-left:10px}.fan{display:inline-block;vertical-align:top;position:relative;padding-bottom:1em}.fan img.card{position:absolute;width:90px}
@@ -11,6 +13,7 @@ img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img
 import firebase from 'firebase';
 import CBCard from './CBCard';
 import db from '../plugins/firebase';
+import Button from 'primevue/button';
 
 require('cards');
 
@@ -22,12 +25,14 @@ require('cards');
                 cspacing: 0.24,
                 cradius: 166,
                 myhand: [],
-                activeUser: false
+                activeUser: false,
+                choose: false
             }
         },
         props: ['handId','playerId', 'indexUser','playID'],      
         components: {
-            CBCard
+            CBCard,
+            Button
         },
         watch: { 
             handId: function(newVal, oldVal) { // watch it
@@ -36,7 +41,7 @@ require('cards');
                 if (this.myround != -1) {
                     db.collection("hands").doc(this.handId)
                         .onSnapshot((doc) => {
-                            console.log("Deck: round : " + this.myround);
+                            console.log("Hand: round : " + this.myround);
                             this.myhand = doc.data().handOn;
                         });
                 }

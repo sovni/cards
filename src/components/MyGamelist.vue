@@ -5,7 +5,7 @@
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
    </DataTable>
-   <Button class="p-button-raised p-button-rounded" icon="pi pi-plus" @click="startGame()"/>
+   <Button class="p-button-raised p-button-rounded" icon="pi pi-plus" @click="createGame()"/>
 </template>
 
 <script>
@@ -37,7 +37,7 @@ import Button from 'primevue/button';
          console.log("MyGameList :" + this.playerUid);
          db.collection("plays")
             .where("players", "array-contains", this.playerUid)
-            .where("state", "==", "not started")
+            .where("state", "==", "created")
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
@@ -45,18 +45,18 @@ import Button from 'primevue/button';
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
                      if (doc.data().players.length == 4) {
-                        db.collection("plays").doc(doc.id).set({state:"starting"}, { merge: true });
+                        db.collection("plays").doc(doc.id).set({state:"prep"}, { merge: true });
                      }
                });
             });
       },
       methods: {
-         startGame() {
+         createGame() {
                db.collection("plays").add({
                   players: [this.playerUid],
                   playersName: [{id: this.playerUid, name: this.playerName}],
                   game: "belote",
-                  state: "not started",
+                  state: "created",
                   creator: this.playerUid
                })
                .then(function(docRef) {

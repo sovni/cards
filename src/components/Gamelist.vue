@@ -30,7 +30,7 @@ import Column from 'primevue/column';
       mounted(){
 
          db.collection("plays")
-            .where("state", "==", "not started")
+            .where("state", "==", "created")
             .onSnapshot((querySnapshot) => {
                this.games = [];
                querySnapshot.forEach((doc) => {

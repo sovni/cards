@@ -8,7 +8,9 @@
       <Hand id="hand2" :handId="hands[1]" :playerId="players[1]" :indexUser="2" :activeUser="false" />
       </div>
       <div class="p-col-4" >
+         <div class="p-d-flex p-jc-center">
          <Deck id="deck" :myround="roundID" />
+         </div>
       </div>
       <div class="p-col-4">
       <Hand id="hand4" :handId="hands[3]" :playerId="players[3]" :indexUser="4" :activeUser="true" />
@@ -67,7 +69,7 @@ var unsubscribeRound;
 
             /*unsubscribePlay = db.collection("plays").docRef(this.playGroundID)
                .onSnapshot((doc) => {
-                  if (doc.data().players.length == 4 && doc.data().state == "not started") {
+                  if (doc.data().players.length == 4 && doc.data().state == "created") {
                      // draw cards
                   }
                });*/

@@ -37,7 +37,7 @@ const { decks } = require('cards');
       mounted(){
          db.collection("plays")
             .where("players", "array-contains", this.playerUid)
-            .where("state", "!=", "not started")
+            .where("state", "==", "prep")
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
@@ -57,7 +57,7 @@ const { decks } = require('cards');
                   players: [this.playerUid],
                   playersName: [{id: this.playerUid, name: this.displayName}],
                   game: "belote",
-                  state: "not started",
+                  state: "created",
                   creator: this.playerUid,
                   creationDate: firebase.firestore.FieldValue.serverTimestamp()
                })
@@ -78,7 +78,8 @@ const { decks } = require('cards');
 
             db.collection("rounds").add({
                play: playId,
-               index: 1,
+               index: 0,
+               dealer: this.playerUid,
                state: "distrib-1",
                choice: [],
                deck: [],
