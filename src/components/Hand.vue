@@ -39,15 +39,34 @@ require('cards');
         watch: { 
             handId: function(newVal, oldVal) { // watch it
                 console.log(
-                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.myround);
-                if (this.myround != -1) {
+                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.handId);
+                if (this.handId != -1) {
                     db.collection("hands").doc(this.handId)
                         .onSnapshot((doc) => {
                             console.log("Hand: round : " + this.myround);
                             this.myhand = doc.data().handOn;
                             this.myindex = doc.data().playerIndex;
                             this.roundId = doc.data().round;
+
+                        console.log("Current round :" + this.roundId);
+                        db.collection("rounds").doc(this.roundId)
+                            //.where("state", "==", "choice-1")
+                            .onSnapshot((doc) => {
+                                console.log("index: " +this.myindex + " round index : " + doc.data().state);
+                                if (doc.data().state == "choice-1") {
+                                    if (doc.data().active == this.myindex)  {
+                                        console.log("active hand: " +this.myindex);
+                                        this.choose = true;
+                                    }
+                                    else {
+                                        this.choose = false;
+                                    }
+                                }
+                                else {
+                                    this.choose = false;
+                                }
                         });
+                    });
                 }
             },
             playerId: function() {
@@ -59,8 +78,8 @@ require('cards');
                 }
             }
         },
-        mounted() {
-            db.collection("rounds").doc(this.roundId)
+        /*mounted() {
+            db.collection("rounds").doc(this.myround)
                 .where("state", "==", "choice-1")
                 .onSnapshot((doc) => {
                     if (doc.data().index%4 == this.myindex)  {
@@ -70,8 +89,25 @@ require('cards');
                         this.choose = false;
                     }
                 });    
-        },
+        },*/
         methods: {
+            pass() {
+                var index;
+                var roundDoc;
+                
+                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc.get().then((doc) => {
+                    index = doc.data().active;
+                    if (index == doc.data().dealer) {
+                        index = (index+1)%doc.data().nbPlayers;
+                        roundDoc.update({state: "choice-2", active: index});
+                    }
+                    else {
+                        index = (index+1)%doc.data().nbPlayers;
+                        roundDoc.update({active: index});
+                    }
+                });
+            },
             getStyle(card, index) {
                 console.log("index " + index);
                 var n = this.myhand.length;

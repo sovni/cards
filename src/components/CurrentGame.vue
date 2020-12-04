@@ -70,7 +70,6 @@ const { decks } = require('cards');
             .onSnapshot((querySnapshot) => {
                querySnapshot.forEach((doc) => {
                      console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
-                     db.collection("plays").doc(doc.id).update({state:"distrib-1"});
                      this.drawCards(doc.id, doc.data().players,doc.data().roundIndex);
                      console.log("distribute cards round 1");
                      db.collection("plays").doc(doc.id).update({state:"playing"});
@@ -88,8 +87,9 @@ const { decks } = require('cards');
 
             db.collection("rounds").add({
                play: playId,
-               index: 0,
-               dealer: this.playerUid,
+               nbPlayers: players.length,
+               active: (dealer+1)%players.length,
+               dealer: dealer,
                state: "distrib-1",
                choice: [],
                deck: [],
@@ -152,8 +152,13 @@ const { decks } = require('cards');
             return handArray;           
          },
          selectPlay(){
-            if (this.selectedPlay.uid)
-               this.emitter.emit("select-play", this.selectedPlay.uid);
+            if (this.selectedPlay.uid) {
+               db.collection("plays").doc(this.selectedPlay.uid)
+                  .get().then((doc) => {
+                     if (doc.data().state != 'created')
+                        this.emitter.emit("select-play", this.selectedPlay.uid);
+                  });
+            }
 
             console.log("selected " + this.selectedPlay.uid)
          }
