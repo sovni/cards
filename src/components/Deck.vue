@@ -50,7 +50,8 @@ require('cards');
                             this.mydeck = doc.data().cards;
                         });
                 }
-            }        },
+            }
+        },
         methods: {
             mounted(){
                 //if (this.myround != -1) {

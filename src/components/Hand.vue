@@ -137,6 +137,24 @@ require('cards');
                         if (active == doc.data().starter) {
                             console.log ("round finished : check who won the trick");
                             db.collection("rounds").doc(this.roundId).update({state: "end-trick"});
+
+                            db.collection("tricks").add({
+                                roundId: this.roundId,
+                                players: [],
+                                playerIndex: [],
+                                cards: []
+                            })
+                            .then((docRef) => {
+                                console.log("Trick created with ID: ", docRef.id);
+                                db.collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                this.$emit("start-trick", docRef.id);
+
+                            })
+                            .catch(function(error) {
+                                console.error("Error adding document: ", error);
+                            });      
+
+
                         }
                         else
                             db.collection("rounds").doc(this.roundId).update({active: active});                    

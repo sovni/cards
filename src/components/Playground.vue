@@ -89,11 +89,11 @@ import db from '../plugins/firebase';
                         this.players[j] = playerArray[(active+j)%this.hands.length];
                      }
                });
-               db.collection("rounds").doc(this.roundId).get().then((doc) => {
-                  if (doc.data().tricks.length > 0)
-                     this.trickId = doc.data().currentTrick;
+               db.collection("rounds").doc(this.roundId)
+                  .onSnapshot((doc) => {
+                     if (doc.data().tricks.length > 0)
+                        this.trickId = doc.data().currentTrick;
                });  
-
             });
          });
  
