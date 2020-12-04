@@ -1,11 +1,11 @@
 <template>
    <div class="p-grid">
       <div class="p-col-4 p-offset-4">
-      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2"  />
+      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :playId="playGroundID" />
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="1"  />
+      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :playId="playGroundID"  />
       </div>
       <div class="p-col-4" >
          <div class="p-d-flex p-jc-center">
@@ -13,10 +13,10 @@
          </div>
       </div>
       <div class="p-col-4">
-      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="3" />
+      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :playId="playGroundID" />
       </div>
       <div class="p-col-4 p-offset-4">
-      <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" />
+      <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :playId="playGroundID" />
       </div>                  
       <div class="p-col-4" />
    </div>
@@ -33,7 +33,7 @@ import db from '../plugins/firebase';
 //const { decks } = require('cards');
 //const deck = new decks.PiquetDeck();
 
-var unsubscribeRound;
+//var unsubscribeRound;
 //var unsubscribePlay;
 
    export default {
@@ -60,8 +60,8 @@ var unsubscribeRound;
             console.log("receive event play : " + uid);
             //if (this.playGroundID != -1)
             //   unsubscribePlay();
-           if (this.roundID != -1)
-               unsubscribeRound();               
+           //if (this.roundID != -1)
+            //   unsubscribeRound();               
             this.playGroundID = uid;
 
             /*unsubscribePlay = db.collection("plays").docRef(this.playGroundID)

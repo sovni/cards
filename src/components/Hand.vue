@@ -4,6 +4,14 @@
     </div>
    <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
    <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
+   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
+   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')()"/>
+   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')()"/>
+   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')()"/>
+   <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
+
+
+
 </template>
 <style>
 img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img.card{margin:0;padding:0}.active-hand img.card{cursor:pointer}.hhand{display:inline-block}.hhand img.card{padding-top:10px}.hhand.active-hand img.card:hover{padding-top:0;padding-bottom:10px}.vhand{display:block}.vhand img.card{padding-right:10px}.vhand.active-hand img.card:hover{padding-right:0;padding-left:10px}.hhand-compact{display:inline-block}.hhand-compact img.card:first-child{margin-left:0;padding-top:10px}.hhand-compact img.card{margin-left:-52px;padding-top:10px}.hhand-compact.active-hand img.card:hover{padding-top:0;padding-bottom:10px}.vhand-compact{display:inline-block;vertical-align:top}.vhand-compact img.card:first-child{display:block;margin-top:0;padding-right:10px}.vhand-compact img.card{display:block;margin-top:-80px;padding-right:10px}.active-hand .vhand-compact img.card:hover,.vhand-compact.active-hand img.card:hover{display:block;padding-right:0;padding-left:10px}.fan{display:inline-block;vertical-align:top;position:relative;padding-bottom:1em}.fan img.card{position:absolute;width:90px}
@@ -27,11 +35,12 @@ require('cards');
                 myhand: [],
                 myindex: -1,
                 choose: false,
+                choosebis: false,
                 activeUser: false,
                 roundId: -1
             }
         },
-        props: ['handId','playerId', 'indexUser','playID'],      
+        props: ['handId','playerId', 'indexUser','playId'],      
         components: {
             CBCard,
             Button
@@ -54,6 +63,7 @@ require('cards');
                             .onSnapshot((doc) => {
                                 console.log("index: " +this.myindex + " round index : " + doc.data().state);
                                 if (doc.data().state == "choice-1") {
+                                    this.choosebis = false;
                                     if (doc.data().active == this.myindex)  {
                                         console.log("active hand: " +this.myindex);
                                         this.choose = true;
@@ -62,8 +72,19 @@ require('cards');
                                         this.choose = false;
                                     }
                                 }
+                                else if (doc.data().state == "choice-2") {
+                                    this.choose = false;
+                                    if (doc.data().active == this.myindex)  {
+                                        console.log("active hand: " +this.myindex);
+                                        this.choosebis = true;
+                                    }
+                                    else {
+                                        this.choosebis = false;
+                                    }
+                                }
                                 else {
                                     this.choose = false;
+                                    this.choosebis = false;
                                 }
                         });
                     });
@@ -91,6 +112,47 @@ require('cards');
                 });    
         },*/
         methods: {
+            take(suit="") {
+                var roundDoc;
+
+                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc.get().then((doc) => {
+                    console.log("round : "+ doc.data().state);
+                    var takeCard = doc.data().choice[0];
+                    console.log("take : " + takeCard.suit, ":player : " + this.playerId);
+                    if (suit == "")
+                        db.collection("rounds").doc(this.roundId).update({atout: takeCard.suit, bid: this.playerId});
+                    else
+                        db.collection("rounds").doc(this.roundId).update({atout: suit, bid: this.playerId});
+
+                    db.collection("rounds").doc(this.roundId).update({choice: firebase.firestore.FieldValue.arrayRemove(takeCard)});
+
+                    console.log("draw remaining cards");
+
+                    db.collection("hands").doc(this.handId).update({handOn: firebase.firestore.FieldValue.arrayUnion(takeCard)});
+
+                    db.collection("plays").doc(this.playId)
+                        .get().then((playDoc) => {
+                            var deckIndex = 0;
+                            var active;
+                            for (var i=0;i<playDoc.data().players.length;i++) {
+                                var playerId = playDoc.data().players[(i+doc.data().dealer)%playDoc.data().players.length];
+                                var handId = this.roundId + playerId;
+                                var nbCards = 3;
+                                if (this.playerId == playerId)
+                                    nbCards = 2;
+                                for (var j=0;j<nbCards;j++) {
+                                    var nextCard;
+                                    nextCard = doc.data().deck[deckIndex++];
+                                    db.collection("hands").doc(handId).update({handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)});
+                                }
+                            }
+                            active = (doc.data().dealer+1)%playDoc.data().players.length;
+                            db.collection("rounds").doc(this.roundId).update({state:"start-trick", active: active});
+
+                        });
+                });                
+            },
             pass() {
                 var index;
                 var roundDoc;
@@ -108,6 +170,23 @@ require('cards');
                     }
                 });
             },
+            passbis() {
+                var index;
+                var roundDoc;
+                
+                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc.get().then((doc) => {
+                    index = doc.data().active;
+                    if (index == doc.data().dealer) {
+                        index = (index+1)%doc.data().nbPlayers;
+                        roundDoc.update({state: "end-round", active: index});
+                    }
+                    else {
+                        index = (index+1)%doc.data().nbPlayers;
+                        roundDoc.update({active: index});
+                    }
+                });
+            },            
             getStyle(card, index) {
                 console.log("index " + index);
                 var n = this.myhand.length;
