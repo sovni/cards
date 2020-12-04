@@ -93,6 +93,7 @@ const { decks } = require('cards');
                state: "distrib-1",
                choice: [],
                deck: [],
+               tricks:[],
                scores: []
             })
             .then((docRef) => {

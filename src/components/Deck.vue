@@ -24,7 +24,7 @@ require('cards');
                 mydeck: []
             }
         },
-        props: ['myround'],      
+        props: ['myround','trickId'],      
         components: {
             CBCard
         },
@@ -39,8 +39,18 @@ require('cards');
                             this.mydeck = doc.data().choice;
                         });
                 }
-            }
-        },
+            },
+            trickId: function(newVal, oldVal) { // watch it
+                console.log(
+                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.myround);
+                if (this.trickId != -1) {
+                    db.collection("tricks").doc(this.trickId)
+                        .onSnapshot((doc) => {
+                            console.log("trickId: round : " + this.trickId);
+                            this.mydeck = doc.data().cards;
+                        });
+                }
+            }        },
         methods: {
             mounted(){
                 //if (this.myround != -1) {

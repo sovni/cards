@@ -5,11 +5,11 @@
       </div>
       <div class="p-col-4" />
       <div class="p-col-4">
-      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :playId="playGroundID"  />
+      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :playId="playGroundID" />
       </div>
       <div class="p-col-4" >
          <div class="p-d-flex p-jc-center">
-         <Deck :myround="roundID" />
+         <Deck :myround="roundId" :trickId="trickId"/>
          </div>
       </div>
       <div class="p-col-4">
@@ -43,7 +43,8 @@ import db from '../plugins/firebase';
                 hands: [[],[],[],[]],
                 players: ["","","",""],
                 playGroundID: -1,
-                roundID: -1,
+                roundId: -1,
+                trickId: -1,
                 currentGame: "belote",
                 myIndex: -1
             }
@@ -58,47 +59,44 @@ import db from '../plugins/firebase';
       mounted(){
          this.emitter.on("select-play", (uid) => {
             console.log("receive event play : " + uid);
-            //if (this.playGroundID != -1)
-            //   unsubscribePlay();
-           //if (this.roundID != -1)
-            //   unsubscribeRound();               
+      
             this.playGroundID = uid;
+            db.collection("plays").doc(this.playGroundID).get().then((doc) => {
+               this.roundId = doc.data().round;
 
-            /*unsubscribePlay = db.collection("plays").docRef(this.playGroundID)
-               .onSnapshot((doc) => {
-                  if (doc.data().players.length == 4 && doc.data().state == "created") {
-                     // draw cards
-                  }
-               });*/
-            var handArray = [];
-            var playerArray = [];
-            var i = 0;
-            var active = 0;
-            var round = -1;
-            db.collection("hands")
-               .where("play", "==", this.playGroundID)
-               .onSnapshot((querySnapshot) => {
-                     querySnapshot.forEach((doc) => {
-                        console.log("doc : " + doc.data().handOn)
-                        handArray[i] = doc.id;// data().handOn;
-                        playerArray[i] = doc.data().player;
-                        if (doc.data().player == firebase.auth().currentUser.uid) {
-                           active=i;
-                           round = doc.data().round;
-                        }
-                        i++;
-                     });
-                  console.log("round : " + round);
-                  this.roundID = round;
-                  this.myIndex == active;
-                  for (var j=0;j<this.hands.length;j++) {
-                     this.hands[j] = handArray[(active+j)%this.hands.length];
-                     this.players[j] = playerArray[(active+j)%this.hands.length];
-
-                  }
+               var handArray = [];
+               var playerArray = [];
+               var i = 0;
+               var active = 0;
+               var round = -1;
+               db.collection("hands")
+                  .where("round", "==", this.roundId)
+                  .onSnapshot((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                           console.log("doc : " + doc.data().handOn)
+                           handArray[i] = doc.id;// data().handOn;
+                           playerArray[i] = doc.data().player;
+                           if (doc.data().player == firebase.auth().currentUser.uid) {
+                              active=i;
+                              round = doc.data().round;
+                           }
+                           i++;
+                        });
+                     console.log("round : " + round);
+                     this.myIndex == active;
+                     for (var j=0;j<this.hands.length;j++) {
+                        this.hands[j] = handArray[(active+j)%this.hands.length];
+                        this.players[j] = playerArray[(active+j)%this.hands.length];
+                     }
                });
+               db.collection("rounds").doc(this.roundId).get().then((doc) => {
+                  if (doc.data().tricks.length > 0)
+                     this.trickId = doc.data().currentTrick;
+               });  
+
+            });
          });
-  
+ 
       },
       methods: {
       }

@@ -1,6 +1,6 @@
 <template>
     <div class="hhand active-hand fan"  style="width:400px;height:200px;">
-        <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
+        <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" @card-play="playCard"/> 
     </div>
    <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
    <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
@@ -10,7 +10,7 @@
    <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')()"/>
    <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
 
-
+    <Message v-if="myturn" :severity="warn">Play !</Message>
 
 </template>
 <style>
@@ -22,6 +22,7 @@ import firebase from 'firebase';
 import CBCard from './CBCard';
 import db from '../plugins/firebase';
 import Button from 'primevue/button';
+import Message from 'primevue/message';
 
 require('cards');
 
@@ -37,12 +38,14 @@ require('cards');
                 choose: false,
                 choosebis: false,
                 activeUser: false,
+                myturn:false,
                 roundId: -1
             }
         },
         props: ['handId','playerId', 'indexUser','playId'],      
         components: {
             CBCard,
+            Message,
             Button
         },
         watch: { 
@@ -52,7 +55,7 @@ require('cards');
                 if (this.handId != -1) {
                     db.collection("hands").doc(this.handId)
                         .onSnapshot((doc) => {
-                            console.log("Hand: round : " + this.myround);
+                            console.log("Hand: round : " + this.roundId);
                             this.myhand = doc.data().handOn;
                             this.myindex = doc.data().playerIndex;
                             this.roundId = doc.data().round;
@@ -86,6 +89,13 @@ require('cards');
                                     this.choose = false;
                                     this.choosebis = false;
                                 }
+                                if (doc.data().state == "trick") {
+                                    if (doc.data().active == this.myindex)
+                                        this.myturn = true;
+                                    else   
+                                        this.myturn = false;
+                                }
+
                         });
                     });
                 }
@@ -99,19 +109,40 @@ require('cards');
                 }
             }
         },
-        /*mounted() {
-            db.collection("rounds").doc(this.myround)
-                .where("state", "==", "choice-1")
-                .onSnapshot((doc) => {
-                    if (doc.data().index%4 == this.myindex)  {
-                        this.choose = true;
-                    }
-                    else {
-                        this.choose = false;
-                    }
-                });    
-        },*/
         methods: {
+            playCard(event) {
+                var playedCard;
+                var roundDoc;
+                var active;
+
+                playedCard = {rank:event.rank, suit:event.suit};
+                console.log("receive card play on hand event : " + event.suit + ":" + event.rank + "hand:" + event.hand);   
+
+                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc.get().then((doc) => {
+                    if (doc.data().active == this.myindex && doc.data().state == "trick") {
+                        var trick;
+                        db.collection("hands").doc(this.handId).update({handOn: firebase.firestore.FieldValue.arrayRemove(playedCard)});         
+                        db.collection("hands").doc(this.handId).update({handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)});         
+                        trick = doc.data().currentTrick;
+                        //db.collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
+                        db.collection("tricks").doc(trick).update({
+                            players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
+                            playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),
+                            cards: firebase.firestore.FieldValue.arrayUnion(playedCard),
+
+                        });
+
+                        active = (doc.data().active+1)%doc.data().nbPlayers;
+                        if (active == doc.data().starter) {
+                            console.log ("round finished : check who won the trick");
+                            db.collection("rounds").doc(this.roundId).update({state: "end-trick"});
+                        }
+                        else
+                            db.collection("rounds").doc(this.roundId).update({active: active});                    
+                    }
+                });
+            },
             take(suit="") {
                 var roundDoc;
 
@@ -148,7 +179,22 @@ require('cards');
                                 }
                             }
                             active = (doc.data().dealer+1)%playDoc.data().players.length;
-                            db.collection("rounds").doc(this.roundId).update({state:"start-trick", active: active});
+                            db.collection("rounds").doc(this.roundId).update({state:"trick", active: active, starter: active});
+                            db.collection("tricks").add({
+                                roundId: this.roundId,
+                                players: [],
+                                playerIndex: [],
+                                cards: []
+                            })
+                            .then((docRef) => {
+                                console.log("Trick created with ID: ", docRef.id);
+                                db.collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                this.$emit("start-trick", docRef.id);
+
+                            })
+                            .catch(function(error) {
+                                console.error("Error adding document: ", error);
+                            });                                
 
                         });
                 });                

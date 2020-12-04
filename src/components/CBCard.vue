@@ -131,7 +131,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 cBB : cBB
             }
         },
-        props: ['mycard','mystyle','myactive'],
+        props: ['mycard','mystyle','myactive','myhand'],
         components: {
         },
         methods: {
@@ -163,9 +163,9 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 return eval("this.c"+card.rank+suit);
             },
             handleClick() {
-                console.log("Card clicked : " + this.mycard.suit + ":" + this.mycard.rank)
-                this.emitter.emit("card-play", this.mycard);
-                
+                console.log("Card clicked : " + this.mycard.suit + ":" + this.mycard.rank + " hand:" + this.myhand)
+                this.$emit("card-play", {'suit':this.mycard.suit, 'rank':this.mycard.rank, 'hand':this.myhand});
+
             }            
         }         
     }    
