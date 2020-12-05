@@ -10,7 +10,7 @@
    <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')()"/>
    <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
 
-    <Message v-if="myturn" :severity="warn">Play !</Message>
+    <Message v-if="myturn" severity="warn">Play !</Message>
 
 </template>
 <style>
@@ -101,12 +101,12 @@ require('cards');
                 }
             },
             playerId: function() {
-                if (firebase.auth().currentUser.uid == this.playerId) {
+                //if (firebase.auth().currentUser.uid == this.playerId) {
                     this.activeUser = true;
-                }
-                else {
-                    this.activeUser = false;
-                }
+                //}
+                //else {
+                //    this.activeUser = false;
+                //}
             }
         },
         methods: {
@@ -135,26 +135,45 @@ require('cards');
 
                         active = (doc.data().active+1)%doc.data().nbPlayers;
                         if (active == doc.data().starter) {
-                            console.log ("round finished : check who won the trick");
+                            var winnerIndex;
+                            var trickDoc;
+
                             db.collection("rounds").doc(this.roundId).update({state: "end-trick"});
 
-                            db.collection("tricks").add({
-                                roundId: this.roundId,
-                                players: [],
-                                playerIndex: [],
-                                cards: []
-                            })
-                            .then((docRef) => {
-                                console.log("Trick created with ID: ", docRef.id);
-                                db.collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                this.$emit("start-trick", docRef.id);
+                            console.log ("round finished : check who won the trick");
+                            trickDoc= db.collection("tricks").doc(trick);
+                            trickDoc.get().then((tdoc) => {   
+                                var handDoc;
 
-                            })
-                            .catch(function(error) {
-                                console.error("Error adding document: ", error);
-                            });      
+                                winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
 
+                                db.collection("rounds").doc(this.roundId).update({state:"trick", active: winnerIndex, starter: winnerIndex});
 
+                                handDoc= db.collection("hands").doc(this.handId);
+                                handDoc.get().then((hdoc) => {
+                                    if (hdoc.data().handOn.length == 0) {
+                                        // END TRICK, START another one
+                                        db.collection("plays").doc(this.playId).update({state:"end-round"});
+                                    }
+                                    else {
+                                        db.collection("tricks").add({
+                                            roundId: this.roundId,
+                                            players: [],
+                                            playerIndex: [],
+                                            cards: []
+                                        })
+                                        .then((docRef) => {
+                                            console.log("Trick created with ID: ", docRef.id);
+                                            db.collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                            this.$emit("start-trick", docRef.id);
+
+                                        })
+                                        .catch(function(error) {
+                                            console.error("Error adding document: ", error);
+                                        });      
+                                    }
+                                });
+                            });
                         }
                         else
                             db.collection("rounds").doc(this.roundId).update({active: active});                    
@@ -244,13 +263,112 @@ require('cards');
                     if (index == doc.data().dealer) {
                         index = (index+1)%doc.data().nbPlayers;
                         roundDoc.update({state: "end-round", active: index});
+                        db.collection("plays").doc(doc.data().play).update({state: "end-round"});
                     }
                     else {
                         index = (index+1)%doc.data().nbPlayers;
                         roundDoc.update({active: index});
                     }
                 });
-            },            
+            },
+            CalculateWinner(cards, indexes, atout) {
+                var winnerIndex = -1;
+                var best = -1;
+                var bestAtout = -1;
+                var color;
+
+                color = cards[0].suit;
+                for (var i=0;i<cards.length;i++) {
+                    var value = this.GetCardValue(cards[i], atout);
+                    console.log("card value: " + value + " (" + cards[i].suit + cards[i].rank + ")");
+                    if (cards[i].suit == atout) {
+                        if (value > bestAtout) {
+                            winnerIndex = i;
+                            console.log("best card" + i);
+                            bestAtout = value;
+                        }
+                    }
+                    else if (bestAtout == -1 && cards[i].suit == color){
+                        if (value > best) {
+                            best = value;
+                            console.log("best card" + i);
+                            winnerIndex = i;
+                        }
+                    }
+                }
+
+                return indexes[winnerIndex];
+            },
+            GetCardValue(card, atout) {
+                var value;
+                if (card.suit == atout) {
+                    switch (card.rank) {
+                        case "J":
+                            value = 107;
+                            break;
+                        case "9" :
+                            value=106;
+                            break;
+                        case "A" :
+                        case "As" :
+                            value=105;
+                            break;
+                        case "10" :
+                        case "T" :
+                            value=104;
+                            break;
+                        case "K" :
+                            value=103;
+                            break;
+                        case "Q" :
+                            value=102;
+                            break;
+                        case "8" : 
+                            value=101;
+                            break;
+                        case "7" :
+                            value=100;
+                            break;
+                        default:
+                            value=0;
+                            break;
+                    }
+                }
+                else {
+                    switch (card.rank) {
+                        case "A":
+                        case "As" :
+                            value = 8;
+                            break;
+                        case "10" :
+                        case "T" :
+                            value=7;
+                            break;
+                        case "K" :
+                            value=6;
+                            break;
+                        case "Q" :
+                            value=5;
+                            break;
+                        case "J" :
+                            value=4;
+                            break;
+                        case "9" :
+                            value=3;
+                            break;
+                        case "8" : 
+                            value=2;
+                            break;
+                        case "7" :
+                            value=1;
+                            break;
+                        default:
+                            value=0;
+                            break;
+                    }                    
+                }
+                return value;
+            },       
             getStyle(card, index) {
                 console.log("index " + index);
                 var n = this.myhand.length;

@@ -35,18 +35,21 @@ require('cards');
                 if (this.myround != -1) {
                     db.collection("rounds").doc(this.myround)
                         .onSnapshot((doc) => {
-                            console.log("Deck: round : " + this.myround);
-                            this.mydeck = doc.data().choice;
+                            if (doc.data().state == "choice-1" || doc.data().state == "choice-2") {
+                                console.log("Deck: round : " + this.myround);
+                                this.mydeck = doc.data().choice;
+                            }
                         });
                 }
             },
             trickId: function(newVal, oldVal) { // watch it
                 console.log(
-                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.myround);
+                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.trickId);
                 if (this.trickId != -1) {
                     db.collection("tricks").doc(this.trickId)
                         .onSnapshot((doc) => {
                             console.log("trickId: round : " + this.trickId);
+                            console.log("trick change : cards" + doc.data().cards);
                             this.mydeck = doc.data().cards;
                         });
                 }
@@ -76,10 +79,10 @@ require('cards');
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
                 var rotationAngle = Math.round(coords[index].angle);
-                if (this.indexUser == 1)
-                    coords[index].y += 100;
-                else if (this.indexUser == 2 || this.indexUser == 4 )
-                    coords[index].x += 50;
+                //if (this.indexUser == 1)
+                //    coords[index].y += 100;
+                //else if (this.indexUser == 2 || this.indexUser == 4 )
+                //    coords[index].x += 50;
                 return "width:"+width+"px; left:"+ coords[index].x + "px;top:" + coords[index].y+ "px; transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 
             },
@@ -90,7 +93,7 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                startAngle = startAngle + (this.indexUser -1) * 90;
+                //startAngle = startAngle + (this.indexUser -1) * 90;
 
                 var coords = [];
                 var i;

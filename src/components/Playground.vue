@@ -61,7 +61,10 @@ import db from '../plugins/firebase';
             console.log("receive event play : " + uid);
       
             this.playGroundID = uid;
-            db.collection("plays").doc(this.playGroundID).get().then((doc) => {
+            db.collection("plays").doc(this.playGroundID)
+               //.get().then((doc) => {
+               .onSnapshot((doc) => {
+
                this.roundId = doc.data().round;
 
                var handArray = [];
@@ -90,9 +93,9 @@ import db from '../plugins/firebase';
                      }
                });
                db.collection("rounds").doc(this.roundId)
-                  .onSnapshot((doc) => {
-                     if (doc.data().tricks.length > 0)
-                        this.trickId = doc.data().currentTrick;
+                  .onSnapshot((rdoc) => {
+                     if (rdoc.data().tricks.length > 0)
+                        this.trickId = rdoc.data().currentTrick;
                });  
             });
          });

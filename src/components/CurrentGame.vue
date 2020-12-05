@@ -75,7 +75,19 @@ const { decks } = require('cards');
                      db.collection("plays").doc(doc.id).update({state:"playing"});
 
                 });
-            });              },
+            });
+         db.collection("plays")
+            .where("creator", "==", this.playerUid)
+            .where("state", "==", "end-round")
+            .onSnapshot((querySnapshot) => {
+               querySnapshot.forEach((doc) => {
+                     var roundIndex = doc.data().roundIndex +1;
+                     console.log("CurrentGame end-round state : " +doc.id, " => ", doc.data());
+                     db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex});
+                     console.log("starting next round");
+                });      
+            });
+      },
       methods: {
         drawCards(playId, players, dealer) {
             var deck;
