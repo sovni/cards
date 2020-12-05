@@ -117,7 +117,7 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 cQH: cQH,
                 cQS: cQS,
                 cAC: cAC,
-                cAsD: cAsD,
+                cAD: cAsD,
                 cAH: cAH,
                 cAS: cAS,
                 cJC: cJC,
@@ -152,8 +152,8 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                         break;     
                     case 'diamonds':
                         suit = "D";
-                        if (card.rank == "A")
-                            card.rank = "As";
+                        //if (card.rank == "A")
+                        //    card.rank = "As";
                         break;     
                     default :
                         suit = 'J';
