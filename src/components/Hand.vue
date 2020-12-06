@@ -147,7 +147,9 @@ require('cards');
                                 var points;
 
                                 winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
-                                points = this.CalculateScore(tdoc.data().cards, doc.data().atout);
+                                console.log("winner : " + winnerIndex);
+                                points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
+                                console.log("Points: "+ points[0] + "/" + points[1]);
                                 db.collection("rounds").doc(this.roundId).update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
 
                                 handDoc= db.collection("hands").doc(this.handId);
@@ -468,7 +470,7 @@ require('cards');
                             value=0;
                             break;
                         case "7" :
-                            value=1;
+                            value=0;
                             break;
                         default:
                             value=0;

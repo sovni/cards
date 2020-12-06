@@ -76,6 +76,7 @@ import db from '../plugins/firebase';
                   .where("round", "==", this.roundId)
                   .onSnapshot((querySnapshot) => {
                         querySnapshot.forEach((doc) => {
+                           i = doc.data().playerIndex;
                            console.log("doc : " + doc.data().handOn)
                            handArray[i] = doc.id;// data().handOn;
                            playerArray[i] = doc.data().player;
