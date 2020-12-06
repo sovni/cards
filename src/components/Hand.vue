@@ -144,15 +144,17 @@ require('cards');
                             trickDoc= db.collection("tricks").doc(trick);
                             trickDoc.get().then((tdoc) => {   
                                 var handDoc;
+                                var points;
 
                                 winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
-
-                                db.collection("rounds").doc(this.roundId).update({state:"trick", active: winnerIndex, starter: winnerIndex});
+                                points = this.CalculateScore(tdoc.data().cards, doc.data().atout);
+                                db.collection("rounds").doc(this.roundId).update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
 
                                 handDoc= db.collection("hands").doc(this.handId);
                                 handDoc.get().then((hdoc) => {
-                                    if (hdoc.data().handOn.length == 0) {
+                                    if (hdoc.data().handOn.length == 0) {                                        
                                         // END TRICK, START another one
+                                        this.CalculateRoundScore();
                                         db.collection("plays").doc(this.playId).update({state:"end-round"});
                                     }
                                     else {
@@ -189,9 +191,9 @@ require('cards');
                     var takeCard = doc.data().choice[0];
                     console.log("take : " + takeCard.suit, ":player : " + this.playerId);
                     if (suit == "")
-                        db.collection("rounds").doc(this.roundId).update({atout: takeCard.suit, bid: this.playerId});
+                        db.collection("rounds").doc(this.roundId).update({atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex});
                     else
-                        db.collection("rounds").doc(this.roundId).update({atout: suit, bid: this.playerId});
+                        db.collection("rounds").doc(this.roundId).update({atout: suit, bid: this.playerId, bidIndex: this.myindex});
 
                     db.collection("rounds").doc(this.roundId).update({choice: firebase.firestore.FieldValue.arrayRemove(takeCard)});
 
@@ -271,6 +273,33 @@ require('cards');
                     }
                 });
             },
+            CalculateRoundScore() {
+                var roundDoc;
+                var points = [];
+
+                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc.get().then((doc) => {
+                   for (var i=0;i<doc.data().nbPlayers;i++) {
+                        points[i] = 0;
+                    }
+                    for (i=0;i<doc.data().scores.length;i++) {
+                        points[doc.data().scores[i].winnerIndex] += doc.data().scores[i].points;
+                        if (i==doc.data().scores.length-1)
+                            points[doc.data().scores[i].winnerIndex] += 10;
+                    }
+                    points[0] = points[0] + points[2];
+                    points[1] = points[1] + points[3];
+                    if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
+                        points[0] = 160;
+                        points[1] = 0;
+                    }
+                    else if (points[1] > points[0] && (doc.data().bidIndex == 0 || doc.data().bidIndex == 2)) {
+                        points[1] = 160;
+                        points[0] = 0;
+                    }
+                    db.collection("rounds").doc(this.roundId).update({score:[points[0], points[1]]});
+                });
+            },
             CalculateWinner(cards, indexes, atout) {
                 var winnerIndex = -1;
                 var best = -1;
@@ -298,6 +327,15 @@ require('cards');
                 }
 
                 return indexes[winnerIndex];
+            },
+            CalculatePoints(cards, atout) {
+                var points = 0;
+
+                for (var i=0;i<cards.length;i++) {
+                    points += this.GetCardPoints(cards[i], atout);
+                }
+
+                return points;
             },
             GetCardValue(card, atout) {
                 var value;
@@ -369,6 +407,76 @@ require('cards');
                 }
                 return value;
             },       
+           GetCardPoints(card, atout) {
+                var value;
+                if (card.suit == atout) {
+                    switch (card.rank) {
+                        case "J":
+                            value = 20;
+                            break;
+                        case "9" :
+                            value=14;
+                            break;
+                        case "A" :
+                        case "As" :
+                            value=11;
+                            break;
+                        case "10" :
+                        case "T" :
+                            value=10;
+                            break;
+                        case "K" :
+                            value=4;
+                            break;
+                        case "Q" :
+                            value=3;
+                            break;
+                        case "8" : 
+                            value=0;
+                            break;
+                        case "7" :
+                            value=0;
+                            break;
+                        default:
+                            value=0;
+                            break;
+                    }
+                }
+                else {
+                    switch (card.rank) {
+                        case "A":
+                        case "As" :
+                            value = 11;
+                            break;
+                        case "10" :
+                        case "T" :
+                            value=10;
+                            break;
+                        case "K" :
+                            value=4;
+                            break;
+                        case "Q" :
+                            value=3;
+                            break;
+                        case "J" :
+                            value=2;
+                            break;
+                        case "9" :
+                            value=0;
+                            break;
+                        case "8" : 
+                            value=0;
+                            break;
+                        case "7" :
+                            value=1;
+                            break;
+                        default:
+                            value=0;
+                            break;
+                    }                    
+                }
+                return value;
+            },
             getStyle(card, index) {
                 console.log("index " + index);
                 var n = this.myhand.length;

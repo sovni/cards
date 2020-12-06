@@ -58,6 +58,7 @@ import Button from 'primevue/button';
                   game: "belote",
                   state: "created",
                   creator: this.playerUid,
+                  score: [],
                   roundIndex: 0
                })
                .then(function(docRef) {

@@ -4,6 +4,7 @@
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
+      <Column field="score" header="Score"></Column>
    </DataTable>
 </template>
 
@@ -36,12 +37,20 @@ const { decks } = require('cards');
       },
       mounted(){
          db.collection("plays")
-            .where("creator", "==", this.playerUid)
+            //.where("creator", "==", this.playerUid)
+            .where("players", "array-contains", this.playerUid)
             .where("state", "!=", "created")
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
-                  this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
+                  var score = "";
+                  for (var i=0;i<doc.data().score.length;i++) {
+                     if (i==0)
+                        score = doc.data().score[i];
+                     else  
+                        score = "/" + doc.data().score[i];
+                  }
+                  this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state, "score": score});
                });
             });
          db.collection("plays")
@@ -81,6 +90,7 @@ const { decks } = require('cards');
             .where("state", "==", "end-round")
             .onSnapshot((querySnapshot) => {
                querySnapshot.forEach((doc) => {
+                     this.calculateScore(doc.id);
                      var roundIndex = doc.data().roundIndex +1;
                      console.log("CurrentGame end-round state : " +doc.id, " => ", doc.data());
                      db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex});
@@ -89,6 +99,24 @@ const { decks } = require('cards');
             });
       },
       methods: {
+         calculateScore(playId) {
+            db.collection("rounds").where("play", "==", playId)
+            .get()
+            .then(function(querySnapshot) {
+               var points = [];
+               querySnapshot.forEach(function(doc) {
+                     for (var i=0;i<doc.data.score.length;i++) {
+                        points[i] += doc.data.score[i];
+                     }
+               });
+               db.collection("plays").doc(this.roundId).update({score:[points[0], points[1]]});
+            })
+            .catch(function(error) {
+               console.log("Error getting documents: ", error);
+            });
+
+
+         },
         drawCards(playId, players, dealer) {
             var deck;
             this.roundId = -1;
@@ -106,7 +134,8 @@ const { decks } = require('cards');
                choice: [],
                deck: [],
                tricks:[],
-               scores: []
+               scores: [],
+               score: []
             })
             .then((docRef) => {
                this.roundId = docRef.id;
