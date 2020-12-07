@@ -1,16 +1,32 @@
 <template>
-    <div class="hhand active-hand fan"  style="width:400px;height:200px;">
-        <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" @card-play="playCard"/> 
+   <div class="p-grid">
+        <div v-if="indexUser == 0" class="p-col-12 p-d-flex p-jc-center" style="height:50px">  
+            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
+            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
+            <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
+        </div>
+        <div class="p-col-12" >  
+        <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
+        <div class="hhand active-hand fan" >
+            <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" @card-play="playCard"/> 
+        </div>
+        </div>
+       <div v-if="indexUser != 0" class="p-col-12 p-d-flex p-jc-center" style="height:50px">  
+            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
+            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')()"/>
+            <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
+            <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
+        </div>
     </div>
-   <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
-   <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
-   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
-   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')()"/>
-   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')()"/>
-   <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')()"/>
-   <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
-
-    <Message v-if="myturn" severity="warn">Play !</Message>
 
 </template>
 <style>
@@ -22,7 +38,6 @@ import firebase from 'firebase';
 import CBCard from './CBCard';
 import db from '../plugins/firebase';
 import Button from 'primevue/button';
-import Message from 'primevue/message';
 
 require('cards');
 
@@ -45,7 +60,6 @@ require('cards');
         props: ['handId','playerId', 'indexUser','playId'],      
         components: {
             CBCard,
-            Message,
             Button
         },
         watch: { 
@@ -157,6 +171,7 @@ require('cards');
                                     if (hdoc.data().handOn.length == 0) {                                        
                                         // END TRICK, START another one
                                         this.CalculateRoundScore();
+                                        db.collection("rounds").doc(this.roundId).update({state:"end-round"});
                                         db.collection("plays").doc(this.playId).update({state:"end-round"});
                                     }
                                     else {
@@ -490,10 +505,10 @@ require('cards');
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
                 var rotationAngle = Math.round(coords[index].angle);
-                if (this.indexUser == 0)
+                /*if (this.indexUser == 0)
                     coords[index].y += 100;
                 else if (this.indexUser == 1 || this.indexUser == 3 )
-                    coords[index].x += 50;
+                    coords[index].x += 50;*/
                 return "width:"+width+"px; left:"+ coords[index].x + "px;top:" + coords[index].y+ "px; transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 
             },

@@ -1,5 +1,6 @@
 <template>
-    <div class="hhand active-hand"  style="width:400px;height:200px;">
+    <!-- <div class="hhand active-hand"  style="width:400px;height:200px;">-->
+    <div class="hhand active-hand fan" style="width:300px;height:300px;">
         <CBCard v-for="(mycard, index) in mydeck" v-bind:key="mycard" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
     </div>
 </template>
@@ -21,7 +22,8 @@ require('cards');
                 cwidth: 98,
                 cspacing: 0.24,
                 cradius: 166,
-                mydeck: []
+                mydeck: [],
+                playerIndex: []
             }
         },
         props: ['myround','trickId'],      
@@ -50,6 +52,7 @@ require('cards');
                         .onSnapshot((doc) => {
                             console.log("trickId: round : " + this.trickId);
                             console.log("trick change : cards" + doc.data().cards);
+                            this.playerIndex = doc.data().playerIndex;
                             this.mydeck = doc.data().cards;
                         });
                 }
@@ -76,14 +79,29 @@ require('cards');
                 }
                 var width = this.cwidth; // hack: for a hidden hand
                 var height = Math.floor(width * 1.4); // hack: for a hidden hand
-                var box = {};
-                var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
-                var rotationAngle = Math.round(coords[index].angle);
-                //if (this.indexUser == 1)
-                //    coords[index].y += 100;
-                //else if (this.indexUser == 2 || this.indexUser == 4 )
-                //    coords[index].x += 50;
-                return "width:"+width+"px; left:"+ coords[index].x + "px;top:" + coords[index].y+ "px; transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
+                var p2left = 150-Math.floor(width*0.5);
+                var p0left = 150-(Math.floor(width*0.5));
+                var p0top = 300 - height;
+                var p1left = 300-height;
+                var p1top = Math.floor(150-(this.cwidth*0.5));
+                var p3top = Math.floor(150-(this.cwidth*0.5));
+                //var box = {};
+                var style="";
+                var pindex = this.playerIndex[index];
+                console.log("pindex: " + pindex + " - index: " + index);
+                if (pindex == 0)
+                    style = "width:"+width+"px; left:"+ p0left + "px;top:" + p0top + "px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
+                else if (pindex == 1)
+                    style = "width:"+width+"px; left:" + p1left + "px;top:" + p1top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
+                else if (pindex == 2)
+                    style = "width:"+width+"px; left:"+ p2left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
+                else if (pindex == 3)
+                    style = "width:"+width+"px; left:0px;top:" + p3top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
+                console.log("style : " + style);
+                return style;
+                //var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
+                //var rotationAngle = Math.round(coords[index].angle);
+                //return "width:"+width+"px; left:"+ coords[index].x + "px;top:" + coords[index].y+ "px; transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 
             },
             calculateCoords(numCards, arcRadius, cardWidth, cardHeight, direction, cardSpacing, box) {

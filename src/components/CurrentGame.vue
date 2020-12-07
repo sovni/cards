@@ -100,16 +100,21 @@ const { decks } = require('cards');
       },
       methods: {
          calculateScore(playId) {
+            var points = [];
+            points[0] = 0;
+            points[1] = 0;
+            console.log("!!!!! CalculateScore : " + playId);
             db.collection("rounds").where("play", "==", playId)
             .get()
-            .then(function(querySnapshot) {
-               var points = [];
-               querySnapshot.forEach(function(doc) {
-                     for (var i=0;i<doc.data.score.length;i++) {
-                        points[i] += doc.data.score[i];
+            .then((querySnapshot) => {
+               querySnapshot.forEach((doc) => {
+                     console.log("!!!!! CalculateScore round : " + doc.id);
+                     for (var i=0;i<doc.data().score.length;i++) {
+                        points[i] += doc.data().score[i];
                      }
+                     console.log("!!!!! CalculateScore round : " + points[0] + "/" + points[1]);
                });
-               db.collection("plays").doc(this.roundId).update({score:[points[0], points[1]]});
+               db.collection("plays").doc(playId).update({score:[points[0], points[1]]});
             })
             .catch(function(error) {
                console.log("Error getting documents: ", error);

@@ -1,5 +1,5 @@
 <template>
-   <div class="p-grid">
+   <!--<div class="p-grid">
       <div class="p-col-4 p-offset-4">
       <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :playId="playGroundID" />
       </div>
@@ -19,7 +19,38 @@
       <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :playId="playGroundID" />
       </div>                  
       <div class="p-col-4" />
-   </div>
+   </div> -->
+   <div class="p-grid">
+      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+      <div class="p-col" />
+      <div class="p-col-fixed"  style="width:300px;height:200px">
+      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :playId="playGroundID" />
+      </div>
+      <div class="p-col" />
+      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+
+      <div class="p-col-fixed"  style="width:200px;height:300px">
+      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :playId="playGroundID" />
+      </div>
+      <div class="p-col" />
+      <div class="p-col-fixed"  style="width:300px;height:300px">
+         <!--<div class="p-d-flex p-jc-center">-->
+         <Deck :myround="roundId" :trickId="trickId"/>
+         <!--</div>-->
+      </div>
+      <div class="p-col" />
+      <div class="p-col-fixed"  style="width:200px;height:300px">
+      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :playId="playGroundID" />
+      </div>
+
+      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+      <div class="p-col" />
+      <div class="p-col-fixed"  style="width:300px;height:200px">
+      <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :playId="playGroundID" />
+      </div>                  
+      <div class="p-col" />
+      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+   </div>   
 </template>
 
 <script>
