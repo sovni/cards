@@ -71,12 +71,17 @@ require('cards');
                     .collection("hands").doc(this.handId)
                         .onSnapshot((doc) => {
                             console.log("Hand: round : " + this.roundId);
-                            this.myhand = doc.data().handOn;
+
+                            var roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
+                            roundDoc.get().then((rdoc) => {
+
+                            this.myhand = this.OrderHand(doc.data().handOn, rdoc.data().atout);
+                            //this.myhand = doc.data().handOn;
                             this.myindex = doc.data().playerIndex;
                             //this.roundId = doc.data().round;
 
-                        console.log("Current round :" + this.roundId);
-                        db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId)
+                            console.log("Current round :" + this.roundId);
+                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId)
                             //.where("state", "==", "choice-1")
                             .onSnapshot((doc) => {
                                 console.log("index: " +this.myindex + " round index : " + doc.data().state);
@@ -110,7 +115,7 @@ require('cards');
                                     else   
                                         this.myturn = false;
                                 }
-
+                            });
                         });
                     });
                 }
@@ -125,6 +130,14 @@ require('cards');
             }
         },
         methods: {
+            OrderHand(cards, atout) {
+                var hand = [];
+
+                hand = cards;
+                hand.sort((a,b) => {return this.GetCardValue(a, atout) - this.GetCardValue(b, atout)});
+                return hand;
+
+            },
             playCard(event) {
                 var playedCard;
                 var roundDoc;
