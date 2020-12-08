@@ -1,5 +1,5 @@
 <template>
-   <DataTable :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-click="selectPlay">
+   <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-click="selectPlay">
       <Column filed="uid" header="Id" ></Column>
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
@@ -48,7 +48,7 @@ const { decks } = require('cards');
                      if (i==0)
                         score = doc.data().score[i];
                      else  
-                        score = "/" + doc.data().score[i];
+                        score += "/" + doc.data().score[i];
                   }
                   this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state, "score": score});
                });

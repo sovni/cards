@@ -1,5 +1,5 @@
 <template>
-   <DataTable :value="mygames" selectionMode="single" >
+   <DataTable class="p-datatable-sm" :value="mygames" selectionMode="single" >
       <Column filed="uid" header="Id" style="display: none;" renderer="false"></Column>
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>

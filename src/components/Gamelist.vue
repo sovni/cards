@@ -1,5 +1,5 @@
 <template>
-   <DataTable :value="games" >
+   <DataTable class="p-datatable-sm" :value="games" >
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
