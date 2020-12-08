@@ -24,29 +24,29 @@
       <div class="p-col-fixed"  style="width:200px;height:200px"/>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:300px;height:200px">
-      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :playId="playGroundID" />
+      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :playId="playGroundID" />
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:200px;height:200px"/>
 
       <div class="p-col-fixed"  style="width:200px;height:300px">
-      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :playId="playGroundID" />
+      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :roundId="roundId" :playId="playGroundID" />
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:300px;height:300px">
          <!--<div class="p-d-flex p-jc-center">-->
-         <Deck :myround="roundId" :trickId="trickId"/>
+         <Deck :myround="roundId" :trickId="trickId" :playId="playGroundID"/>
          <!--</div>-->
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:200px;height:300px">
-      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :playId="playGroundID" />
+      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId" :playId="playGroundID" />
       </div>
 
       <div class="p-col-fixed"  style="width:200px;height:200px"/>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:300px;height:200px">
-      <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :playId="playGroundID" />
+      <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :roundId="roundId" :playId="playGroundID" />
       </div>                  
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:200px;height:200px"/>
@@ -103,8 +103,10 @@ import db from '../plugins/firebase';
                var i = 0;
                var active = 0;
                var round = -1;
-               db.collection("hands")
-                  .where("round", "==", this.roundId)
+               db.collection("plays").doc(this.playGroundID)
+                  .collection("rounds").doc(this.roundId).
+                  collection("hands")
+                  //.where("round", "==", this.roundId)
                   .onSnapshot((querySnapshot) => {
                         querySnapshot.forEach((doc) => {
                            i = doc.data().playerIndex;
@@ -124,7 +126,7 @@ import db from '../plugins/firebase';
                         this.players[j] = playerArray[(active+j)%this.hands.length];
                      }
                });
-               db.collection("rounds").doc(this.roundId)
+               db.collection("plays").doc(this.playGroundID).collection("rounds").doc(this.roundId)
                   .onSnapshot((rdoc) => {
                      if (rdoc.data().tricks.length > 0)
                         this.trickId = rdoc.data().currentTrick;

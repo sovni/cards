@@ -104,7 +104,7 @@ const { decks } = require('cards');
             points[0] = 0;
             points[1] = 0;
             console.log("!!!!! CalculateScore : " + playId);
-            db.collection("rounds").where("play", "==", playId)
+            db.collection("plays").doc(playId).collection("rounds")
             .get()
             .then((querySnapshot) => {
                querySnapshot.forEach((doc) => {
@@ -130,7 +130,7 @@ const { decks } = require('cards');
             console.log("Draw cards " + playId);
             db.collection("plays").doc(playId).update({state:"distrib-1"});
 
-            db.collection("rounds").add({
+            db.collection("plays").doc(playId).collection("rounds").add({
                play: playId,
                nbPlayers: players.length,
                active: (dealer+1)%players.length,
@@ -148,7 +148,9 @@ const { decks } = require('cards');
                db.collection("plays").doc(playId).update({round: this.roundId});
 
                for (var i = 0; i < players.length; i++) {
-                  db.collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
+                  db.collection("plays").doc(playId)
+                    .collection("rounds").doc(this.roundId)
+                    .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
                      play: playId,
                      round: this.roundId,
                      player: players[(i+dealer)%players.length],
@@ -160,14 +162,14 @@ const { decks } = require('cards');
                }
                console.log("Second draw turn");
                for (i = 0; i < players.length; i++) {
-                  this.drawHand(deck, 2, players[(i+dealer)%players.length]);
+                  this.drawHand(playId, deck, 2, players[(i+dealer)%players.length]);
                }          
                console.log("Draw atout");
-               db.collection("rounds").doc(this.roundId).update({
+               db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
                   choice: this.getHand(deck, 1)
                });
                console.log("Store remaining deck");
-               db.collection("rounds").doc(this.roundId).update({
+               db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
                   deck: this.getHand(deck, 11), state: "choice-1"
                });          
             })
@@ -177,13 +179,15 @@ const { decks } = require('cards');
             }); 
             console.log("Round Id : " + this.roundId);
          },
-         drawHand(deck, nb, playerId) {
+         drawHand(playId, deck, nb, playerId) {
             var hand = deck.draw(nb);
             var handArray = [];
             for (var j = 0; j < hand.length; j++) {
                console.log("add card - player : " + playerId);
-               db.collection("hands").doc(this.roundId+playerId).update({
-                  handOn: firebase.firestore.FieldValue.arrayUnion({suit: hand[j].suit.name, rank: hand[j].rank.shortName})
+               db.collection("plays").doc(playId)
+                    .collection("rounds").doc(this.roundId)
+                    .collection("hands").doc(this.roundId+playerId).update({
+                     handOn: firebase.firestore.FieldValue.arrayUnion({suit: hand[j].suit.name, rank: hand[j].rank.shortName})
                });
 
                //handArray.push(hand[j].suit.name +":" + hand[j].rank.shortName);
