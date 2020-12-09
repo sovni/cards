@@ -134,7 +134,7 @@ require('cards');
                 var hand = [];
 
                 hand = cards;
-                hand.sort((a,b) => {return this.GetCardValue(a, atout) - this.GetCardValue(b, atout)});
+                hand.sort((a,b) => {return this.GetCardValue(b, atout) - this.GetCardValue(a, atout)});
                 return hand;
 
             },
@@ -452,7 +452,20 @@ require('cards');
                         default:
                             value=0;
                             break;
-                    }                    
+                    } 
+                    switch (card.suit) {
+                        case "hearts":
+                            value += 10;
+                            break;
+                        case "clubs":
+                            value += 20;
+                            break;
+                        case "diamonds":
+                            value += 30;
+                            break;
+                        default:
+                            break;
+                    }                   
                 }
                 return value;
             },       
