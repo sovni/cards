@@ -21,35 +21,35 @@
       <div class="p-col-4" />
    </div> -->
    <div class="p-grid">
-      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+      <div class="p-col-fixed"  style="width:200px;height:150px"/>
       <div class="p-col" />
-      <div class="p-col-fixed"  style="width:300px;height:200px">
-      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :playId="playGroundID" />
+      <div class="p-col-fixed"  style="width:250px;height:150px">
+      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :playId="playGroundID" />
       </div>
       <div class="p-col" />
-      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+      <div class="p-col-fixed"  style="width:200px;height:150px"/>
 
-      <div class="p-col-fixed"  style="width:200px;height:300px">
-      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :roundId="roundId" :playId="playGroundID" />
+      <div class="p-col-fixed"  style="width:150px;height:250px">
+      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1" :roundId="roundId" :cwidth="cardWidth" :playId="playGroundID" />
       </div>
       <div class="p-col" />
-      <div class="p-col-fixed"  style="width:300px;height:300px">
+      <div class="p-col-fixed"  style="width:350px;height:250px">
          <!--<div class="p-d-flex p-jc-center">-->
          <Deck :myround="roundId" :trickId="trickId" :playId="playGroundID"/>
          <!--</div>-->
       </div>
       <div class="p-col" />
-      <div class="p-col-fixed"  style="width:200px;height:300px">
-      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId" :playId="playGroundID" />
+      <div class="p-col-fixed"  style="width:150px;height:250px">
+      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :playId="playGroundID" />
       </div>
 
-      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+      <div class="p-col-fixed"  style="width:100px;height:400px"/>
       <div class="p-col" />
-      <div class="p-col-fixed"  style="width:300px;height:200px">
-      <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :roundId="roundId" :playId="playGroundID" />
+      <div class="p-col-fixed"  style="width:450px;height:400px">
+      <Hand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :roundId="roundId" :cwidth="myCardWidth" :playId="playGroundID" />
       </div>                  
       <div class="p-col" />
-      <div class="p-col-fixed"  style="width:200px;height:200px"/>
+      <div class="p-col-fixed"  style="width:100px;height:400px"/>
    </div>   
 </template>
 
@@ -77,6 +77,8 @@ import db from '../plugins/firebase';
                 roundId: -1,
                 trickId: -1,
                 currentGame: "belote",
+                cardWidth: 78,
+                myCardWidth: 140,
                 myIndex: -1
             }
       }, 

@@ -45,7 +45,6 @@ require('cards');
         name: 'Hand',
       data(){
             return {
-                cwidth: 98,
                 cspacing: 0.24,
                 cradius: 166,
                 myhand: [],
@@ -55,7 +54,7 @@ require('cards');
                 activeUser: false,
                 myturn:false            }
         },
-        props: ['handId','playerId', 'indexUser','playId','roundId'],      
+        props: ['handId','playerId', 'indexUser','playId','roundId','cwidth'],      
         components: {
             CBCard,
             Button
@@ -540,7 +539,6 @@ require('cards');
                 return value;
             },
             getStyle(card, index) {
-                console.log("index " + index);
                 var n = this.myhand.length;
                 if (n === 0) {
                     return;
