@@ -53,11 +53,9 @@ require('cards');
                 choose: false,
                 choosebis: false,
                 activeUser: false,
-                myturn:false,
-                roundId: -1
-            }
+                myturn:false            }
         },
-        props: ['handId','playerId', 'indexUser','playId'],      
+        props: ['handId','playerId', 'indexUser','playId','roundId'],      
         components: {
             CBCard,
             Button
@@ -66,16 +64,24 @@ require('cards');
             handId: function(newVal, oldVal) { // watch it
                 console.log(
                 "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.handId);
+                console.log("play id:" + this.playId);
                 if (this.handId != -1) {
-                    db.collection("hands").doc(this.handId)
+                    db.collection("plays").doc(this.playId)
+                    .collection("rounds").doc(this.roundId)
+                    .collection("hands").doc(this.handId)
                         .onSnapshot((doc) => {
                             console.log("Hand: round : " + this.roundId);
-                            this.myhand = doc.data().handOn;
-                            this.myindex = doc.data().playerIndex;
-                            this.roundId = doc.data().round;
 
-                        console.log("Current round :" + this.roundId);
-                        db.collection("rounds").doc(this.roundId)
+                            var roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
+                            roundDoc.get().then((rdoc) => {
+
+                            this.myhand = this.OrderHand(doc.data().handOn, rdoc.data().atout);
+                            //this.myhand = doc.data().handOn;
+                            this.myindex = doc.data().playerIndex;
+                            //this.roundId = doc.data().round;
+
+                            console.log("Current round :" + this.roundId);
+                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId)
                             //.where("state", "==", "choice-1")
                             .onSnapshot((doc) => {
                                 console.log("index: " +this.myindex + " round index : " + doc.data().state);
@@ -109,7 +115,7 @@ require('cards');
                                     else   
                                         this.myturn = false;
                                 }
-
+                            });
                         });
                     });
                 }
@@ -124,6 +130,14 @@ require('cards');
             }
         },
         methods: {
+            OrderHand(cards, atout) {
+                var hand = [];
+
+                hand = cards;
+                hand.sort((a,b) => {return this.GetCardValue(b, atout) - this.GetCardValue(a, atout)});
+                return hand;
+
+            },
             playCard(event) {
                 var playedCard;
                 var roundDoc;
@@ -132,15 +146,20 @@ require('cards');
                 playedCard = {rank:event.rank, suit:event.suit};
                 console.log("receive card play on hand event : " + event.suit + ":" + event.rank + "hand:" + event.hand);   
 
-                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
                 roundDoc.get().then((doc) => {
                     if (doc.data().active == this.myindex && doc.data().state == "trick") {
                         var trick;
-                        db.collection("hands").doc(this.handId).update({handOn: firebase.firestore.FieldValue.arrayRemove(playedCard)});         
-                        db.collection("hands").doc(this.handId).update({handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)});         
+                        db.collection("plays").doc(this.playId)
+                        .collection("rounds").doc(this.roundId)
+                        .collection("hands").doc(this.handId)
+                        .update({handOn: firebase.firestore.FieldValue.arrayRemove(playedCard),
+                                handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)});         
                         trick = doc.data().currentTrick;
-                        //db.collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
-                        db.collection("tricks").doc(trick).update({
+                        //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
+                        db.collection("plays").doc(this.playId)
+                            .collection("rounds").doc(this.roundId)
+                            .collection("tricks").doc(trick).update({
                             players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
                             playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),
                             cards: firebase.firestore.FieldValue.arrayUnion(playedCard),
@@ -152,10 +171,12 @@ require('cards');
                             var winnerIndex;
                             var trickDoc;
 
-                            db.collection("rounds").doc(this.roundId).update({state: "end-trick"});
+                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({state: "end-trick"});
 
                             console.log ("round finished : check who won the trick");
-                            trickDoc= db.collection("tricks").doc(trick);
+                            trickDoc= db.collection("plays").doc(this.playId)
+                                .collection("rounds").doc(this.roundId)
+                                .collection("tricks").doc(trick);
                             trickDoc.get().then((tdoc) => {   
                                 var handDoc;
                                 var points;
@@ -164,18 +185,22 @@ require('cards');
                                 console.log("winner : " + winnerIndex);
                                 points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
                                 console.log("Points: "+ points[0] + "/" + points[1]);
-                                db.collection("rounds").doc(this.roundId).update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
+                                db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
 
-                                handDoc= db.collection("hands").doc(this.handId);
+                                handDoc= db.collection("plays").doc(this.playId)
+                                    .collection("rounds").doc(this.roundId)
+                                    .collection("hands").doc(this.handId);
                                 handDoc.get().then((hdoc) => {
                                     if (hdoc.data().handOn.length == 0) {                                        
                                         // END TRICK, START another one
                                         this.CalculateRoundScore();
-                                        db.collection("rounds").doc(this.roundId).update({state:"end-round"});
+                                        db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({state:"end-round"});
                                         db.collection("plays").doc(this.playId).update({state:"end-round"});
                                     }
                                     else {
-                                        db.collection("tricks").add({
+                                        db.collection("plays").doc(this.playId)
+                                            .collection("rounds").doc(this.roundId)
+                                            .collection("tricks").add({
                                             roundId: this.roundId,
                                             players: [],
                                             playerIndex: [],
@@ -183,7 +208,7 @@ require('cards');
                                         })
                                         .then((docRef) => {
                                             console.log("Trick created with ID: ", docRef.id);
-                                            db.collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
                                             this.$emit("start-trick", docRef.id);
 
                                         })
@@ -195,28 +220,31 @@ require('cards');
                             });
                         }
                         else
-                            db.collection("rounds").doc(this.roundId).update({active: active});                    
+                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({active: active});                    
                     }
                 });
             },
             take(suit="") {
                 var roundDoc;
 
-                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
                 roundDoc.get().then((doc) => {
                     console.log("round : "+ doc.data().state);
                     var takeCard = doc.data().choice[0];
                     console.log("take : " + takeCard.suit, ":player : " + this.playerId);
                     if (suit == "")
-                        db.collection("rounds").doc(this.roundId).update({atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex});
+                        db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex});
                     else
-                        db.collection("rounds").doc(this.roundId).update({atout: suit, bid: this.playerId, bidIndex: this.myindex});
+                        db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({atout: suit, bid: this.playerId, bidIndex: this.myindex});
 
-                    db.collection("rounds").doc(this.roundId).update({choice: firebase.firestore.FieldValue.arrayRemove(takeCard)});
+                    db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({choice: firebase.firestore.FieldValue.arrayRemove(takeCard)});
 
                     console.log("draw remaining cards");
 
-                    db.collection("hands").doc(this.handId).update({handOn: firebase.firestore.FieldValue.arrayUnion(takeCard)});
+                    db.collection("plays").doc(this.playId)
+                        .collection("rounds").doc(this.roundId)
+                        .collection("hands").doc(this.handId)
+                        .update({handOn: firebase.firestore.FieldValue.arrayUnion(takeCard)});
 
                     db.collection("plays").doc(this.playId)
                         .get().then((playDoc) => {
@@ -231,12 +259,17 @@ require('cards');
                                 for (var j=0;j<nbCards;j++) {
                                     var nextCard;
                                     nextCard = doc.data().deck[deckIndex++];
-                                    db.collection("hands").doc(handId).update({handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)});
+                                    db.collection("plays").doc(this.playId)
+                                        .collection("rounds").doc(this.roundId)
+                                        .collection("hands").doc(handId)
+                                        .update({handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)});
                                 }
                             }
                             active = (doc.data().dealer+1)%playDoc.data().players.length;
-                            db.collection("rounds").doc(this.roundId).update({state:"trick", active: active, starter: active});
-                            db.collection("tricks").add({
+                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({state:"trick", active: active, starter: active});
+                            db.collection("plays").doc(this.playId)
+                                .collection("rounds").doc(this.roundId)
+                                .collection("tricks").add({
                                 roundId: this.roundId,
                                 players: [],
                                 playerIndex: [],
@@ -244,9 +277,8 @@ require('cards');
                             })
                             .then((docRef) => {
                                 console.log("Trick created with ID: ", docRef.id);
-                                db.collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
                                 this.$emit("start-trick", docRef.id);
-
                             })
                             .catch(function(error) {
                                 console.error("Error adding document: ", error);
@@ -259,7 +291,7 @@ require('cards');
                 var index;
                 var roundDoc;
                 
-                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
                 roundDoc.get().then((doc) => {
                     index = doc.data().active;
                     if (index == doc.data().dealer) {
@@ -276,7 +308,7 @@ require('cards');
                 var index;
                 var roundDoc;
                 
-                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
                 roundDoc.get().then((doc) => {
                     index = doc.data().active;
                     if (index == doc.data().dealer) {
@@ -294,7 +326,7 @@ require('cards');
                 var roundDoc;
                 var points = [];
 
-                roundDoc= db.collection("rounds").doc(this.roundId);
+                roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
                 roundDoc.get().then((doc) => {
                    for (var i=0;i<doc.data().nbPlayers;i++) {
                         points[i] = 0;
@@ -314,7 +346,7 @@ require('cards');
                         points[1] = 160;
                         points[0] = 0;
                     }
-                    db.collection("rounds").doc(this.roundId).update({score:[points[0], points[1]]});
+                    db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({score:[points[0], points[1]]});
                 });
             },
             CalculateWinner(cards, indexes, atout) {
@@ -420,7 +452,20 @@ require('cards');
                         default:
                             value=0;
                             break;
-                    }                    
+                    } 
+                    switch (card.suit) {
+                        case "hearts":
+                            value += 10;
+                            break;
+                        case "clubs":
+                            value += 20;
+                            break;
+                        case "diamonds":
+                            value += 30;
+                            break;
+                        default:
+                            break;
+                    }                   
                 }
                 return value;
             },       
