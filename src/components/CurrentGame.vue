@@ -1,5 +1,5 @@
 <template>
-   <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-click="selectPlay">
+   <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-select="selectPlay">
       <Column filed="uid" header="Id" ></Column>
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
@@ -52,6 +52,9 @@ const { decks } = require('cards');
                   }
                   this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state, "score": score});
                });
+               //if (this.mygames.length > 0)
+               //   this.emitter.emit("select-play", this.this.mygames[0].uid);
+
             });
          db.collection("plays")
             .where("creator", "==", this.playerUid)
