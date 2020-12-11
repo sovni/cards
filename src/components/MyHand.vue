@@ -147,6 +147,9 @@ require('cards');
                             else   
                                 this.myturn = false;
                         }
+                        else
+                            this.myturn = false;
+
                     });
                 }
                 else   
@@ -202,7 +205,7 @@ require('cards');
                                 this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
 
                                 this.handDocRef.get().then((hdoc) => {
-                                    if (hdoc.data().handOn.length == 0) {                                        
+                                    if (hdoc.data().handOn.length == 0) {  
                                         // END TRICK, START another one
                                         this.CalculateRoundScore();
                                         this.roundDocRef.update({state:"end-round"});
@@ -240,11 +243,15 @@ require('cards');
                     var takeCard = doc.data().choice[0];
                     console.log("take : " + takeCard.suit, ":player : " + this.playerId);
                     if (suit == "")
-                        this.roundDocRef.update({atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex});
+                        this.roundDocRef.update({
+                            atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex,
+                            choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
+                        });
                     else
-                        this.roundDocRef.update({atout: suit, bid: this.playerId, bidIndex: this.myindex});
-
-                    this.roundDocRef.update({choice: firebase.firestore.FieldValue.arrayRemove(takeCard)});
+                        this.roundDocRef.update({
+                            atout: suit, bid: this.playerId, bidIndex: this.myindex,
+                            choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
+                        });
 
                     console.log("draw remaining cards");
 
@@ -317,11 +324,9 @@ require('cards');
                 });
             },
             CalculateRoundScore() {
-                var roundDoc;
                 var points = [];
 
-                roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
-                roundDoc.get().then((doc) => {
+                this.roundDocRef.get().then((doc) => {
                    for (var i=0;i<doc.data().nbPlayers;i++) {
                         points[i] = 0;
                     }
@@ -340,7 +345,7 @@ require('cards');
                         points[1] = 160;
                         points[0] = 0;
                     }
-                    db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({score:[points[0], points[1]]});
+                    this.roundDocRef.update({score:[points[0], points[1]]});
                 });
             },
             CalculateWinner(cards, indexes, atout) {
