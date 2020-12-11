@@ -14,7 +14,6 @@ import db from '../plugins/firebase';
 
 require('cards');
 
-
    export default {
         name: 'Deck',
       data(){
@@ -23,10 +22,12 @@ require('cards');
                 cspacing: 0.24,
                 cradius: 166,
                 mydeck: [],
-                playerIndex: []
+                playerIndex: [],
+                players: [],
+                myindex: -1
             }
         },
-        props: ['myround','trickId','playId'],      
+        props: ['myround','trickId','playId','playerId'],      
         components: {
             CBCard
         },
@@ -54,8 +55,21 @@ require('cards');
                         .onSnapshot((doc) => {
                             console.log("trickId: round : " + this.trickId);
                             console.log("trick change : cards" + doc.data().cards);
+
+                            db.collection("plays").doc(this.playId).get().then((pdoc) => {
+                                for (var i=0;i<pdoc.data().players.length;i++) {
+                                    console.log("compare player :" + pdoc.data().players[i] + ": " + this.playerId)
+                                    if (pdoc.data().players[i] == this.playerId) {
+                                        this.myindex = i;
+                                        console.log("found index : " + this.myindex)
+                                        break;
+                                    }
+                                }
+                                
                             this.playerIndex = doc.data().playerIndex;
+                            this.players = doc.data().players;
                             this.mydeck = doc.data().cards;
+                            });
                         });
                 }
             }
@@ -68,7 +82,6 @@ require('cards');
                             console.log("Deck: round : " + this.myround);
                             this.mydeck = doc.data().choice;
                         });
-
                 //}
             },
             
@@ -91,7 +104,8 @@ require('cards');
                 var p3top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
                 //var box = {};
                 var style="";
-                var pindex = this.playerIndex[index];
+        
+                var pindex = this.playerIndex[(index+this.myindex)%this.playerIndex.length];
                 console.log("pindex: " + pindex + " - index: " + index);
                 if (pindex == 0)
                     style = "width:"+width+"px; left:"+ p0left + "px;top:" + p0top + "px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";

@@ -58,47 +58,32 @@ const { decks } = require('cards');
             });
          db.collection("plays")
             .where("creator", "==", this.playerUid)
-            .where("state", "==", "prep")
+            //.where("state", "==", "prep")
             .onSnapshot((querySnapshot) => {
                querySnapshot.forEach((doc) => {
-                  console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
-                  db.collection("plays").doc(doc.id).update({state:"start-play"});
-                  console.log("starting game");
-               });
-            });
-         db.collection("plays")
-            .where("creator", "==", this.playerUid)
-            .where("state", "==", "start-play")
-            .onSnapshot((querySnapshot) => {
-               querySnapshot.forEach((doc) => {
+                  if (doc.data().state == "prep") {
+                     console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
+                     db.collection("plays").doc(doc.id).update({state:"start-play"});
+                     console.log("starting game");
+                  }
+                  else if (doc.data().state == "start-play") {
                      console.log("CurrentGame start-play state : " +doc.id, " => ", doc.data());
                      db.collection("plays").doc(doc.id).update({state:"start-round"});
                      console.log("starting round");
-                });
-            });            
-         db.collection("plays")
-            .where("creator", "==", this.playerUid)
-            .where("state", "==", "start-round")
-            .onSnapshot((querySnapshot) => {
-               querySnapshot.forEach((doc) => {
+                  }
+                  else if (doc.data().state == "start-round") {
                      console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
                      this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length);
                      console.log("distribute cards round 1");
                      db.collection("plays").doc(doc.id).update({state:"playing"});
-
-                });
-            });
-         db.collection("plays")
-            .where("creator", "==", this.playerUid)
-            .where("state", "==", "end-round")
-            .onSnapshot((querySnapshot) => {
-               querySnapshot.forEach((doc) => {
+                  }          
+                  else if (doc.data().state == "end-round") {
                      this.calculateScore(doc.id);
                      var roundIndex = doc.data().roundIndex +1;
                      console.log("CurrentGame end-round state : " +doc.id, " => ", doc.data());
                      db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex});
-                     console.log("starting next round");
-                });      
+                     console.log("starting next round");                  }
+               });
             });
       },
       methods: {

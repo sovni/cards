@@ -35,7 +35,7 @@
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:350px;height:250px">
          <!--<div class="p-d-flex p-jc-center">-->
-         <Deck :myround="roundId" :trickId="trickId" :playId="playGroundID"/>
+         <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :playId="playGroundID"/>
          <!--</div>-->
       </div>
       <div class="p-col" />
@@ -107,8 +107,8 @@ import db from '../plugins/firebase';
                var active = 0;
                var round = -1;
                db.collection("plays").doc(this.playGroundID)
-                  .collection("rounds").doc(this.roundId).
-                  collection("hands")
+                  .collection("rounds").doc(this.roundId)
+                  .collection("hands")
                   //.where("round", "==", this.roundId)
                   .onSnapshot((querySnapshot) => {
                         querySnapshot.forEach((doc) => {
