@@ -548,16 +548,19 @@ require('cards');
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
                 console.log("!!!!!!!!!!!!!!!!Calculate Box : " + box.width + ":" + box.height);
-                console.log("Add : " + Math.floor((width - box.width)*0.5))
+                //console.log("Add : " + Math.floor((width - box.width)*0.5))
                 var rotationAngle = Math.round(coords[index].angle);
                 if (this.indexUser == 0)
                     coords[index].x += Math.floor((450 - box.width)*0.5);
-                else if (this.indexUser == 2)
+                /*else if (this.indexUser == 2) {
+                    console.log("Before : " + coords[index].x);
                     coords[index].x += Math.floor((250 - box.width)*0.5);
+                    console.log("After : " + coords[index].x);
+                }
                 else if (this.indexUser == 1)
                     coords[index].y += Math.floor((250 - box.height)*0.5);
                 else if (this.indexUser == 3)
-                    coords[index].y += Math.floor((250 - box.height)*0.5);                    
+                    coords[index].y += Math.floor((250 - box.height)*0.5); */
 
                 /*if (this.indexUser == 0)
                     coords[index].y += 100;

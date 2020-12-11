@@ -16,6 +16,7 @@
       name: "Header-component",
       data() {
         return {
+            currentUser: '',
             items: [
                {
                    label:'Home',
@@ -29,17 +30,20 @@
                       {
                          label:'Login',
                          icon:'pi pi-fw pi-user',
-                         to:'/login'
+                         to:'/login',
+                         visible: () => !this.currentUser
                       },
                       {
                          label:'Register',
                          icon:'pi pi-fw pi-user-plus',
-                         to:'/register'
+                         to:'/register',
+                         visible: () => !this.currentUser
                       },
                       {
                          label:'Logout',
                          icon:'pi pi-fw pi-user-minus',
-                         command: () => {this.logout();}
+                         command: () => {this.logout();},
+                         visible: () => this.currentUser
                       }                                            
 
                    ]
@@ -56,11 +60,16 @@
                this.$router.replace('login');
             });
          },
+         isLogged(){
+            if (!this.currentUser)
+               return false;
+            return true;
+         },
          getUserName(){
-            const currentUser = firebase.auth().currentUser;
-            if (!currentUser)
+            this.currentUser = firebase.auth().currentUser;
+            if (!this.currentUser)
                return "";
-            return currentUser.displayName;
+            return this.currentUser.displayName;
          }
       }
    }
