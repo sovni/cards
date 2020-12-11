@@ -82,7 +82,7 @@ const { decks } = require('cards');
             .onSnapshot((querySnapshot) => {
                querySnapshot.forEach((doc) => {
                      console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
-                     this.drawCards(doc.id, doc.data().players,doc.data().roundIndex);
+                     this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length);
                      console.log("distribute cards round 1");
                      db.collection("plays").doc(doc.id).update({state:"playing"});
 

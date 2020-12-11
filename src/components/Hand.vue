@@ -35,7 +35,8 @@ require('cards');
                 choose: false,
                 choosebis: false,
                 activeUser: false,
-                myturn:false            }
+                myturn:false
+            }
         },
         props: ['handId','playerId', 'indexUser','playId','roundId','cwidth'],      
         components: {

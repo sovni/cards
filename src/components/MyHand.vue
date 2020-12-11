@@ -52,72 +52,48 @@ require('cards');
                 choose: false,
                 choosebis: false,
                 activeUser: false,
-                myturn:false            }
+                myturn:false,
+                playDocRef: null,
+                handDocRef: null,
+                handDocSubs: null,
+                roundDocRef: null,
+                roundDocSubs: null,
+                trickDocRef: null,
+                atout: ""                  }
         },
-        props: ['handId','playerId', 'indexUser','playId','roundId','cwidth'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId'],      
         components: {
             CBCard,
             Button
         },
         watch: { 
+            playId: function(newVal, oldVal) { // watch it
+                console.log("Watch props.playId function called:" + newVal + ":"+oldVal+":"+this.playId);
+                if (this.playId != null) {
+                    this.playDocRef = db.collection("plays").doc(this.playId);
+                }
+                else   
+                    this.playDocRef = null;
+            },
             handId: function(newVal, oldVal) { // watch it
-                console.log(
-                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.handId);
+                console.log("Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.handId);
                 console.log("play id:" + this.playId);
+                if (this.handDocSubs != null) {
+                    this.handDocSubs();
+                    this.handDocSubs = null;
+                }
                 if (this.handId != -1) {
-                    db.collection("plays").doc(this.playId)
-                    .collection("rounds").doc(this.roundId)
-                    .collection("hands").doc(this.handId)
-                        .onSnapshot((doc) => {
-                            console.log("Hand: round : " + this.roundId);
-
-                            var roundDoc= db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId);
-                            roundDoc.get().then((rdoc) => {
-
-                            this.myhand = this.OrderHand(doc.data().handOn, rdoc.data().atout);
-                            //this.myhand = doc.data().handOn;
-                            this.myindex = doc.data().playerIndex;
+                    this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
+                    this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
                             //this.roundId = doc.data().round;
-
                             console.log("Current round :" + this.roundId);
-                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId)
-                            //.where("state", "==", "choice-1")
-                            .onSnapshot((doc) => {
-                                console.log("index: " +this.myindex + " round index : " + doc.data().state);
-                                if (doc.data().state == "choice-1") {
-                                    this.choosebis = false;
-                                    if (doc.data().active == this.myindex)  {
-                                        console.log("active hand: " +this.myindex);
-                                        this.choose = true;
-                                    }
-                                    else {
-                                        this.choose = false;
-                                    }
-                                }
-                                else if (doc.data().state == "choice-2") {
-                                    this.choose = false;
-                                    if (doc.data().active == this.myindex)  {
-                                        console.log("active hand: " +this.myindex);
-                                        this.choosebis = true;
-                                    }
-                                    else {
-                                        this.choosebis = false;
-                                    }
-                                }
-                                else {
-                                    this.choose = false;
-                                    this.choosebis = false;
-                                }
-                                if (doc.data().state == "trick") {
-                                    if (doc.data().active == this.myindex)
-                                        this.myturn = true;
-                                    else   
-                                        this.myturn = false;
-                                }
-                            });
-                        });
+                            this.myindex = doc.data().playerIndex;
+                            this.watchRoundId();
+                            this.myhand = this.OrderHand(doc.data().handOn, this.atout);
                     });
                 }
+                else
+                    this.handDocRef = null;
             },
             playerId: function() {
                 //if (firebase.auth().currentUser.uid == this.playerId) {
@@ -129,6 +105,53 @@ require('cards');
             }
         },
         methods: {
+            watchRoundId() {
+                console.log("Watch props.roundId function called:"+this.roundId);
+                if (this.roundDocSubs != null) {
+                    this.roundDocSubs();
+                    this.roundDocSubs = null;
+                }
+                if (this.roundId != null) {
+                    this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
+                    this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
+                        console.log("index: " +this.myindex + " round index : " + doc.data().state);
+                        if (doc.data().atout)
+                            this.atout = doc.data().atout;
+                        if (doc.data().state == "choice-1") {
+                            this.choosebis = false;
+                            if (doc.data().active == this.myindex)  {
+                                console.log("active hand: " +this.myindex);
+                                this.choose = true;
+                            }
+                            else {
+                                this.choose = false;
+                            }
+                        }
+                        else if (doc.data().state == "choice-2") {
+                            this.choose = false;
+                            if (doc.data().active == this.myindex)  {
+                                console.log("active hand: " +this.myindex);
+                                this.choosebis = true;
+                            }
+                            else {
+                                this.choosebis = false;
+                            }
+                        }
+                        else {
+                            this.choose = false;
+                            this.choosebis = false;
+                        }
+                        if (doc.data().state == "trick") {
+                            if (doc.data().active == this.myindex)
+                                this.myturn = true;
+                            else   
+                                this.myturn = false;
+                        }
+                    });
+                }
+                else   
+                    this.roundDocRef = null;       
+            },     
             OrderHand(cards, atout) {
                 var hand = [];
 
