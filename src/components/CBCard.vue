@@ -65,6 +65,7 @@ const cTD = require('../assets/cards-belote/TD.svg');
 const cTH = require('../assets/cards-belote/TH.svg');
 const cTS = require('../assets/cards-belote/TS.svg');
 const cBB = require('../assets/cards/BLUE_BACK.svg');
+const cRB = require('../assets/cards/RED_BACK.svg');
 
 
    export default {
@@ -128,16 +129,21 @@ const cBB = require('../assets/cards/BLUE_BACK.svg');
                 cTD: cTD,
                 cTH: cTH,
                 cTS: cTS,
-                cBB : cBB
+                cBB : cBB,
+                cRB : cRB
             }
         },
-        props: ['mycard','mystyle','myactive','myhand'],
+        props: ['mycard','mystyle','myactive','myhand','myturn'],
         components: {
         },
         methods: {
             getImg(card) {
-                if (this.myactive == false)
-                    return this.cBB;
+                if (this.myactive == false) {
+                    if (this.myturn)
+                        return this.cRB;
+                    else
+                        return this.cBB;
+                }
               var suit;
               //switch (card.suit.name) {
               switch (card.suit) {

@@ -1,12 +1,11 @@
 <template>
-   <div class="p-grid">
+   <div class="p-grid" style="width:100%;height:100%" >
         <div class="p-col-12" >  
-        <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
-        <div class="hhand active-hand fan" >
-            <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" /> 
-        </div>
-        </div>
-
+            <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
+            <div class="hhand active-hand fan highlight" >
+                <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:myturn="myturn" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" /> 
+            </div>
+       </div>
     </div>
 
 </template>
@@ -28,8 +27,6 @@ require('cards');
                 cradius: 166,
                 myhand: [],
                 myindex: -1,
-                choose: false,
-                choosebis: false,
                 activeUser: false,
                 myturn:false,
                 playDocRef: null,
@@ -88,36 +85,8 @@ require('cards');
                     this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
                     this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
                         console.log("index: " +this.myindex + " round index : " + doc.data().state);
-                        if (doc.data().state == "choice-1") {
-                            this.choosebis = false;
-                            if (doc.data().active == this.myindex)  {
-                                console.log("active hand: " +this.myindex);
-                                this.choose = true;
-                            }
-                            else {
-                                this.choose = false;
-                            }
-                        }
-                        else if (doc.data().state == "choice-2") {
-                            this.choose = false;
-                            if (doc.data().active == this.myindex)  {
-                                console.log("active hand: " +this.myindex);
-                                this.choosebis = true;
-                            }
-                            else {
-                                this.choosebis = false;
-                            }
-                        }
-                        else {
-                            this.choose = false;
-                            this.choosebis = false;
-                        }
-                        if (doc.data().state == "trick") {
-                            if (doc.data().active == this.myindex)
-                                this.myturn = true;
-                            else   
-                                this.myturn = false;
-                        }
+                        if (doc.data().active == this.myindex)
+                            this.myturn = true;
                         else
                             this.myturn = false;
 

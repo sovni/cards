@@ -1,12 +1,23 @@
 <template>
-  <div id="chat" style="width:100%;height:400px">
-    <!-- Login section -->
+  <div id="chat" style="width:100%;height:650px">
+    <ScrollPanel style="width: 100%; height: 100%">
+        <div
+            class="border pl-2 pt-1 ml-2 message-text mb-2"
+            v-for="message in messages"
+            :key="message"
+          >
+            <span class="mg-text">{{ message.username }}</span>
+            <p class="message pt-0">{{ message.text }}</p>
+          </div>
+    </ScrollPanel >
+    <InputText v-model="showMessage" type="text" class="p-mt-4 p-inputtext-sm" style="width: 70%;"/>
+    <Button label="Send" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
 
     <!-- Chat section -->
-    <div class="message-body mt-3">
+    <!--<div class="message-body mt-3">
       <h5>Welcome {{ name }}!</h5>
       <div class="card" style="width:100%;height:600px">
-        <div class="card-body" style="width:100%;height:600px">
+        <div class="card-body" style="width:100%;height:550px">
           <div
             class="border pl-2 pt-1 ml-2 message-text mb-2"
             v-for="message in messages"
@@ -19,11 +30,15 @@
       </div>
       <input v-model="showMessage" type="text" class="mt-3 mr-2 pl-2 pr-2" />
       <button class="btn btn-primary" @click="sendMessage">Send</button>
-    </div>
+    </div>-->
   </div>
 </template>
 <style>
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons");
+.mg-text {
+  color: rgb(0, 195, 255);
+  font-weight: bolder;
+}
+/*@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons");
 #chat {
   font-family: "Roboto", sans-serif;
   font-size: 18px;
@@ -48,6 +63,7 @@ input {
 .message-text {
   min-width: 10%;
   border-radius: 4px;
+  overflow:auto;
 }
 .message {
   font-size: 14px;
@@ -67,15 +83,20 @@ input {
 .card {
   width: 100%;
   margin: auto;
+  overflow:auto;
 }
 .card-body {
   min-height: 60vh;
   overflow-x: scroll;
   overflow:auto;
-}
+}*/
 </style>
 <script>
 import firebase from 'firebase';
+import ScrollPanel from 'primevue/scrollpanel';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+
 export default {
   name: "GameChat",
   data() {
@@ -87,6 +108,11 @@ export default {
     };
   },
     props: ['playerId'],      
+        components: {
+            ScrollPanel,
+            InputText,
+            Button
+        },
     methods: {
         getUserName(){
             this.currentUser = firebase.auth().currentUser;
