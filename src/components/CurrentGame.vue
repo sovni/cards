@@ -1,11 +1,12 @@
 <template>
    <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-select="selectPlay">
-      <Column filed="uid" header="Id" ></Column>
+      <!--<Column field="uid" header="Id" ></Column> -->
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
       <Column field="score" header="Score"></Column>
    </DataTable>
+   <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
 </template>
 
 <script>
@@ -16,6 +17,7 @@ import db from '../plugins/firebase';
 //import playGroundConverter from '../plugins/fireplayground';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Button from 'primevue/button';
 
 const { decks } = require('cards');
 
@@ -31,6 +33,7 @@ const { decks } = require('cards');
       props: ['playerUid','playerName'],      
       components: {
          DataTable,
+         Button,
          Column
       },
       created(){
@@ -39,18 +42,26 @@ const { decks } = require('cards');
          db.collection("plays")
             //.where("creator", "==", this.playerUid)
             .where("players", "array-contains", this.playerUid)
-            .where("state", "!=", "created")
+            //.where("state", "!=", "created")
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
-                  var score = "";
-                  for (var i=0;i<doc.data().score.length;i++) {
-                     if (i==0)
-                        score = doc.data().score[i];
-                     else  
-                        score += "/" + doc.data().score[i];
+                  if (doc.data().state != "created") {
+                     var score = "";
+                     for (var i=0;i<doc.data().score.length;i++) {
+                        if (i==0)
+                           score = doc.data().score[i];
+                        else  
+                           score += "/" + doc.data().score[i];
+                     }
+                     this.mygames.unshift({"uid": doc.id, "name": "belote", "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "score": score});
                   }
-                  this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state, "score": score});
+                  else {
+                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state});
+                     if (doc.data().players.length == 4) {
+                        db.collection("plays").doc(doc.id).update({state:"prep"});
+                     }                     
+                  }
                });
                //if (this.mygames.length > 0)
                //   this.emitter.emit("select-play", this.this.mygames[0].uid);
@@ -90,6 +101,25 @@ const { decks } = require('cards');
             });
       },
       methods: {
+         createGame() {
+               db.collection("plays").add({
+                  players: [this.playerUid],
+                  playersName: [{id: this.playerUid, name: this.playerName}],
+                  game: "belote",
+                  state: "created",
+                  creator: this.playerUid,
+                  score: [],
+                  nbPlayers: 4,
+                  roundIndex: 0
+               })
+               .then(function(docRef) {
+                  console.log("Plays written with ID: ", docRef.id);
+                  //this.roundID = docRef.id;
+               })
+               .catch(function(error) {
+                  console.error("Error adding document: ", error);
+               });                           
+         },
          calculateScore(playId) {
             var points = [];
             points[0] = 0;

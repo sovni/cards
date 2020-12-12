@@ -1,8 +1,14 @@
 <template>
    <DataTable class="p-datatable-sm" :value="games" >
+      <Column field="uid" header="Id" headerStyle="width:10px;"></Column>
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
+      <Column >
+            <template #body="slotProps">
+                <Button icon="pi pi-sign-in" class="p-button-rounded p-button-success p-button-sm" @click="joinGame(slotProps.data)" />
+            </template>
+        </Column>
    </DataTable>
 </template>
 
@@ -12,17 +18,21 @@ import db from '../plugins/firebase';
 //import playGroundConverter from '../plugins/fireplayground';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Button from 'primevue/button';
+import firebase from 'firebase';
 
    export default {
       name: 'Gamelist',
       data() {
             return {
-                games: []
+                games: [],
+                gamesuid:[]
             }
       },
       props: ['playerUid','playerName'],      
       components: {
          DataTable,
+         Button,
          Column
       },
       created(){
@@ -43,12 +53,24 @@ import Column from 'primevue/column';
                            break;
                         }
                      }
-                     if (!found)
-                        this.games.push({"name": doc.data().game, "players": doc.data().players.length, "state": doc.data().state});
+                     if (!found) {
+                        var id = this.games.length + 1;
+                        this.gamesuid[id] = doc.id
+                        this.games.push({"uid": doc.id, "name": doc.data().game, "players": doc.data().players.length, "state": doc.data().state});
+                     }
                });
             });
       },
       methods: {
+         joinGame(play) {
+            console.log("Join Game : " + this.gamesuid[play.uid]);
+            var currentUser = firebase.auth().currentUser;
+            db.collection("plays").doc(this.gamesuid[play.uid]).update({
+               players: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+               playersName: firebase.firestore.FieldValue.arrayUnion({id: currentUser.uid, name: currentUser.displayName})
+            })
+
+        }
 
       }
    }       
