@@ -56,7 +56,7 @@ import firebase from 'firebase';
                      if (!found) {
                         var id = this.games.length + 1;
                         this.gamesuid[id] = doc.id
-                        this.games.push({"uid": doc.id, "name": doc.data().game, "players": doc.data().players.length, "state": doc.data().state});
+                        this.games.push({"uid": id, "name": doc.data().game, "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state});
                      }
                });
             });

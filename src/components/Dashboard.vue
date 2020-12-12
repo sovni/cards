@@ -40,12 +40,12 @@
             <div class="p-mr-2" style="max-width:200px;height:800px;">
                <Card style="width:400px;height:800px;">
                   <template v-slot:title>
-                     Game List
+                     Chat
                   </template>
                   <template v-slot:content>
                         <div class="p-grid">
                           <div class="p-col-12">
-                              <Gamelist  :playerUid="playerUid" :playerName="playerName"/>
+                              <!--<Gamelist  :playerUid="playerUid" :playerName="playerName"/>-->
                            </div>
                         </div>          
                   </template>   

@@ -24,13 +24,13 @@
       <div class="p-col-fixed"  style="width:200px;height:150px"/>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:250px;height:150px">
-      <MyHand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :playId="playGroundID" />
+      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :playId="playGroundID" />
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:200px;height:150px"/>
 
       <div class="p-col-fixed"  style="width:150px;height:250px">
-      <MyHand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playGroundID" />
+      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playGroundID" />
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:350px;height:250px">
@@ -40,7 +40,7 @@
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:150px;height:250px">
-      <MyHand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playGroundID" />
+      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playGroundID" />
       </div>
 
       <div class="p-col-fixed"  style="width:100px;height:400px"/>
@@ -55,7 +55,7 @@
 
 <script>
 import firebase from 'firebase';
-//import Hand from './Hand'
+import Hand from './Hand'
 import MyHand from './MyHand'
 import Deck from './Deck'
 import '../plugins/firebase'
@@ -86,7 +86,7 @@ import db from '../plugins/firebase';
       }, 
       props: ['playerUid','playerName'],
       components: {
-         //Hand,
+         Hand,
          MyHand,
          Deck
       },

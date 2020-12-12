@@ -4,7 +4,8 @@
       <Column field="name" header="Name"></Column>
       <Column field="players" header="Players"></Column>
       <Column field="state" header="State"></Column>
-      <Column field="score" header="Score"></Column>
+      <Column field="score" header="Score">
+      </Column>
    </DataTable>
    <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
 </template>

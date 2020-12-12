@@ -3,12 +3,10 @@
         <div class="p-col-12" >  
         <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
         <div class="hhand active-hand fan" >
-            <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)"/> 
+            <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" /> 
         </div>
         </div>
-       <div class="p-col-12 p-d-flex p-jc-center" style="height:50px">  
-            <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
-        </div>
+
     </div>
 
 </template>
@@ -17,15 +15,13 @@ img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img
 </style>
 
 <script>
-//import firebase from 'firebase';
 import CBCard from './CBCard';
 import db from '../plugins/firebase';
-import Button from 'primevue/button';
 
 require('cards');
 
    export default {
-        name: 'Hand',
+        name: 'MyHand',
       data(){
             return {
                 cspacing: 0.24,
@@ -35,74 +31,110 @@ require('cards');
                 choose: false,
                 choosebis: false,
                 activeUser: false,
-                myturn:false
+                myturn:false,
+                playDocRef: null,
+                handDocRef: null,
+                handDocSubs: null,
+                roundDocRef: null,
+                roundDocSubs: null,
+                trickDocRef: null
             }
         },
-        props: ['handId','playerId', 'indexUser','playId','roundId','cwidth'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId'],      
         components: {
-            CBCard,
-            Button
+            CBCard
         },
         watch: { 
+            playId: function(newVal, oldVal) { // watch it
+                console.log("Watch props.playId function called:" + newVal + ":"+oldVal+":"+this.playId);
+                if (this.playId != null) {
+                    this.playDocRef = db.collection("plays").doc(this.playId);
+                }
+                else   
+                    this.playDocRef = null;
+            },
             handId: function(newVal, oldVal) { // watch it
-                console.log(
-                "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.handId);
+                console.log("Watch props.handid function called:" + newVal + ":"+oldVal+":"+this.handId);
                 console.log("play id:" + this.playId);
+                if (this.handDocSubs != null) {
+                    this.handDocSubs();
+                    this.handDocSubs = null;
+                }
                 if (this.handId != -1) {
-                    db.collection("plays").doc(this.playId)
-                    .collection("rounds").doc(this.roundId)
-                    .collection("hands").doc(this.handId)
-                        .onSnapshot((doc) => {
-                            console.log("Hand: round : " + this.roundId);
-
-
-                            this.myhand = doc.data().handOn;
-                            this.myindex = doc.data().playerIndex;
-
+                    this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
+                    this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
+                            //this.roundId = doc.data().round;
                             console.log("Current round :" + this.roundId);
-                            db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId)
-                            //.where("state", "==", "choice-1")
-                            .onSnapshot((doc) => {
-                                console.log("index: " +this.myindex + " round index : " + doc.data().state);
-                                if (doc.data().state == "choice-1") {
-                                    this.choosebis = false;
-                                    if (doc.data().active == this.myindex)  {
-                                        console.log("active hand: " +this.myindex);
-                                        this.choose = true;
-                                    }
-                                    else {
-                                        this.choose = false;
-                                    }
-                                }
-                                else if (doc.data().state == "choice-2") {
-                                    this.choose = false;
-                                    if (doc.data().active == this.myindex)  {
-                                        console.log("active hand: " +this.myindex);
-                                        this.choosebis = true;
-                                    }
-                                    else {
-                                        this.choosebis = false;
-                                    }
-                                }
-                                else {
-                                    this.choose = false;
-                                    this.choosebis = false;
-                                }
-                                if (doc.data().state == "trick") {
-                                    if (doc.data().active == this.myindex)
-                                        this.myturn = true;
-                                    else   
-                                        this.myturn = false;
-                                }
-                            });
+                            this.myindex = doc.data().playerIndex;
+                            this.watchRoundId();
+                            this.myhand = doc.data().handOn;
                     });
                 }
+                else
+                    this.handDocRef = null;
             },
             playerId: function() {
- 
+                this.activeUser = false;
             }
         },
         methods: {
+            watchRoundId() {
+                console.log("Watch props.roundId function called:"+this.roundId);
+                if (this.roundDocSubs != null) {
+                    this.roundDocSubs();
+                    this.roundDocSubs = null;
+                }
+                if (this.roundId != null) {
+                    this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
+                    this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
+                        console.log("index: " +this.myindex + " round index : " + doc.data().state);
+                        if (doc.data().state == "choice-1") {
+                            this.choosebis = false;
+                            if (doc.data().active == this.myindex)  {
+                                console.log("active hand: " +this.myindex);
+                                this.choose = true;
+                            }
+                            else {
+                                this.choose = false;
+                            }
+                        }
+                        else if (doc.data().state == "choice-2") {
+                            this.choose = false;
+                            if (doc.data().active == this.myindex)  {
+                                console.log("active hand: " +this.myindex);
+                                this.choosebis = true;
+                            }
+                            else {
+                                this.choosebis = false;
+                            }
+                        }
+                        else {
+                            this.choose = false;
+                            this.choosebis = false;
+                        }
+                        if (doc.data().state == "trick") {
+                            if (doc.data().active == this.myindex)
+                                this.myturn = true;
+                            else   
+                                this.myturn = false;
+                        }
+                        else
+                            this.myturn = false;
+
+                    });
+                }
+                else   
+                    this.roundDocRef = null;       
+            },     
+            CalculatePoints(cards, atout) {
+                var points = 0;
+
+                for (var i=0;i<cards.length;i++) {
+                    points += this.GetCardPoints(cards[i], atout);
+                }
+
+                return points;
+            },
             getStyle(card, index) {
                 var n = this.myhand.length;
                 if (n === 0) {
@@ -112,7 +144,21 @@ require('cards');
                 var height = Math.floor(width * 1.4); // hack: for a hidden hand
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
+                console.log("!!!!!!!!!!!!!!!!Calculate Box : " + box.width + ":" + box.height);
+                //console.log("Add : " + Math.floor((width - box.width)*0.5))
                 var rotationAngle = Math.round(coords[index].angle);
+                if (this.indexUser == 0)
+                    coords[index].x += Math.floor((450 - box.width)*0.5);
+                /*else if (this.indexUser == 2) {
+                    console.log("Before : " + coords[index].x);
+                    coords[index].x += Math.floor((250 - box.width)*0.5);
+                    console.log("After : " + coords[index].x);
+                }
+                else if (this.indexUser == 1)
+                    coords[index].y += Math.floor((250 - box.height)*0.5);
+                else if (this.indexUser == 3)
+                    coords[index].y += Math.floor((250 - box.height)*0.5); */
+
                 /*if (this.indexUser == 0)
                     coords[index].y += 100;
                 else if (this.indexUser == 1 || this.indexUser == 3 )
@@ -195,9 +241,6 @@ require('cards');
 
                 return coords;
             },
-            cardSetTop: function (card, top) {
-                card.style.top = top + "px";
-            },
             degreesToRadians: function (degrees) {
                 return degrees * (Math.PI / 180);
             },            
@@ -238,4 +281,3 @@ require('cards');
         }         
     }    
 </script>
-
