@@ -76,7 +76,7 @@ require('cards');
                     this.playDocRef = null;
             },
             handId: function(newVal, oldVal) { // watch it
-                console.log("Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.handId);
+                console.log("Watch props.handid function called:" + newVal + ":"+oldVal+":"+this.handId);
                 console.log("play id:" + this.playId);
                 if (this.handDocSubs != null) {
                     this.handDocSubs();

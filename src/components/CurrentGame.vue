@@ -59,30 +59,33 @@ const { decks } = require('cards');
          db.collection("plays")
             .where("creator", "==", this.playerUid)
             //.where("state", "==", "prep")
-            .onSnapshot((querySnapshot) => {
+            .onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {
                querySnapshot.forEach((doc) => {
-                  if (doc.data().state == "prep") {
-                     console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
-                     db.collection("plays").doc(doc.id).update({state:"start-play"});
-                     console.log("starting game");
+                  if (!doc.metadata.hasPendingWrites) {
+                     if (doc.data().state == "prep") {
+                        console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
+                        db.collection("plays").doc(doc.id).update({state:"start-play"});
+                        console.log("starting game");
+                     }
+                     else if (doc.data().state == "start-play") {
+                        console.log("CurrentGame start-play state : " +doc.id, " => ", doc.data());
+                        db.collection("plays").doc(doc.id).update({state:"start-round"});
+                        console.log("starting round");
+                     }
+                     else if (doc.data().state == "start-round") {
+                        console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
+                        this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length);
+                        console.log("distribute cards round 1");
+                        db.collection("plays").doc(doc.id).update({state:"playing"});
+                     }          
+                     else if (doc.data().state == "end-round") {
+                        this.calculateScore(doc.id);
+                        var roundIndex = doc.data().roundIndex +1;
+                        console.log("CurrentGame end-round state : " +doc.id, " => ", doc.data());
+                        db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex});
+                        console.log("starting next round");          
+                     }        
                   }
-                  else if (doc.data().state == "start-play") {
-                     console.log("CurrentGame start-play state : " +doc.id, " => ", doc.data());
-                     db.collection("plays").doc(doc.id).update({state:"start-round"});
-                     console.log("starting round");
-                  }
-                  else if (doc.data().state == "start-round") {
-                     console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
-                     this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length);
-                     console.log("distribute cards round 1");
-                     db.collection("plays").doc(doc.id).update({state:"playing"});
-                  }          
-                  else if (doc.data().state == "end-round") {
-                     this.calculateScore(doc.id);
-                     var roundIndex = doc.data().roundIndex +1;
-                     console.log("CurrentGame end-round state : " +doc.id, " => ", doc.data());
-                     db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex});
-                     console.log("starting next round");                  }
                });
             });
       },
@@ -133,7 +136,7 @@ const { decks } = require('cards');
             .then((docRef) => {
                this.roundId = docRef.id;
                console.log("Round this written with ID: ", docRef.id);
-               db.collection("plays").doc(playId).update({round: this.roundId});
+               //db.collection("plays").doc(playId).update({round: this.roundId});
 
                for (var i = 0; i < players.length; i++) {
                   db.collection("plays").doc(playId)
@@ -160,6 +163,7 @@ const { decks } = require('cards');
                db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
                   deck: this.getHand(deck, 11), state: "choice-1"
                });          
+               db.collection("plays").doc(playId).update({round: this.roundId});
             })
             .catch((error) => {
                console.error("Error adding Round: ", error);
