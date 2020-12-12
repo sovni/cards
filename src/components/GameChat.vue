@@ -1,12 +1,12 @@
 <template>
-  <div id="chat" style="width:100%">
+  <div id="chat" style="width:100%;height:400px">
     <!-- Login section -->
 
     <!-- Chat section -->
     <div class="message-body mt-3">
       <h5>Welcome {{ name }}!</h5>
-      <div class="card">
-        <div class="card-body">
+      <div class="card" style="width:100%;height:600px">
+        <div class="card-body" style="width:100%;height:600px">
           <div
             class="border pl-2 pt-1 ml-2 message-text mb-2"
             v-for="message in messages"
@@ -66,12 +66,12 @@ input {
 }
 .card {
   width: 100%;
-  /*height: 75vh;*/
   margin: auto;
 }
 .card-body {
   min-height: 60vh;
   overflow-x: scroll;
+  overflow:auto;
 }
 </style>
 <script>
