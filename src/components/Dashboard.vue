@@ -45,6 +45,7 @@
                   <template v-slot:content>
                         <div class="p-grid">
                           <div class="p-col-12">
+                             <GameChat :playerId="playerUid"/>
                               <!--<Gamelist  :playerUid="playerUid" :playerName="playerName"/>-->
                            </div>
                         </div>          
@@ -63,6 +64,7 @@ import Card from 'primevue/card';
 import Playground from './Playground'
 import Gamelist from './Gamelist'
 import CurrentGame from './CurrentGame'
+import GameChat from './GameChat'
 
 
    export default {
@@ -77,7 +79,8 @@ import CurrentGame from './CurrentGame'
          Card,
          Playground,
          Gamelist,
-         CurrentGame
+         CurrentGame,
+         GameChat
       },
       created() {
          var currentUser = firebase.auth().currentUser;
