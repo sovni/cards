@@ -62,6 +62,7 @@ import Button from 'primevue/button';
                   console.log(user);
                   this.username = user.user.displayName;
                   console.log("Login name :" + this.username);
+                  this.$router.replace({ name: "Dashboard" });
 
                })
                .catch(err => {
@@ -70,7 +71,7 @@ import Button from 'primevue/button';
          },
          glogin(){
             var provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then(function(result) {
+            firebase.auth().signInWithPopup(provider).then((result) => {
                // This gives you a Google Access Token. You can use it to access the Google API.
                //this.usertoken = result.credential.accessToken;
                // The signed-in user info.
@@ -79,6 +80,7 @@ import Button from 'primevue/button';
                //this.useremail = result.user.email;
                //console.log("Login done : " + this.useremail);
                // ...
+               this.$router.replace({ name: "Dashboard" });
             }).catch(function(error) {
                // Handle Errors here.
                //var errorCode = error.code;

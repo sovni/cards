@@ -6,9 +6,13 @@ import Dashboard from './components/Dashboard'
 export const routes = [
    {
       path: '/:catchAll(.*)',
-      redirect: '/login'
+      redirect: '/dashboard'
    },{
       path: '/',
+      name: 'Dashboard',
+      component: Dashboard
+   },{
+      path: '/home',
       name: 'Home',
       component: Home
    },{

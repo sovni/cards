@@ -1,6 +1,6 @@
 <template>
     <!-- <div class="hhand active-hand"  style="width:400px;height:200px;">-->
-    <div class="hhand active-hand fan" style="width:300px;height:300px;">
+    <div class="hhand active-hand fan" style="width:350px;height:250px;">
         <CBCard v-for="(mycard, index) in mydeck" v-bind:key="mycard" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
     </div>
 </template>
@@ -14,19 +14,18 @@ import db from '../plugins/firebase';
 
 require('cards');
 
-
    export default {
         name: 'Deck',
       data(){
             return {
-                cwidth: 98,
+                cwidth: 110,
                 cspacing: 0.24,
                 cradius: 166,
                 mydeck: [],
-                playerIndex: []
-            }
+                playersIndex: [],
+                players: []            }
         },
-        props: ['myround','trickId','playId'],      
+        props: ['myround','trickId','playId','playerId','playerIndex','nbPlayer'],      
         components: {
             CBCard
         },
@@ -54,7 +53,9 @@ require('cards');
                         .onSnapshot((doc) => {
                             console.log("trickId: round : " + this.trickId);
                             console.log("trick change : cards" + doc.data().cards);
-                            this.playerIndex = doc.data().playerIndex;
+                                
+                            this.playersIndex = doc.data().playerIndex;
+                            this.players = doc.data().players;
                             this.mydeck = doc.data().cards;
                         });
                 }
@@ -68,7 +69,6 @@ require('cards');
                             console.log("Deck: round : " + this.myround);
                             this.mydeck = doc.data().choice;
                         });
-
                 //}
             },
             
@@ -76,21 +76,27 @@ require('cards');
             getStyle(card, index) {
                 console.log("index " + index);
                 var n = this.mydeck.length;
+                var deckWidth = 350;
+                var deckHeight = 250;
                 if (n === 0) {
                     return;
                 }
                 var width = this.cwidth; // hack: for a hidden hand
                 var height = Math.floor(width * 1.4); // hack: for a hidden hand
-                var p2left = 150-Math.floor(width*0.5);
-                var p0left = 150-(Math.floor(width*0.5));
-                var p0top = 300 - height;
-                var p1left = 300-height;
-                var p1top = Math.floor(150-(this.cwidth*0.5));
-                var p3top = Math.floor(150-(this.cwidth*0.5));
+                var p2left = Math.floor(deckWidth*0.5)-Math.floor(width*0.5);
+                var p0left = Math.floor(deckWidth*0.5)-(Math.floor(width*0.5));
+                var p0top = deckHeight - height;
+                var p1left = deckWidth-height;
+                var p1top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+                var p3top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
                 //var box = {};
                 var style="";
-                var pindex = this.playerIndex[index];
-                console.log("pindex: " + pindex + " - index: " + index);
+        
+                var pindex = (this.playersIndex[index] - this.playerIndex);
+                console.log("pindex: " + pindex + ":" + this.playersIndex[index] +" - index: " + index);
+                pindex = (pindex + this.nbPlayer)%this.nbPlayer;
+
+                console.log("pindex: " + pindex + ":" + this.playersIndex[index] +" - index: " + index);
                 if (pindex == 0)
                     style = "width:"+width+"px; left:"+ p0left + "px;top:" + p0top + "px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 else if (pindex == 1)
@@ -98,7 +104,7 @@ require('cards');
                 else if (pindex == 2)
                     style = "width:"+width+"px; left:"+ p2left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
                 else if (pindex == 3)
-                    style = "width:"+width+"px; left:0px;top:" + p3top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
+                    style = "width:"+width+"px; left:25px;top:" + p3top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
                 console.log("style : " + style);
                 return style;
                 //var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    

@@ -8,7 +8,7 @@
                   <div class="p-mb-2">
                      <Card style="width:400px;height:380px;">
                         <template v-slot:title>
-                           Current Game
+                           My Games
                         </template>
                         <template v-slot:content>
                            <CurrentGame :playerUid="playerUid" :playerName="playerName"/>
@@ -18,10 +18,10 @@
                   <div class="p-mb-2">
                      <Card style="width:400px;height:380px;">
                         <template v-slot:title>
-                           My Games
+                           Game List
                         </template>
                         <template v-slot:content>
-                           <MyGamelist  :playerUid="playerUid" :playerName="playerName"/>
+                              <Gamelist  :playerUid="playerUid" :playerName="playerName"/>
                         </template>   
                      </Card>
                   </div>
@@ -40,12 +40,12 @@
             <div class="p-mr-2" style="max-width:200px;height:800px;">
                <Card style="width:400px;height:800px;">
                   <template v-slot:title>
-                     Game List
+                     Chat
                   </template>
                   <template v-slot:content>
                         <div class="p-grid">
                           <div class="p-col-12">
-                              <Gamelist  :playerUid="playerUid" :playerName="playerName"/>
+                              <!--<Gamelist  :playerUid="playerUid" :playerName="playerName"/>-->
                            </div>
                         </div>          
                   </template>   
@@ -63,7 +63,6 @@ import Card from 'primevue/card';
 import Playground from './Playground'
 import Gamelist from './Gamelist'
 import CurrentGame from './CurrentGame'
-import MyGamelist from './MyGamelist'
 
 
    export default {
@@ -78,8 +77,7 @@ import MyGamelist from './MyGamelist'
          Card,
          Playground,
          Gamelist,
-         CurrentGame,
-         MyGamelist
+         CurrentGame
       },
       created() {
          var currentUser = firebase.auth().currentUser;
