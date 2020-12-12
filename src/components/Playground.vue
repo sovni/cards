@@ -35,7 +35,7 @@
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:350px;height:250px">
          <!--<div class="p-d-flex p-jc-center">-->
-         <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :playId="playGroundID"/>
+         <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playGroundID"/>
          <!--</div>-->
       </div>
       <div class="p-col" />
@@ -74,6 +74,7 @@ import db from '../plugins/firebase';
             return {
                 hands: [[],[],[],[]],
                 players: ["","","",""],
+                playersIndex: [0,0,0,0],
                 playGroundID: -1,
                 roundId: -1,
                 trickId: -1,
@@ -127,6 +128,7 @@ import db from '../plugins/firebase';
                      for (var j=0;j<this.hands.length;j++) {
                         this.hands[j] = handArray[(active+j)%this.hands.length];
                         this.players[j] = playerArray[(active+j)%this.hands.length];
+                        this.playersIndex[j] = (active+j)%this.hands.length;
                      }
 
                });
