@@ -1,10 +1,10 @@
 <template>
    <div class="p-grid">
       <div class="p-col-fixed"  style="width:200px;height:150px">
-         <div v-if="atout == 'spades'" class="p-text-center" >ATOUT : <span>&spades;</span></div>
-         <div v-if="atout == 'diamonds'" class="p-text-center" >ATOUT : <span>&diams;</span></div>
-         <div v-if="atout == 'clubs'" class="p-text-center" >ATOUT : <span>&clubs;</span></div>
-         <div v-if="atout == 'hearts'" class="p-text-center" >ATOUT : <span>&hearts;</span></div>
+         <div v-if="atout == 'spades'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: black;">&spades;</span></div>
+         <div v-if="atout == 'diamonds'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: red;">&diams;</span></div>
+         <div v-if="atout == 'clubs'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: black;">&clubs;</span></div>
+         <div v-if="atout == 'hearts'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: red;">&hearts;</span></div>
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:250px;height:150px">
