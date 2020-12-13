@@ -88,8 +88,9 @@ require('cards');
                             //this.roundId = doc.data().round;
                             console.log("Current round :" + this.roundId);
                             this.myindex = doc.data().playerIndex;
-                            this.watchRoundId();
-                            this.myhand = this.OrderHand(doc.data().handOn, this.atout);
+                            this.watchRoundId(doc.data().handOn);
+                            //console.log("Order hand : " + this.atout);
+                            //this.myhand = this.OrderHand(doc.data().handOn, this.atout);
                     });
                 }
                 else
@@ -105,7 +106,7 @@ require('cards');
             }
         },
         methods: {
-            watchRoundId() {
+            watchRoundId(hand) {
                 console.log("Watch props.roundId function called:"+this.roundId);
                 if (this.roundDocSubs != null) {
                     this.roundDocSubs();
@@ -149,11 +150,14 @@ require('cards');
                         }
                         else
                             this.myturn = false;
-
+ 
+                        this.myhand = this.OrderHand(hand, this.atout);
                     });
                 }
                 else   
-                    this.roundDocRef = null;       
+                    this.roundDocRef = null;   
+
+    
             },     
             OrderHand(cards, atout) {
                 var hand = [];
