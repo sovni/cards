@@ -85,7 +85,7 @@ import GameChat from './GameChat'
       created() {
          var currentUser = firebase.auth().currentUser;
          this.playerUid = currentUser.uid;
-         this.playerName = currentUser.displayName;
+         this.playerName = currentUser.displayName.split(" ")[0];
       },
       methods: {
       }      
