@@ -337,7 +337,11 @@ require('cards');
                     }
                     points[0] = points[0] + points[2];
                     points[1] = points[1] + points[3];
-                    if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
+                    if (points[0] == 0 && points[1] == 162)
+                        points[1] = 250;
+                    else if (points[0] == 162 && points[1] == 0)
+                        points[0] = 250;
+                    else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
                         points[0] = 160;
                         points[1] = 0;
                     }
