@@ -23,7 +23,12 @@ require('cards');
                 cradius: 166,
                 mydeck: [],
                 playersIndex: [],
-                players: []            }
+                players: [],
+                roundDocRef: null,
+                roundDocSubs: null,
+                trickDocRef: null,
+                trickDocSubs: null
+        }
         },
         props: ['myround','trickId','playId','playerId','playerIndex','nbPlayer'],      
         components: {
@@ -33,9 +38,13 @@ require('cards');
             myround: function(newVal, oldVal) { // watch it
                 console.log(
                 "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.myround);
+                if (this.roundDocSubs != null) {
+                    this.roundDocSubs();
+                    this.roundDocSubs = null;
+                }
                 if (this.myround != -1) {
-                    db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround)
-                        .onSnapshot((doc) => {
+                    this.roundDocRef = db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround)
+                    this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
                             if (doc.data().state == "choice-1" || doc.data().state == "choice-2") {
                                 console.log("Deck: round : " + this.myround);
                                 this.mydeck = doc.data().choice;
@@ -46,11 +55,13 @@ require('cards');
             trickId: function(newVal, oldVal) { // watch it
                 console.log(
                 "Watch props.myround function called:" + newVal + ":"+oldVal+":"+this.trickId);
+                if (this.trickDocSubs != null) {
+                    this.trickDocSubs();
+                    this.trickDocSubs = null;
+                }
                 if (this.trickId != -1) {
-                    db.collection("plays").doc(this.playId)
-                    .collection("rounds").doc(this.myround)
-                    .collection("tricks").doc(this.trickId)
-                        .onSnapshot((doc) => {
+                    this.trickDocRef = this.roundDocRef.collection("tricks").doc(this.trickId);
+                    this.trickDocSubs = this.trickDocRef.onSnapshot((doc) => {
                             console.log("trickId: round : " + this.trickId);
                             console.log("trick change : cards" + doc.data().cards);
                                 
@@ -62,17 +73,6 @@ require('cards');
             }
         },
         methods: {
-            mounted(){
-                //if (this.myround != -1) {
-                    db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround)
-                        .onSnapshot(function(doc) {
-                            console.log("Deck: round : " + this.myround);
-                            this.mydeck = doc.data().choice;
-                        });
-                //}
-            },
-            
-
             getStyle(card, index) {
                 console.log("index " + index);
                 var n = this.mydeck.length;
