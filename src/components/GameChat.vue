@@ -146,7 +146,7 @@ export default {
       let data = snapshot.val();
       let messages = [];
       Object.keys(data).forEach(key => {
-        messages.push({
+        messages.unshift({
           id: key,
           username: data[key].username,
           text: data[key].text
