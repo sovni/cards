@@ -183,8 +183,25 @@ require('cards');
                             handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)
                         });         
                         trick = doc.data().currentTrick;
-                        //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
                         trickDoc = this.roundDocRef.collection("tricks").doc(trick);
+
+                        /*trickDoc.get().then((tdoc) => {   
+                            var suitPlayed = '';
+                            for (var i=0;i<tdoc.data().cards.length;i++) {
+                                if (i==0) {
+                                    suitPlayed = tdoc.data().cards[0].suit;
+                                }
+                            }
+                            if (tdoc.data().cards.length > 0) {
+                                if (playedCard.suit != suitPlayed) {
+                                    console.log("!!!!!! IT IS NOT LEGIT !!!!!!");
+                                }
+                            }
+                        });*/
+
+
+
+                        //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
                         trickDoc.update({
                             players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
                             playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),

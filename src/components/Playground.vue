@@ -14,7 +14,7 @@
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:200px;height:150px">
          <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-col-12 p-text-center p-text-bold">SCORE</div>
-         <div v-if="scores[0] != null" class="p-text-center">NOUS : {{scores[0]}} - EUX : {{scores[1]}}</div>
+         <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-text-center">NOUS : {{scores[0]}} - EUX : {{scores[1]}}</div>
       </div>
 
       <div class="p-col-fixed"  style="width:150px;height:250px">
