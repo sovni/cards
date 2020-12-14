@@ -10,6 +10,11 @@
       <Column field="state" header="State"></Column>
       <Column field="score" header="Score">
       </Column>
+      <Column header="Action">
+            <template #body="slotProps">
+                <Button v-if="slotProps.data.state == 'created'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+            </template>
+        </Column>      
    </DataTable>
    <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
 </template>
@@ -137,7 +142,15 @@ const { decks } = require('cards');
                   console.error("Error adding document: ", error);
                });                           
          },
-         calculateScore(playId) {
+         leaveGame(play) {
+            console.log("Leave Game : " + play.uid);
+            var currentUser = firebase.auth().currentUser;
+            db.collection("plays").doc(play.uid).update({
+               players: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
+               playersName: firebase.firestore.FieldValue.arrayRemove({id: currentUser.uid, name: currentUser.displayName.split(" ")[0]})
+            })
+         },
+        calculateScore(playId) {
             var points = [];
             points[0] = 0;
             points[1] = 0;

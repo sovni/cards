@@ -8,9 +8,9 @@
             </template>
      </Column>
       <Column field="state" header="State"></Column>
-      <Column >
+      <Column header="Action">
             <template #body="slotProps">
-                <Button icon="pi pi-sign-in" v-tooltip="'Test'" class="p-button-rounded p-button-success p-button-sm" @click="joinGame(slotProps.data)" />
+                <Button icon="pi pi-sign-in" v-tooltip="'Rejoindre'" class="p-button-rounded p-button-success p-button-sm" @click="joinGame(slotProps.data)" />
             </template>
         </Column>
    </DataTable>
