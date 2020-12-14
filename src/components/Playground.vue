@@ -14,7 +14,9 @@
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:200px;height:150px">
          <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-col-12 p-text-center p-text-bold">SCORE</div>
-         <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-text-center">NOUS : {{scores[0]}} - EUX : {{scores[1]}}</div>
+         <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-text-center">
+            <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
+         </div>
       </div>
 
       <div class="p-col-fixed"  style="width:150px;height:250px">
@@ -48,36 +50,69 @@ import MyHand from './MyHand'
 import Deck from './Deck'
 import '../plugins/firebase'
 import db from '../plugins/firebase';
+import Chart from 'primevue/chart';
 
    export default {
       name: 'Playground',
       data() {
             return {
-                hands: [[],[],[],[]],
-                players: ["","","",""],
-                playersIndex: [0,0,0,0],
-                playId: -1,
-                roundId: -1,
-                trickId: -1,
-                currentGame: "belote",
-                cardWidth: 78,
-                myCardWidth: 140,
-                myIndex: -1,
-                scores: [0,0],
-                playDocRef: null,
-                playDocSubs: null,
-                roundDocRef: null,
-                roundDocSubs: null,
-                handDocRef: null,
-                handDocSubs: null,
-                atout: ''
+               hands: [[],[],[],[]],
+               players: ["","","",""],
+               playersIndex: [0,0,0,0],
+               playId: -1,
+               roundId: -1,
+               trickId: -1,
+               currentGame: "belote",
+               cardWidth: 78,
+               myCardWidth: 140,
+               myIndex: -1,
+               scores: [0,0],
+               playDocRef: null,
+               playDocSubs: null,
+               roundDocRef: null,
+               roundDocSubs: null,
+               handDocRef: null,
+               handDocSubs: null,
+               atout: '',
+               scoresOptions: {
+                  legend: false,
+                  responsive: true,
+                  hoverMode: 'index',
+                  scales: {
+                     xAxes: [
+                        {
+                           type: 'linear',
+                           display: true,
+                           position: 'left',
+                           id: 'x-axis-1',
+                           ticks: {
+                              min: 0,
+                              max: 1000
+                           }
+                        }
+
+                     ]
+                  }
+               },
+               basicData: {
+
+                  labels: ['Nous', 'Eux'], 
+                  datasets: [
+                     {
+                        label: 'Scores',
+                        backgroundColor: '#42A5F5',
+                        data: [35,45]
+                     }        
+                  ]
+               }  
             }
       }, 
       props: ['playerUid','playerName'],
       components: {
          Hand,
          MyHand,
-         Deck
+         Deck,
+         Chart
       },
       created(){
       },
@@ -110,6 +145,7 @@ import db from '../plugins/firebase';
                   this.scores[1] = doc.data().score[0];
                   this.scores[0] = doc.data().score[1];                  
                }
+               this.scoresData = {labels: ['Nous', 'Eux'], datasets: [{label: 'Scores',backgroundColor: ['#42A5F5','#FFA726'], data: [this.scores[0],this.scores[1]]}]};
 
                if (doc.data().round != this.roundId) {
                   if (this.roundDocSubs != null) {
