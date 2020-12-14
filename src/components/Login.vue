@@ -60,7 +60,7 @@ import Button from 'primevue/button';
             firebase.auth().signInWithEmailAndPassword(this.useremail, this.userpassword)
                .then(user => {
                   console.log(user);
-                  this.username = user.user.displayName;
+                  this.username = user.user.displayName.split(" ")[0];
                   console.log("Login name :" + this.username);
                   this.$router.replace({ name: "Dashboard" });
 
@@ -76,7 +76,7 @@ import Button from 'primevue/button';
                //this.usertoken = result.credential.accessToken;
                // The signed-in user info.
                console.log(result);
-               //this.username = result.user.displayName;
+               //this.username = result.user.displayName.split(" ")[0];
                //this.useremail = result.user.email;
                //console.log("Login done : " + this.useremail);
                // ...

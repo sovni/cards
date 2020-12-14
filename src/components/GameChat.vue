@@ -118,7 +118,7 @@ export default {
             this.currentUser = firebase.auth().currentUser;
             if (!this.currentUser)
                return "";
-            return this.currentUser.displayName;
+            return this.currentUser.displayName.split(" ")[0];
         },      
     updateUsername() {
       this.name = this.userName;

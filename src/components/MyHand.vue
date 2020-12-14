@@ -88,8 +88,9 @@ require('cards');
                             //this.roundId = doc.data().round;
                             console.log("Current round :" + this.roundId);
                             this.myindex = doc.data().playerIndex;
-                            this.watchRoundId();
-                            this.myhand = this.OrderHand(doc.data().handOn, this.atout);
+                            this.watchRoundId(doc.data().handOn);
+                            //console.log("Order hand : " + this.atout);
+                            //this.myhand = this.OrderHand(doc.data().handOn, this.atout);
                     });
                 }
                 else
@@ -105,7 +106,7 @@ require('cards');
             }
         },
         methods: {
-            watchRoundId() {
+            watchRoundId(hand) {
                 console.log("Watch props.roundId function called:"+this.roundId);
                 if (this.roundDocSubs != null) {
                     this.roundDocSubs();
@@ -149,11 +150,14 @@ require('cards');
                         }
                         else
                             this.myturn = false;
-
+ 
+                        this.myhand = this.OrderHand(hand, this.atout);
                     });
                 }
                 else   
-                    this.roundDocRef = null;       
+                    this.roundDocRef = null;   
+
+    
             },     
             OrderHand(cards, atout) {
                 var hand = [];
@@ -179,8 +183,25 @@ require('cards');
                             handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)
                         });         
                         trick = doc.data().currentTrick;
-                        //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
                         trickDoc = this.roundDocRef.collection("tricks").doc(trick);
+
+                        /*trickDoc.get().then((tdoc) => {   
+                            var suitPlayed = '';
+                            for (var i=0;i<tdoc.data().cards.length;i++) {
+                                if (i==0) {
+                                    suitPlayed = tdoc.data().cards[0].suit;
+                                }
+                            }
+                            if (tdoc.data().cards.length > 0) {
+                                if (playedCard.suit != suitPlayed) {
+                                    console.log("!!!!!! IT IS NOT LEGIT !!!!!!");
+                                }
+                            }
+                        });*/
+
+
+
+                        //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
                         trickDoc.update({
                             players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
                             playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),
@@ -337,7 +358,11 @@ require('cards');
                     }
                     points[0] = points[0] + points[2];
                     points[1] = points[1] + points[3];
-                    if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
+                    if (points[0] == 0 && points[1] == 162)
+                        points[1] = 250;
+                    else if (points[0] == 162 && points[1] == 0)
+                        points[0] = 250;
+                    else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
                         points[0] = 160;
                         points[1] = 0;
                     }

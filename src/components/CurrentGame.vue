@@ -2,10 +2,19 @@
    <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-select="selectPlay">
       <!--<Column field="uid" header="Id" ></Column> -->
       <Column field="name" header="Name"></Column>
-      <Column field="players" header="Players"></Column>
+      <Column field="players" header="Players">
+             <template #body="slotProps">
+                <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
+            </template>
+      </Column>
       <Column field="state" header="State"></Column>
       <Column field="score" header="Score">
       </Column>
+      <Column header="Action">
+            <template #body="slotProps">
+                <Button v-if="slotProps.data.state == 'created'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+            </template>
+        </Column>      
    </DataTable>
    <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
 </template>
@@ -19,6 +28,7 @@ import db from '../plugins/firebase';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
+import Tooltip from 'primevue/tooltip';
 
 const { decks } = require('cards');
 
@@ -37,6 +47,9 @@ const { decks } = require('cards');
          Button,
          Column
       },
+      directives: {
+         'tooltip': Tooltip
+      },
       created(){
       },
       mounted(){
@@ -47,18 +60,26 @@ const { decks } = require('cards');
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
+                  var strPlayers = "";
+                  for (var i = 0; i < doc.data().players.length; i++) {
+                     if (i == 0)
+                        strPlayers = doc.data().playersName[i].name;
+                     else
+                        strPlayers += " / " + doc.data().playersName[i].name;
+                  }
+
                   if (doc.data().state != "created") {
                      var score = "";
-                     for (var i=0;i<doc.data().score.length;i++) {
+                     for (i=0;i<doc.data().score.length;i++) {
                         if (i==0)
                            score = doc.data().score[i];
                         else  
                            score += "/" + doc.data().score[i];
                      }
-                     this.mygames.unshift({"uid": doc.id, "name": "belote", "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "score": score});
+                     this.mygames.unshift({"uid": doc.id, "name": "belote", "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "score": score, "names": strPlayers});
                   }
                   else {
-                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state});
+                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "names": strPlayers});
                      if (doc.data().players.length == 4) {
                         db.collection("plays").doc(doc.id).update({state:"prep"});
                      }                     
@@ -121,7 +142,15 @@ const { decks } = require('cards');
                   console.error("Error adding document: ", error);
                });                           
          },
-         calculateScore(playId) {
+         leaveGame(play) {
+            console.log("Leave Game : " + play.uid);
+            var currentUser = firebase.auth().currentUser;
+            db.collection("plays").doc(play.uid).update({
+               players: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
+               playersName: firebase.firestore.FieldValue.arrayRemove({id: currentUser.uid, name: currentUser.displayName.split(" ")[0]})
+            })
+         },
+        calculateScore(playId) {
             var points = [];
             points[0] = 0;
             points[1] = 0;
