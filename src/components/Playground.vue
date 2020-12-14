@@ -1,10 +1,11 @@
 <template>
    <div class="p-grid">
       <div class="p-col-fixed"  style="width:200px;height:150px">
-         <div v-if="atout == 'spades'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: black;">&spades;</span></div>
-         <div v-if="atout == 'diamonds'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: red;">&diams;</span></div>
-         <div v-if="atout == 'clubs'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: black;">&clubs;</span></div>
-         <div v-if="atout == 'hearts'" class="p-text-center" >ATOUT : <span style="font-size: 250%; color: red;">&hearts;</span></div>
+         <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>
+         <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
+         <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
+         <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
+         <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:250px;height:150px">
@@ -12,7 +13,8 @@
       </div>
       <div class="p-col" />
       <div class="p-col-fixed"  style="width:200px;height:150px">
-         <div class="p-text-center">NOUS : {{scores[0]}} - EUX : {{scores[1]}}</div>
+         <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-col-12 p-text-center p-text-bold">SCORE</div>
+         <div v-if="scores[0] != null" class="p-text-center">NOUS : {{scores[0]}} - EUX : {{scores[1]}}</div>
       </div>
 
       <div class="p-col-fixed"  style="width:150px;height:250px">
