@@ -1,37 +1,29 @@
 <template>
-  <div id="chat" style="width:100%;height:650px">
-    <ScrollPanel style="width: 100%; height: 100%">
-        <div
-            class="border pl-2 pt-1 ml-2 message-text mb-2"
-            v-for="message in messages"
-            :key="message"
-          >
-            <span class="mg-text">{{ message.username }}</span>
-            <p class="message pt-0">{{ message.text }}</p>
-          </div>
-    </ScrollPanel >
-    <InputText v-model="showMessage" type="text" class="p-mt-4 p-inputtext-sm" style="width: 70%;"/>
-    <Button label="Send" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
-
-    <!-- Chat section -->
-    <!--<div class="message-body mt-3">
-      <h5>Welcome {{ name }}!</h5>
-      <div class="card" style="width:100%;height:600px">
-        <div class="card-body" style="width:100%;height:550px">
-          <div
-            class="border pl-2 pt-1 ml-2 message-text mb-2"
-            v-for="message in messages"
-            :key="message"
-          >
-            <span class="mg-text">{{ message.username }}</span>
-            <p class="message pt-1">{{ message.text }}</p>
-          </div>
+  <Card style="width:400px;height:800px;">
+    <template v-slot:title>
+        Chat
+    </template>
+    <template v-slot:content>
+        <div class="p-grid">
+              <div class="p-col-12">          
+                <div id="chat" style="width:100%;height:650px">
+                  <ScrollPanel style="width: 100%; height: 100%">
+                      <div
+                          class="border pl-2 pt-1 ml-2 message-text mb-2"
+                          v-for="message in messages"
+                          :key="message"
+                        >
+                          <span class="mg-text">{{ message.username }}</span>
+                          <p class="message pt-0">{{ message.text }}</p>
+                        </div>
+                  </ScrollPanel >
+                  <InputText v-model="showMessage" type="text" class="p-mt-4 p-inputtext-sm" style="width: 70%;"/>
+                  <Button label="Send" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
+                </div>
+              </div> 
         </div>
-      </div>
-      <input v-model="showMessage" type="text" class="mt-3 mr-2 pl-2 pr-2" />
-      <button class="btn btn-primary" @click="sendMessage">Send</button>
-    </div>-->
-  </div>
+    </template>   
+  </Card>  
 </template>
 <style>
 .mg-text {
@@ -96,6 +88,7 @@ import firebase from 'firebase';
 import ScrollPanel from 'primevue/scrollpanel';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import Card from 'primevue/card';
 
 export default {
   name: "GameChat",
@@ -111,7 +104,8 @@ export default {
         components: {
             ScrollPanel,
             InputText,
-            Button
+            Button,
+            Card
         },
     methods: {
         getUserName(){

@@ -1,22 +1,29 @@
 <template>
-   <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-select="selectPlay">
-      <!--<Column field="uid" header="Id" ></Column> -->
-      <Column field="name" header="Name"></Column>
-      <Column field="players" header="Players">
-             <template #body="slotProps">
-                <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
-            </template>
-      </Column>
-      <Column field="state" header="State"></Column>
-      <Column field="score" header="Score">
-      </Column>
-      <Column header="Action">
-            <template #body="slotProps">
-                <Button v-if="slotProps.data.state == 'created'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
-            </template>
-        </Column>      
-   </DataTable>
-   <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
+   <Card style="width:400px;height:380px;">
+      <template v-slot:title>
+         Mes Parties
+      </template>
+      <template v-slot:content>
+         <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-select="selectPlay">
+            <!--<Column field="uid" header="Id" ></Column> -->
+            <Column field="name" header="Name"></Column>
+            <Column field="players" header="Players">
+                  <template #body="slotProps">
+                     <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
+                  </template>
+            </Column>
+            <Column field="state" header="State"></Column>
+            <Column field="score" header="Score">
+            </Column>
+            <Column header="Action">
+                  <template #body="slotProps">
+                     <Button v-if="slotProps.data.state == 'created'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+                  </template>
+            </Column>      
+         </DataTable>
+         <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
+     </template>   
+   </Card>
 </template>
 
 <script>
@@ -29,6 +36,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Tooltip from 'primevue/tooltip';
+import Card from 'primevue/card';
 
 const { decks } = require('cards');
 
@@ -45,7 +53,8 @@ const { decks } = require('cards');
       components: {
          DataTable,
          Button,
-         Column
+         Column,
+         Card
       },
       directives: {
          'tooltip': Tooltip

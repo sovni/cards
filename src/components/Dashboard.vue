@@ -1,6 +1,5 @@
 <template>
-   <div class="p-grid">
-      <!--<div class="p-col-6 p-offset-3" align="center"><h1>Dashboard Component</h1></div><div class="p-col-3" />-->
+   <!--<div class="p-grid">
       <div class="p-col-12 p-mt-2">
          <div class="p-d-flex  p-jc-center">
             <div class="p-mr-2" style="max-width:400px;height:800px;">
@@ -46,7 +45,6 @@
                         <div class="p-grid">
                           <div class="p-col-12">
                              <GameChat :playerId="playerUid"/>
-                              <!--<Gamelist  :playerUid="playerUid" :playerName="playerName"/>-->
                            </div>
                         </div>          
                   </template>   
@@ -54,13 +52,25 @@
             </div>                        
          </div>
       </div>
+   </div>-->
+
+   <div class="p-d-inline-flex p-flex-column p-flex-lg-row">
+      <div class="p-d-inline-flex p-flex-row p-flex-lg-column">
+         <CurrentGame class="p-m-2" :playerUid="playerUid" :playerName="playerName"/>
+         <Gamelist  class="p-m-2" :playerUid="playerUid" :playerName="playerName"/>
+      </div>
+
+      <Playground class="p-m-2"  :playerUid="playerUid" :playerName="playerName"/>
+      <GameChat class="p-m-2"  :playerId="playerUid"/>
+
    </div>
+
 </template>
 
 <script>
 import firebase from 'firebase';
 import '../plugins/firebase'
-import Card from 'primevue/card';
+//import Card from 'primevue/card';
 import Playground from './Playground'
 import Gamelist from './Gamelist'
 import CurrentGame from './CurrentGame'
@@ -76,7 +86,7 @@ import GameChat from './GameChat'
             }
       },            
       components: {
-         Card,
+         //Card,
          Playground,
          Gamelist,
          CurrentGame,
