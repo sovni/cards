@@ -25,7 +25,7 @@
             </div>
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
+            <MyHand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
@@ -35,7 +35,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playId" />
+            <MyHand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playId" />
             </div>
 
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
