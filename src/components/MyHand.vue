@@ -352,7 +352,11 @@ require('cards');
 
                 if (playedCard.suit == suitPlayed)
                     allowed = true;
-                else if (playedCard.suit == atout){
+                else if (this.hasSuit(suitPlayed))
+                    allowed = false;
+                else if (suitPlayed == atout) 
+                    allowed = true;
+                else if (this.hasSuit(atout) && playedCard.suit == atout) {
                     allowed = true;
                 }
 
@@ -362,6 +366,13 @@ require('cards');
                             console.log(response.citation.citation);
                         });*/
                 return allowed;
+            },
+            hasSuit(suit){
+                for (var i=0;i<this.myhand.length;i++) {
+                    if (this.myhand[i].suit == suit)
+                        return true;
+                }
+                return false;
             },
             CalculateRoundScore() {
                 var points = [];
