@@ -342,6 +342,7 @@ require('cards');
             checkPlayAllowed(playedCard, trick, atout) {
                 var allowed = true;
                 var suitPlayed = '';
+                var bestAtoutTrick;
 
                 if (trick.length == 0)
                     return true;
@@ -350,14 +351,56 @@ require('cards');
                 //for (var i=0;i<trick.length;i++) {
                 //}
 
-                if (playedCard.suit == suitPlayed)
-                    allowed = true;
-                else if (this.hasSuit(suitPlayed))
+                if (playedCard.suit == suitPlayed) {
+                    if (suitPlayed != atout)
+                        allowed = true;
+                    else {
+                        console.log("Check best atout");
+                        console.log(trick);
+                        bestAtoutTrick = this.bestAtout(trick, atout);
+                        console.log("Check best atout : " + bestAtoutTrick);
+                        console.log("Played card value :" + this.GetCardValue(playedCard, atout))
+
+                        if (this.GetCardValue(playedCard, atout) > bestAtoutTrick)
+                            allowed = true;
+                        else if (this.bestAtout(this.myhand, atout) > bestAtoutTrick) {
+                            console.log("Il faut monter à l'atout !!");
+                            allowed = false;
+                        }
+                        else
+                            allowed = true;
+                    }
+                }
+                else if (this.hasSuit(suitPlayed)) {
                     allowed = false;
-                else if (suitPlayed == atout) 
+                    console.log("Il faut jouer de la couleur demandée !!");
+                }
+                else if (suitPlayed == atout) {
+                    if (this.hasSuit(atout)) {
+                        allowed = false;
+                        console.log("Il faut jouer de l'atout !!");
+                    }
+                    else
+                        allowed = true;
+                }
+                else if (!this.hasSuit(atout))
                     allowed = true;
-                else if (this.hasSuit(atout) && playedCard.suit == atout) {
+                else if (this.isPartnerMaster(trick, atout)) {
                     allowed = true;
+                }
+                else {
+                    var bestAtout = this.bestAtout(this.myhand, atout);
+                    bestAtoutTrick = this.bestAtout(trick, atout);
+                    if (this.GetCardValue(playedCard, atout) < bestAtoutTrick && bestAtout > bestAtoutTrick) {
+                        allowed = false;
+                        console.log("Il faut monter à l'atout !!")
+                    }
+                    else if (playedCard.suit != atout && this.hasSuit(atout)) {
+                        allowed = false;
+                        console.log("Il faut jouer atout !!")
+                    }
+                    else
+                        allowed = true;
                 }
 
                         /*axios.get('https://kaamelott.chaudie.re/api/random')
@@ -373,6 +416,29 @@ require('cards');
                         return true;
                 }
                 return false;
+            },
+            isPartnerMaster(trick, atout) {
+                var index;
+                if (trick.length <= 1)
+                    return false;
+                index = this.CalculateWinner(trick, [], atout);
+                console.log("IsPartnerMaster : index=" + index);
+                if ((index == 0 && trick.length == 2) || (index == 1 && trick.length == 3))
+                    return true;
+                else
+                    return false;
+            },
+            bestAtout(cards, atout) {
+                var best = 0;
+                var val;
+                for (var i=0;i<cards.length;i++) {
+                    if (cards[i].suit == atout) {
+                        val = this.GetCardValue(cards[i], atout);
+                        if (val > best)
+                            best = val;
+                    }
+                }
+                return best;
             },
             CalculateRoundScore() {
                 var points = [];
@@ -429,7 +495,10 @@ require('cards');
                     }
                 }
 
-                return indexes[winnerIndex];
+                if (indexes.length == 0)
+                    return winnerIndex;
+                else
+                    return indexes[winnerIndex];
             },
             CalculatePoints(cards, atout) {
                 var points = 0;
