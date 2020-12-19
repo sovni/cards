@@ -5,8 +5,9 @@
       </template>
       <template v-slot:content>
          <div class="p-grid">
-            <div class="p-col-fixed"  style="width:200px;height:150px">
+            <div class="p-col-fixed atout"  style="width:200px;height:150px">
                <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>
+               <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
                <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
                <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
                <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
@@ -17,15 +18,15 @@
             <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
             </div>
             <div class="p-col" />
-            <div class="p-col-fixed"  style="width:200px;height:150px">
-               <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-col-12 p-text-center p-text-bold">SCORE</div>
+            <div class="p-col-fixed atout"  style="width:200px;height:150px">
+               <div class="p-col-12 p-text-center p-text-bold">SCORE</div>
                <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-text-center">
                   <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
                </div>
             </div>
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
+            <MyHand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
@@ -35,7 +36,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playId" />
+            <MyHand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playId" />
             </div>
 
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
@@ -49,6 +50,13 @@
       </template>   
    </Card>
 </template>
+<style>
+.atout {
+ border-width:2px;
+ border-style:solid;
+ border-color:black;
+ }
+</style>
 
 <script>
 import firebase from 'firebase';
@@ -82,6 +90,7 @@ import Card from 'primevue/card';
                handDocRef: null,
                handDocSubs: null,
                atout: '',
+               bidPlayer: '',
                scoresOptions: {
                   legend: false,
                   responsive: true,
@@ -134,6 +143,7 @@ import Card from 'primevue/card';
                this.playDocSubs = null;
             }
             this.atout = "";
+            this.bidPlayer = "";
             this.playId = uid;
             this.playDocRef = db.collection("plays").doc(this.playId);
             this.playDocSubs = this.playDocRef.onSnapshot((doc) => {
@@ -193,6 +203,7 @@ import Card from 'primevue/card';
                      if (rdoc.data().tricks.length > 0)
                         this.trickId = rdoc.data().currentTrick;
                         this.atout = rdoc.data().atout;
+                        this.bidPlayer = rdoc.data().bidPlayer;
                   });
                }
             });
