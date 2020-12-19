@@ -178,82 +178,77 @@ require('cards');
                 this.roundDocRef.get().then((doc) => {
                     if (doc.data().active == this.myindex && doc.data().state == "trick") {
                         var trick;
-                        this.handDocRef.update({
-                            handOn: firebase.firestore.FieldValue.arrayRemove(playedCard),
-                            handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)
-                        });         
+    
                         trick = doc.data().currentTrick;
                         trickDoc = this.roundDocRef.collection("tricks").doc(trick);
 
-                        /*trickDoc.get().then((tdoc) => {   
-                            var suitPlayed = '';
-                            for (var i=0;i<tdoc.data().cards.length;i++) {
-                                if (i==0) {
-                                    suitPlayed = tdoc.data().cards[0].suit;
-                                }
-                            }
-                            if (tdoc.data().cards.length > 0) {
-                                if (playedCard.suit != suitPlayed) {
-                                    console.log("!!!!!! IT IS NOT LEGIT !!!!!!");
-                                }
-                            }
-                        });*/
+                        trickDoc.get().then((tdoc) => {  
+                            
+                            var allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout);
 
+                            if (allowed) {
+                                this.handDocRef.update({
+                                    handOn: firebase.firestore.FieldValue.arrayRemove(playedCard),
+                                    handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)
+                                }); 
+                                //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
+                                trickDoc.update({
+                                    players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
+                                    playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),
+                                    cards: firebase.firestore.FieldValue.arrayUnion(playedCard),
 
-
-                        //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
-                        trickDoc.update({
-                            players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
-                            playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),
-                            cards: firebase.firestore.FieldValue.arrayUnion(playedCard),
-
-                        });
-
-                        active = (doc.data().active+1)%doc.data().nbPlayers;
-                        if (active == doc.data().starter) {
-                            var winnerIndex;
-
-                            this.roundDocRef.update({state: "end-trick"});
-
-                            console.log ("round finished : check who won the trick");
-                            trickDoc.get().then((tdoc) => {   
-                                var points;
-
-                                winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
-                                console.log("winner : " + winnerIndex);
-                                points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
-                                console.log("Points: "+ points[0] + "/" + points[1]);
-                                this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
-
-                                this.handDocRef.get().then((hdoc) => {
-                                    if (hdoc.data().handOn.length == 0) {  
-                                        // END TRICK, START another one
-                                        this.CalculateRoundScore();
-                                        this.roundDocRef.update({state:"end-round"});
-                                        this.playDocRef.update({state:"end-round"});
-                                    }
-                                    else {
-                                        this.roundDocRef.collection("tricks").add({
-                                            roundId: this.roundId,
-                                            players: [],
-                                            playerIndex: [],
-                                            cards: []
-                                        })
-                                        .then((docRef) => {
-                                            console.log("Trick created with ID: ", docRef.id);
-                                            this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                            this.$emit("start-trick", docRef.id);
-
-                                        })
-                                        .catch(function(error) {
-                                            console.error("Error adding document: ", error);
-                                        });      
-                                    }
                                 });
-                            });
-                        }
-                        else
-                            this.roundDocRef.update({active: active});                    
+
+                                active = (doc.data().active+1)%doc.data().nbPlayers;
+                                if (active == doc.data().starter) {
+                                    var winnerIndex;
+
+                                    this.roundDocRef.update({state: "end-trick"});
+
+                                    console.log ("round finished : check who won the trick");
+
+                                    var points;
+                                    trickDoc.get().then((tdoc) => {  
+
+                                        winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
+                                        console.log("winner : " + winnerIndex);
+                                        points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
+                                        console.log("Points: "+ points[0] + "/" + points[1]);
+                                        this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
+
+                                        this.handDocRef.get().then((hdoc) => {
+                                            if (hdoc.data().handOn.length == 0) {  
+                                                // END TRICK, START another one
+                                                this.CalculateRoundScore();
+                                                this.roundDocRef.update({state:"end-round"});
+                                                this.playDocRef.update({state:"end-round"});
+                                            }
+                                            else {
+                                                this.roundDocRef.collection("tricks").add({
+                                                    roundId: this.roundId,
+                                                    players: [],
+                                                    playerIndex: [],
+                                                    cards: []
+                                                })
+                                                .then((docRef) => {
+                                                    console.log("Trick created with ID: ", docRef.id);
+                                                    this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                                    this.$emit("start-trick", docRef.id);
+
+                                                })
+                                                .catch(function(error) {
+                                                    console.error("Error adding document: ", error);
+                                                });      
+                                            }
+                                        });
+                                    });
+                                }
+                                else
+                                    this.roundDocRef.update({active: active});                    
+                            }
+                            else
+                                console.log("Card Not allowed !!!!");
+                        });
                     }
                 });
             },
@@ -344,6 +339,107 @@ require('cards');
                     }
                 });
             },
+            checkPlayAllowed(playedCard, trick, atout) {
+                var allowed = true;
+                var suitPlayed = '';
+                var bestAtoutTrick;
+
+                if (trick.length == 0)
+                    return true;
+
+                suitPlayed = trick[0].suit;
+                //for (var i=0;i<trick.length;i++) {
+                //}
+
+                if (playedCard.suit == suitPlayed) {
+                    if (suitPlayed != atout)
+                        allowed = true;
+                    else {
+                        console.log("Check best atout");
+                        console.log(trick);
+                        bestAtoutTrick = this.bestAtout(trick, atout);
+                        console.log("Check best atout : " + bestAtoutTrick);
+                        console.log("Played card value :" + this.GetCardValue(playedCard, atout))
+
+                        if (this.GetCardValue(playedCard, atout) > bestAtoutTrick)
+                            allowed = true;
+                        else if (this.bestAtout(this.myhand, atout) > bestAtoutTrick) {
+                            console.log("Il faut monter à l'atout !!");
+                            allowed = false;
+                        }
+                        else
+                            allowed = true;
+                    }
+                }
+                else if (this.hasSuit(suitPlayed)) {
+                    allowed = false;
+                    console.log("Il faut jouer de la couleur demandée !!");
+                }
+                else if (suitPlayed == atout) {
+                    if (this.hasSuit(atout)) {
+                        allowed = false;
+                        console.log("Il faut jouer de l'atout !!");
+                    }
+                    else
+                        allowed = true;
+                }
+                else if (!this.hasSuit(atout))
+                    allowed = true;
+                else if (this.isPartnerMaster(trick, atout)) {
+                    allowed = true;
+                }
+                else {
+                    var bestAtout = this.bestAtout(this.myhand, atout);
+                    bestAtoutTrick = this.bestAtout(trick, atout);
+                    if (this.GetCardValue(playedCard, atout) < bestAtoutTrick && bestAtout > bestAtoutTrick) {
+                        allowed = false;
+                        console.log("Il faut monter à l'atout !!")
+                    }
+                    else if (playedCard.suit != atout && this.hasSuit(atout)) {
+                        allowed = false;
+                        console.log("Il faut jouer atout !!")
+                    }
+                    else
+                        allowed = true;
+                }
+
+                        /*axios.get('https://kaamelott.chaudie.re/api/random')
+                        .then(response => {
+                            this.info = response
+                            console.log(response.citation.citation);
+                        });*/
+                return allowed;
+            },
+            hasSuit(suit){
+                for (var i=0;i<this.myhand.length;i++) {
+                    if (this.myhand[i].suit == suit)
+                        return true;
+                }
+                return false;
+            },
+            isPartnerMaster(trick, atout) {
+                var index;
+                if (trick.length <= 1)
+                    return false;
+                index = this.CalculateWinner(trick, [], atout);
+                console.log("IsPartnerMaster : index=" + index);
+                if ((index == 0 && trick.length == 2) || (index == 1 && trick.length == 3))
+                    return true;
+                else
+                    return false;
+            },
+            bestAtout(cards, atout) {
+                var best = 0;
+                var val;
+                for (var i=0;i<cards.length;i++) {
+                    if (cards[i].suit == atout) {
+                        val = this.GetCardValue(cards[i], atout);
+                        if (val > best)
+                            best = val;
+                    }
+                }
+                return best;
+            },
             CalculateRoundScore() {
                 var points = [];
 
@@ -399,7 +495,10 @@ require('cards');
                     }
                 }
 
-                return indexes[winnerIndex];
+                if (indexes.length == 0)
+                    return winnerIndex;
+                else
+                    return indexes[winnerIndex];
             },
             CalculatePoints(cards, atout) {
                 var points = 0;

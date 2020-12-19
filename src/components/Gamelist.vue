@@ -1,19 +1,25 @@
 <template>
-   <DataTable class="p-datatable-sm" :value="games" >
-      <Column field="uid" header="Id" headerStyle="width:10px;"></Column>
-      <Column field="name" header="Name"></Column>
-      <Column field="players" header="Players" >
-             <template #body="slotProps">
-                <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
-            </template>
-     </Column>
-      <Column field="state" header="State"></Column>
-      <Column header="Action">
-            <template #body="slotProps">
-                <Button icon="pi pi-sign-in" v-tooltip="'Rejoindre'" class="p-button-rounded p-button-success p-button-sm" @click="joinGame(slotProps.data)" />
-            </template>
-        </Column>
-   </DataTable>
+   <Card style="width:400px;height:380px;">
+      <template v-slot:title>
+         Parties
+      </template>
+      <template v-slot:content>
+         <DataTable class="p-datatable-sm" :value="games" >
+            <Column field="name" header="Name"></Column>
+            <Column field="players" header="Players" >
+                  <template #body="slotProps">
+                     <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
+                  </template>
+            </Column>
+            <Column field="state" header="State"></Column>
+            <Column header="Action">
+                  <template #body="slotProps">
+                     <Button icon="pi pi-sign-in" v-tooltip="'Rejoindre'" class="p-button-rounded p-button-success p-button-sm" @click="joinGame(slotProps.data)" />
+                  </template>
+            </Column>
+         </DataTable>
+      </template>   
+   </Card>
 </template>
 
 <script>
@@ -25,6 +31,7 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import firebase from 'firebase';
 import Tooltip from 'primevue/tooltip';
+import Card from 'primevue/card';
 
    export default {
       name: 'Gamelist',
@@ -38,7 +45,8 @@ import Tooltip from 'primevue/tooltip';
       components: {
          DataTable,
          Button,
-         Column
+         Column,
+         Card
       },
       directives: {
          'tooltip': Tooltip

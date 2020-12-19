@@ -1,46 +1,53 @@
 <template>
-   <div class="p-grid">
-      <div class="p-col-fixed"  style="width:200px;height:150px">
-         <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>
-         <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
-         <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
-         <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
-         <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
-      </div>
-      <div class="p-col" />
-      <div class="p-col-fixed"  style="width:250px;height:150px">
-      <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
-      </div>
-      <div class="p-col" />
-      <div class="p-col-fixed"  style="width:200px;height:150px">
-         <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-col-12 p-text-center p-text-bold">SCORE</div>
-         <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-text-center">
-            <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
-         </div>
-      </div>
+   <Card style="width:800px;height:800px;">
+      <template v-slot:title>
+         Partie en cours
+      </template>
+      <template v-slot:content>
+         <div class="p-grid">
+            <div class="p-col-fixed"  style="width:200px;height:150px">
+               <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>
+               <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
+               <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
+               <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
+               <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:250px;height:150px">
+            <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:200px;height:150px">
+               <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-col-12 p-text-center p-text-bold">SCORE</div>
+               <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-text-center">
+                  <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
+               </div>
+            </div>
 
-      <div class="p-col-fixed"  style="width:150px;height:250px">
-      <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
-      </div>
-      <div class="p-col" />
-      <div class="p-col-fixed"  style="width:350px;height:250px">
-         <!--<div class="p-d-flex p-jc-center">-->
-         <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId"/>
-         <!--</div>-->
-      </div>
-      <div class="p-col" />
-      <div class="p-col-fixed"  style="width:150px;height:250px">
-      <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playId" />
-      </div>
+            <div class="p-col-fixed"  style="width:150px;height:250px">
+            <Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:350px;height:250px">
+               <!--<div class="p-d-flex p-jc-center">-->
+               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId"/>
+               <!--</div>-->
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:150px;height:250px">
+            <Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playId" />
+            </div>
 
-      <div class="p-col-fixed"  style="width:100px;height:400px"/>
-      <div class="p-col" />
-      <div class="p-col-fixed"  style="width:450px;height:400px">
-      <MyHand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :roundId="roundId" :cwidth="myCardWidth" :playId="playId" />
-      </div>                  
-      <div class="p-col" />
-      <div class="p-col-fixed"  style="width:100px;height:400px"/>
-   </div>   
+            <div class="p-col-fixed"  style="width:100px;height:400px"/>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:450px;height:400px">
+            <MyHand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :roundId="roundId" :cwidth="myCardWidth" :playId="playId" />
+            </div>                  
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:100px;height:400px"/>
+         </div>   
+      </template>   
+   </Card>
 </template>
 
 <script>
@@ -51,6 +58,7 @@ import Deck from './Deck'
 import '../plugins/firebase'
 import db from '../plugins/firebase';
 import Chart from 'primevue/chart';
+import Card from 'primevue/card';
 
    export default {
       name: 'Playground',
@@ -112,7 +120,8 @@ import Chart from 'primevue/chart';
          Hand,
          MyHand,
          Deck,
-         Chart
+         Chart,
+         Card
       },
       created(){
       },
