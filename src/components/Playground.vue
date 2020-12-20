@@ -24,6 +24,18 @@
                   <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
                </div>
             </div>
+            <div class="p-col-fixed"  style="width:200px;">
+               {{ playersName[1] }}
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:250px;">
+               {{playersName[2]}}
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:200px;">
+               {{playersName[3]}}
+            </div>
+
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <MyHand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
@@ -42,7 +54,7 @@
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:450px;height:400px">
-            <MyHand :handId="hands[0]" :playerId="players[0]" :indexUser="0" :roundId="roundId" :cwidth="myCardWidth" :playId="playId" />
+            <MyHand :handId="hands[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :cwidth="myCardWidth" :playId="playId" />
             </div>                  
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
@@ -74,6 +86,7 @@ import Card from 'primevue/card';
             return {
                hands: [[],[],[],[]],
                players: ["","","",""],
+               playersName: ["","","",""],
                playersIndex: [0,0,0,0],
                playId: -1,
                roundId: -1,
@@ -195,6 +208,12 @@ import Card from 'primevue/card';
                         for (var j=0;j<this.hands.length;j++) {
                            this.hands[j] = handArray[(active+j)%this.hands.length];
                            this.players[j] = playerArray[(active+j)%this.hands.length];
+                           for (var k=0;k<doc.data().playersName.length;k++) {
+                              if (doc.data().playersName[k].id == this.players[j])  {
+                                 this.playersName[j] = doc.data().playersName[k].name;
+                                 break;
+                              }
+                           }
                            this.playersIndex[j] = (active+j)%this.hands.length;
                         }
 
