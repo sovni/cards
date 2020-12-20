@@ -24,15 +24,15 @@
                   <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
                </div>
             </div>
-            <div class="p-col-fixed"  style="width:200px;">
+            <div class="p-col-fixed"  style="width:200px;text-align: center;">
                {{ playersName[1] }}
             </div>
             <div class="p-col" />
-            <div class="p-col-fixed"  style="width:250px;">
+            <div class="p-col-fixed"  style="width:250px;text-align: center;">
                {{playersName[2]}}
             </div>
             <div class="p-col" />
-            <div class="p-col-fixed"  style="width:200px;">
+            <div class="p-col-fixed"  style="width:200px;text-align: center;">
                {{playersName[3]}}
             </div>
 
