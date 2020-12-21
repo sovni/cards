@@ -58,10 +58,11 @@ require('cards');
                 handDocSubs: null,
                 roundDocRef: null,
                 roundDocSubs: null,
-                trickDocRef: null,
-                atout: ""                  }
+                trickDocRef: null
+                //atout: ""    
+            }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','atout','state'],      
         components: {
             CBCard,
             Button
@@ -85,12 +86,14 @@ require('cards');
                 if (this.handId != -1) {
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
                     this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
+                            console.log("Hands onSnapshot launched (MyHand 1)");
                             //this.roundId = doc.data().round;
                             console.log("Current round :" + this.roundId);
                             this.myindex = doc.data().playerIndex;
-                            this.watchRoundId(doc.data().handOn);
-                            //console.log("Order hand : " + this.atout);
-                            //this.myhand = this.OrderHand(doc.data().handOn, this.atout);
+                            this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
+                            this.watchRound();
+                            this.myhand = this.OrderHand(doc.data().handOn, this.atout);
+
                     });
                 }
                 else
@@ -103,62 +106,52 @@ require('cards');
                 //else {
                 //    this.activeUser = false;
                 //}
-            }
+            },
+            activePlayer: function(newVal, oldVal) {
+                console.log("Watch props.activePlayer function called:" + newVal + ":"+oldVal+":"+this.activePlayer + ":myindex="+this.myindex);
+                this.watchRound();   
+            },
+            state: function(newVal, oldVal) {
+                console.log("Watch props.roundState function called:" + newVal + ":"+oldVal+":"+this.state+ ":myindex="+this.myindex);
+                this.watchRound();   
+            }            
         },
         methods: {
-            watchRoundId(hand) {
-                console.log("Watch props.roundId function called:"+this.roundId);
-                if (this.roundDocSubs != null) {
-                    this.roundDocSubs();
-                    this.roundDocSubs = null;
+            watchRound() {
+                if (this.state == "choice-1") {
+                    this.choosebis = false;
+                    if (this.activePlayer == this.myindex)  {
+                        console.log("active hand: " +this.myindex);
+                        this.choose = true;
+                    }
+                    else {
+                        this.choose = false;
+                    }
                 }
-                if (this.roundId != null) {
-                    this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
-                    this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
-                        console.log("index: " +this.myindex + " round index : " + doc.data().state);
-                        if (doc.data().atout)
-                            this.atout = doc.data().atout;
-                        if (doc.data().state == "choice-1") {
-                            this.choosebis = false;
-                            if (doc.data().active == this.myindex)  {
-                                console.log("active hand: " +this.myindex);
-                                this.choose = true;
-                            }
-                            else {
-                                this.choose = false;
-                            }
-                        }
-                        else if (doc.data().state == "choice-2") {
-                            this.choose = false;
-                            if (doc.data().active == this.myindex)  {
-                                console.log("active hand: " +this.myindex);
-                                this.choosebis = true;
-                            }
-                            else {
-                                this.choosebis = false;
-                            }
-                        }
-                        else {
-                            this.choose = false;
-                            this.choosebis = false;
-                        }
-                        if (doc.data().state == "trick") {
-                            if (doc.data().active == this.myindex)
-                                this.myturn = true;
-                            else   
-                                this.myturn = false;
-                        }
-                        else
-                            this.myturn = false;
- 
-                        this.myhand = this.OrderHand(hand, this.atout);
-                    });
+                else if (this.state == "choice-2") {
+                    this.choose = false;
+                    if (this.activePlayer == this.myindex)  {
+                        console.log("active hand: " +this.myindex);
+                        this.choosebis = true;
+                    }
+                    else {
+                        this.choosebis = false;
+                    }
                 }
-                else   
-                    this.roundDocRef = null;   
+                else {
+                    this.choose = false;
+                    this.choosebis = false;
+                }
+                if (this.state == "trick") {
+                    if (this.activePlayer == this.myindex)
+                        this.myturn = true;
+                    else   
+                        this.myturn = false;
+                }
+                else
+                    this.myturn = false;
 
-    
-            },     
+            },
             OrderHand(cards, atout) {
                 var hand = [];
 

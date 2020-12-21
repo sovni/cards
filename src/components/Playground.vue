@@ -15,7 +15,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;height:150px">
-            <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
+            <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" />
             </div>
             <div class="p-col" />
             <div class="p-col-fixed atout"  style="width:200px;height:150px">
@@ -38,7 +38,8 @@
 
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <MyHand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :playId="playId" />
+            <MyHand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>
+            <!--<Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"/>-->
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
@@ -48,13 +49,14 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <MyHand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :cwidth="cardWidth" :playId="playId" />
+            <MyHand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState"/>
+            <!--<Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"/>-->
             </div>
 
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:450px;height:400px">
-            <MyHand :handId="hands[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :cwidth="myCardWidth" :playId="playId" />
+            <MyHand :handId="hands[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState"/>
             </div>                  
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
@@ -94,7 +96,6 @@ import Card from 'primevue/card';
                currentGame: "belote",
                cardWidth: 78,
                myCardWidth: 140,
-               myIndex: -1,
                scores: [0,0],
                playDocRef: null,
                playDocSubs: null,
@@ -104,6 +105,8 @@ import Card from 'primevue/card';
                handDocSubs: null,
                atout: '',
                bidPlayer: '',
+               activePlayer: -1,
+               roundState: '',
                scoresOptions: {
                   legend: false,
                   responsive: true,
@@ -160,6 +163,7 @@ import Card from 'primevue/card';
             this.playId = uid;
             this.playDocRef = db.collection("plays").doc(this.playId);
             this.playDocSubs = this.playDocRef.onSnapshot((doc) => {
+               console.log("Plays onSnapshot launched (Playground 1)");
                //this.roundId = doc.data().round;
                var handArray = [];
                var playerArray = [];
@@ -192,6 +196,7 @@ import Card from 'primevue/card';
                   this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
                   this.handDocSubs = this.roundDocRef.collection("hands")
                      .onSnapshot((querySnapshot) => {
+                           console.log("Hands onSnapshot launched (Playground 2)");
                            querySnapshot.forEach((rdoc) => {
                               i = rdoc.data().playerIndex;
                               console.log("doc : " + rdoc.data().handOn)
@@ -204,24 +209,29 @@ import Card from 'primevue/card';
                               i++;
                            });
                         console.log("round : " + round);
-                        this.myIndex == active;
                         for (var j=0;j<this.hands.length;j++) {
-                           this.hands[j] = handArray[(active+j)%this.hands.length];
-                           this.players[j] = playerArray[(active+j)%this.hands.length];
-                           for (var k=0;k<doc.data().playersName.length;k++) {
-                              if (doc.data().playersName[k].id == this.players[j])  {
-                                 this.playersName[j] = doc.data().playersName[k].name;
-                                 break;
+                           var hand = handArray[(active+j)%this.hands.length];
+                           if (this.hands[j] != hand) {
+                              this.hands[j] = hand;
+                              this.players[j] = playerArray[(active+j)%this.hands.length];
+                              for (var k=0;k<doc.data().playersName.length;k++) {
+                                 if (doc.data().playersName[k].id == this.players[j])  {
+                                    this.playersName[j] = doc.data().playersName[k].name;
+                                    break;
+                                 }
                               }
+                              this.playersIndex[j] = (active+j)%this.hands.length;
                            }
-                           this.playersIndex[j] = (active+j)%this.hands.length;
                         }
 
                   });
                   this.roundDocSubs = this.roundDocRef.onSnapshot((rdoc) => {
+                     console.log("Rounds onSnapshot launched (Playground 2)");
                      if (rdoc.data().tricks.length > 0)
                         this.trickId = rdoc.data().currentTrick;
+                        this.activePlayer = rdoc.data().active;
                         this.atout = rdoc.data().atout;
+                        this.roundState = rdoc.data().state;
                         this.bidPlayer = rdoc.data().bidPlayer;
                   });
                }

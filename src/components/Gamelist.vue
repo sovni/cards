@@ -58,6 +58,7 @@ import Card from 'primevue/card';
          db.collection("plays")
             .where("state", "==", "created")
             .onSnapshot((querySnapshot) => {
+               console.log("Plays onSnapshot launched (Gamelist 1)");
                this.games = [];
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots

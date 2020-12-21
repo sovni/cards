@@ -37,7 +37,7 @@ require('cards');
                 trickDocRef: null
             }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer'],      
         components: {
             CBCard
         },
@@ -60,10 +60,14 @@ require('cards');
                 if (this.handId != -1) {
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
                     this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
+                            console.log("Hands onSnapshot launched (Hand 1)");
                             //this.roundId = doc.data().round;
                             console.log("Current round :" + this.roundId);
                             this.myindex = doc.data().playerIndex;
-                            this.watchRoundId();
+                            if (this.activePlayer == this.myindex)
+                                this.myturn = true;
+                            else
+                                this.myturn = false;                                    
                             this.myhand = doc.data().handOn;
                     });
                 }
@@ -72,29 +76,16 @@ require('cards');
             },
             playerId: function() {
                 this.activeUser = false;
+            },
+            activePlayer: function(newVal, oldVal) {
+                console.log("Watch props.activePlayer function called:" + newVal + ":"+oldVal+":"+this.activePlayer);
+                if (this.activePlayer == this.myindex)
+                    this.myturn = true;
+                else
+                    this.myturn = false;           
             }
         },
         methods: {
-            watchRoundId() {
-                console.log("Watch props.roundId function called:"+this.roundId);
-                if (this.roundDocSubs != null) {
-                    this.roundDocSubs();
-                    this.roundDocSubs = null;
-                }
-                if (this.roundId != null) {
-                    this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
-                    this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
-                        console.log("index: " +this.myindex + " round index : " + doc.data().state);
-                        if (doc.data().active == this.myindex)
-                            this.myturn = true;
-                        else
-                            this.myturn = false;
-
-                    });
-                }
-                else   
-                    this.roundDocRef = null;       
-            },     
             CalculatePoints(cards, atout) {
                 var points = 0;
 
@@ -118,12 +109,14 @@ require('cards');
                 var rotationAngle = Math.round(coords[index].angle);
                 if (this.indexUser == 0)
                     coords[index].x += Math.floor((450 - box.width)*0.5);
-                /*else if (this.indexUser == 2) {
+                else if (this.indexUser == 2) {
                     console.log("Before : " + coords[index].x);
-                    coords[index].x += Math.floor((250 - box.width)*0.5);
+                    coords[index].y -= 20;
+
+                    //coords[index].x += Math.floor((250 - box.width)*0.5);
                     console.log("After : " + coords[index].x);
                 }
-                else if (this.indexUser == 1)
+                /*else if (this.indexUser == 1)
                     coords[index].y += Math.floor((250 - box.height)*0.5);
                 else if (this.indexUser == 3)
                     coords[index].y += Math.floor((250 - box.height)*0.5); */
