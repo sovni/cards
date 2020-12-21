@@ -54,7 +54,11 @@
             <!--<Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"/>-->
             </div>
 
-            <div class="p-col-fixed"  style="width:100px;height:400px"/>
+            <div v-if="lastScore.length == 0" class="p-col-fixed"  style="width:100px;height:400px"/>
+            <div v-if="lastScore.length > 0" class="p-col-fixed p-card atout"  style="width:100px;height:400px">
+               {{ lastScore[0]}} / {{lastScore[1]}}
+            </div>
+
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:450px;height:400px">
             <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState"/>
@@ -112,6 +116,7 @@ import Card from 'primevue/card';
                bidPlayer: '',
                activePlayer: -1,
                roundState: '',
+               lastScore: [],
                choice: [],
                scoresOptions: {
                   legend: false,
@@ -190,6 +195,17 @@ import Card from 'primevue/card';
                   this.scores[0] = doc.data().score[1];                  
                }
                this.scoresData = {labels: ['Nous', 'Eux'], datasets: [{label: 'Scores',backgroundColor: ['#42A5F5','#FFA726'], data: [this.scores[0],this.scores[1]]}]};
+
+               /*if (doc.data().lastScore.length > 0)
+                  if (doc.data().players[0] == playerId || doc.data().players[2] == playerId)
+                     this.lastScore = doc.data().lastScore;
+                  else {
+                     this.lastScore[1] = doc.data().lastScore[0];
+                     this.lastScore[0] = doc.data().lastScore[1];
+                  }
+               else {
+                  this.lastScore = [];
+               }*/               
 
                if (doc.data().round != this.roundId) {
                   if (this.roundDocSubs != null) {
