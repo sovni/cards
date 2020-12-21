@@ -236,7 +236,7 @@ require('cards');
                                                 }
                                             });
                                         });
-                                    }, 2000);
+                                    }, 1500);
                                 }
                                 else
                                     this.roundDocRef.update({active: active});                    
