@@ -6,13 +6,13 @@
       <template v-slot:content>
          <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-select="selectPlay">
             <!--<Column field="uid" header="Id" ></Column> -->
-            <Column field="name" header="Name"></Column>
-            <Column field="players" header="Players">
+            <Column field="name" header="Nom"></Column>
+            <Column field="players" header="Joueurs">
                   <template #body="slotProps">
                      <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
                   </template>
             </Column>
-            <Column field="state" header="State"></Column>
+            <Column field="state" header="Statut"></Column>
             <Column field="score" header="Score">
             </Column>
             <Column header="Action">
@@ -24,6 +24,9 @@
          <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
      </template>   
    </Card>
+   <Dialog header="Header" v-model:visible="display" >
+      Content
+   </Dialog>
 </template>
 
 <script>
@@ -37,6 +40,7 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Tooltip from 'primevue/tooltip';
 import Card from 'primevue/card';
+import Dialog from 'primevue/dialog';
 
 const { decks } = require('cards');
 
@@ -46,7 +50,8 @@ const { decks } = require('cards');
             return {
                 mygames: [],
                 roundId: -1,
-                selectedPlay: []
+                selectedPlay: [],
+                visible: false
             }
       },      
       props: ['playerUid','playerName'],      
@@ -54,6 +59,7 @@ const { decks } = require('cards');
          DataTable,
          Button,
          Column,
+         Dialog,
          Card
       },
       directives: {
@@ -67,6 +73,7 @@ const { decks } = require('cards');
             .where("players", "array-contains", this.playerUid)
             //.where("state", "!=", "created")
             .onSnapshot((querySnapshot) => {
+               console.log("Plays onSnapshot launched (CurrentGame 1)");
                this.mygames = [];
                querySnapshot.forEach((doc) => {
                   var strPlayers = "";
@@ -103,6 +110,7 @@ const { decks } = require('cards');
             //.where("state", "==", "prep")
             .onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {
                querySnapshot.forEach((doc) => {
+                  console.log("Plays onSnapshot launched (CurrentGame 2)");
                   if (!doc.metadata.hasPendingWrites) {
                      if (doc.data().state == "prep") {
                         console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
