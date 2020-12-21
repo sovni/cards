@@ -41,7 +41,6 @@ import Button from 'primevue/button';
             .onSnapshot((querySnapshot) => {
                this.mygames = [];
                querySnapshot.forEach((doc) => {
-                     console.log("Plays onSnapshot launched (MyGamelist 1)");
                      // doc.data() is never undefined for query doc snapshots
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
                     this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});

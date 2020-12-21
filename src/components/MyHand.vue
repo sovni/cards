@@ -58,11 +58,10 @@ require('cards');
                 handDocSubs: null,
                 roundDocRef: null,
                 roundDocSubs: null,
-                trickDocRef: null
-                //atout: ""    
-            }
+                trickDocRef: null,
+                atout: ""                  }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','atout','state'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId'],      
         components: {
             CBCard,
             Button
@@ -86,14 +85,12 @@ require('cards');
                 if (this.handId != -1) {
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
                     this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
-                            console.log("Hands onSnapshot launched (MyHand 1)");
                             //this.roundId = doc.data().round;
                             console.log("Current round :" + this.roundId);
                             this.myindex = doc.data().playerIndex;
-                            this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
-                            this.watchRound();
-                            this.myhand = this.OrderHand(doc.data().handOn, this.atout);
-
+                            this.watchRoundId(doc.data().handOn);
+                            //console.log("Order hand : " + this.atout);
+                            //this.myhand = this.OrderHand(doc.data().handOn, this.atout);
                     });
                 }
                 else
@@ -106,52 +103,62 @@ require('cards');
                 //else {
                 //    this.activeUser = false;
                 //}
-            },
-            activePlayer: function(newVal, oldVal) {
-                console.log("Watch props.activePlayer function called:" + newVal + ":"+oldVal+":"+this.activePlayer + ":myindex="+this.myindex);
-                this.watchRound();   
-            },
-            state: function(newVal, oldVal) {
-                console.log("Watch props.roundState function called:" + newVal + ":"+oldVal+":"+this.state+ ":myindex="+this.myindex);
-                this.watchRound();   
-            }            
+            }
         },
         methods: {
-            watchRound() {
-                if (this.state == "choice-1") {
-                    this.choosebis = false;
-                    if (this.activePlayer == this.myindex)  {
-                        console.log("active hand: " +this.myindex);
-                        this.choose = true;
-                    }
-                    else {
-                        this.choose = false;
-                    }
+            watchRoundId(hand) {
+                console.log("Watch props.roundId function called:"+this.roundId);
+                if (this.roundDocSubs != null) {
+                    this.roundDocSubs();
+                    this.roundDocSubs = null;
                 }
-                else if (this.state == "choice-2") {
-                    this.choose = false;
-                    if (this.activePlayer == this.myindex)  {
-                        console.log("active hand: " +this.myindex);
-                        this.choosebis = true;
-                    }
-                    else {
-                        this.choosebis = false;
-                    }
+                if (this.roundId != null) {
+                    this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
+                    this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
+                        console.log("index: " +this.myindex + " round index : " + doc.data().state);
+                        if (doc.data().atout)
+                            this.atout = doc.data().atout;
+                        if (doc.data().state == "choice-1") {
+                            this.choosebis = false;
+                            if (doc.data().active == this.myindex)  {
+                                console.log("active hand: " +this.myindex);
+                                this.choose = true;
+                            }
+                            else {
+                                this.choose = false;
+                            }
+                        }
+                        else if (doc.data().state == "choice-2") {
+                            this.choose = false;
+                            if (doc.data().active == this.myindex)  {
+                                console.log("active hand: " +this.myindex);
+                                this.choosebis = true;
+                            }
+                            else {
+                                this.choosebis = false;
+                            }
+                        }
+                        else {
+                            this.choose = false;
+                            this.choosebis = false;
+                        }
+                        if (doc.data().state == "trick") {
+                            if (doc.data().active == this.myindex)
+                                this.myturn = true;
+                            else   
+                                this.myturn = false;
+                        }
+                        else
+                            this.myturn = false;
+ 
+                        this.myhand = this.OrderHand(hand, this.atout);
+                    });
                 }
-                else {
-                    this.choose = false;
-                    this.choosebis = false;
-                }
-                if (this.state == "trick") {
-                    if (this.activePlayer == this.myindex)
-                        this.myturn = true;
-                    else   
-                        this.myturn = false;
-                }
-                else
-                    this.myturn = false;
+                else   
+                    this.roundDocRef = null;   
 
-            },
+    
+            },     
             OrderHand(cards, atout) {
                 var hand = [];
 
@@ -196,47 +203,45 @@ require('cards');
                                 if (active == doc.data().starter) {
                                     var winnerIndex;
 
-                                    setTimeout(() => { 
-                                        this.roundDocRef.update({state: "end-trick"});
+                                    this.roundDocRef.update({state: "end-trick"});
 
-                                        console.log ("round finished : check who won the trick");
+                                    console.log ("round finished : check who won the trick");
 
-                                        var points;
-                                        trickDoc.get().then((tdoc) => {  
+                                    var points;
+                                    trickDoc.get().then((tdoc) => {  
 
-                                            winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
-                                            console.log("winner : " + winnerIndex);
-                                            points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
-                                            console.log("Points: "+ points[0] + "/" + points[1]);
-                                            this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
+                                        winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
+                                        console.log("winner : " + winnerIndex);
+                                        points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
+                                        console.log("Points: "+ points[0] + "/" + points[1]);
+                                        this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
 
-                                            this.handDocRef.get().then((hdoc) => {
-                                                if (hdoc.data().handOn.length == 0) {  
-                                                    // END TRICK, START another one
-                                                    this.CalculateRoundScore();
-                                                    this.roundDocRef.update({state:"end-round"});
-                                                    this.playDocRef.update({state:"end-round"});
-                                                }
-                                                else {
-                                                    this.roundDocRef.collection("tricks").add({
-                                                        roundId: this.roundId,
-                                                        players: [],
-                                                        playerIndex: [],
-                                                        cards: []
-                                                    })
-                                                    .then((docRef) => {
-                                                        console.log("Trick created with ID: ", docRef.id);
-                                                        this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                                        this.$emit("start-trick", docRef.id);
+                                        this.handDocRef.get().then((hdoc) => {
+                                            if (hdoc.data().handOn.length == 0) {  
+                                                // END TRICK, START another one
+                                                this.CalculateRoundScore();
+                                                this.roundDocRef.update({state:"end-round"});
+                                                this.playDocRef.update({state:"end-round"});
+                                            }
+                                            else {
+                                                this.roundDocRef.collection("tricks").add({
+                                                    roundId: this.roundId,
+                                                    players: [],
+                                                    playerIndex: [],
+                                                    cards: []
+                                                })
+                                                .then((docRef) => {
+                                                    console.log("Trick created with ID: ", docRef.id);
+                                                    this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                                    this.$emit("start-trick", docRef.id);
 
-                                                    })
-                                                    .catch(function(error) {
-                                                        console.error("Error adding document: ", error);
-                                                    });      
-                                                }
-                                            });
+                                                })
+                                                .catch(function(error) {
+                                                    console.error("Error adding document: ", error);
+                                                });      
+                                            }
                                         });
-                                    }, 1500);
+                                    });
                                 }
                                 else
                                     this.roundDocRef.update({active: active});                    
@@ -256,13 +261,11 @@ require('cards');
                     if (suit == "")
                         this.roundDocRef.update({
                             atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex,
-                            bidPlayer: this.getUserName(),
                             choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
                         });
                     else
                         this.roundDocRef.update({
                             atout: suit, bid: this.playerId, bidIndex: this.myindex,
-                            bidPlayer: this.getUserName(),
                             choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
                         });
 
@@ -437,12 +440,6 @@ require('cards');
                 }
                 return best;
             },
-            getUserName(){
-                this.currentUser = firebase.auth().currentUser;
-                if (!this.currentUser)
-                    return "";
-                return this.currentUser.displayName.split(" ")[0];
-            },            
             CalculateRoundScore() {
                 var points = [];
 
