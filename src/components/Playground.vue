@@ -1,10 +1,11 @@
 <template>
    <Card style="width:800px;height:800px;">
-      <template v-slot:title>
+      <template v-slot:title v-if="playId == -1">
+         Sélectionnez ou créez une partie
       </template>
-      <template v-slot:content>
+      <template v-slot:content >
          <div class="p-grid">
-            <div class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
                <!--<div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>-->
                <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>
                <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
@@ -18,9 +19,9 @@
             <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" />
             </div>
             <div class="p-col" />
-            <div class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
                <div class="p-col-12 p-text-center p-text-bold">SCORE</div>
-               <div v-if="scores[0] != null && scores[0] != 0 && scores[1] != 0" class="p-text-center">
+               <div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center">
                   <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
                </div>
             </div>
