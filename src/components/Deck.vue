@@ -30,7 +30,7 @@ require('cards');
                 trickDocSubs: null
         }
         },
-        props: ['myround','trickId','playId','playerId','playerIndex','nbPlayer','state','choice'],      
+        props: ['myround','trickId','playId','playerId','playerIndex','nbPlayer'],      
         components: {
             CBCard
         },
@@ -44,13 +44,12 @@ require('cards');
                 }
                 if (this.myround != -1) {
                     this.roundDocRef = db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround)
-                    /*this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
-                            console.log("Rounds onSnapshot launched (Deck 1)");
+                    this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
                             if (doc.data().state == "choice-1" || doc.data().state == "choice-2") {
                                 console.log("Deck: round : " + this.myround);
                                 this.mydeck = doc.data().choice;
                             }
-                        });*/
+                        });
                 }
             },
             trickId: function(newVal, oldVal) { // watch it
@@ -63,7 +62,6 @@ require('cards');
                 if (this.trickId != -1) {
                     this.trickDocRef = this.roundDocRef.collection("tricks").doc(this.trickId);
                     this.trickDocSubs = this.trickDocRef.onSnapshot((doc) => {
-                            console.log("Tricks onSnapshot launched (Deck 2)");
                             console.log("trickId: round : " + this.trickId);
                             console.log("trick change : cards" + doc.data().cards);
                                 
@@ -72,21 +70,7 @@ require('cards');
                             this.mydeck = doc.data().cards;
                         });
                 }
-            },
-            state: function(newVal, oldVal) {
-                console.log("Watch props.roundState function called:" + newVal + ":"+oldVal+":"+this.state);
-                if (this.state == "choice-1" || this.state == "choice-2") {
-                    console.log("Deck: round : " + this.myround);
-                    this.mydeck = this.choice;
-                }            
-            },
-            choice: function(newVal, oldVal) {
-                console.log("Watch props.choice function called:" + newVal + ":"+oldVal+":"+this.choice);
-                if (this.state == "choice-1" || this.state == "choice-2") {
-                    console.log("Deck: round : " + this.myround);
-                    this.mydeck = this.choice;
-                }            
-            }            
+            }
         },
         methods: {
             getStyle(card, index) {
