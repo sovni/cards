@@ -5,13 +5,13 @@
       </template>
       <template v-slot:content>
          <DataTable class="p-datatable-sm" :value="games" >
-            <Column field="name" header="Name"></Column>
-            <Column field="players" header="Players" >
+            <Column field="name" header="Nom"></Column>
+            <Column field="players" header="Joueurs" >
                   <template #body="slotProps">
                      <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
                   </template>
             </Column>
-            <Column field="state" header="State"></Column>
+            <Column field="state" header="Statut"></Column>
             <Column header="Action">
                   <template #body="slotProps">
                      <Button icon="pi pi-sign-in" v-tooltip="'Rejoindre'" class="p-button-rounded p-button-success p-button-sm" @click="joinGame(slotProps.data)" />

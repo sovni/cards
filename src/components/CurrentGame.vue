@@ -6,13 +6,13 @@
       <template v-slot:content>
          <DataTable class="p-datatable-sm" :value="mygames" v-model:selection="selectedPlay" selectionMode="single" dataKey="uid" @row-select="selectPlay">
             <!--<Column field="uid" header="Id" ></Column> -->
-            <Column field="name" header="Name"></Column>
-            <Column field="players" header="Players">
+            <Column field="name" header="Nom"></Column>
+            <Column field="players" header="Joueurs">
                   <template #body="slotProps">
                      <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
                   </template>
             </Column>
-            <Column field="state" header="State"></Column>
+            <Column field="state" header="Statut"></Column>
             <Column field="score" header="Score">
             </Column>
             <Column header="Action">

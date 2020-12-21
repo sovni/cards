@@ -19,7 +19,7 @@
                   </ScrollPanel >
                   <form @submit.prevent="sendMessage">
                     <InputText v-model="showMessage" type="text" class="p-mt-4 p-inputtext-sm" style="width: 70%;"/>
-                    <Button label="Send" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
+                    <Button label="Envoyer" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
                   </form>
                 </div>
               </div> 
