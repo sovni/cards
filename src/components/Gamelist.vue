@@ -5,13 +5,13 @@
       </template>
       <template v-slot:content>
          <DataTable class="p-datatable-sm" :value="games" >
-            <Column field="name" header="Nom"></Column>
-            <Column field="players" header="Joueurs" >
+            <Column field="name" header="Name"></Column>
+            <Column field="players" header="Players" >
                   <template #body="slotProps">
                      <div class="p-text-left" v-tooltip="slotProps.data.names" >{{slotProps.data.players}}</div>
                   </template>
             </Column>
-            <Column field="state" header="Statut"></Column>
+            <Column field="state" header="State"></Column>
             <Column header="Action">
                   <template #body="slotProps">
                      <Button icon="pi pi-sign-in" v-tooltip="'Rejoindre'" class="p-button-rounded p-button-success p-button-sm" @click="joinGame(slotProps.data)" />
@@ -58,7 +58,6 @@ import Card from 'primevue/card';
          db.collection("plays")
             .where("state", "==", "created")
             .onSnapshot((querySnapshot) => {
-               console.log("Plays onSnapshot launched (Gamelist 1)");
                this.games = [];
                querySnapshot.forEach((doc) => {
                      // doc.data() is never undefined for query doc snapshots
