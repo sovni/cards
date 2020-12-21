@@ -88,6 +88,9 @@ require('cards');
             playerId: function() {
                 this.activeUser = false;
             },
+            playerIndex: function() {
+                this.myindex = this.playerIndex;
+            },
             activePlayer: function(newVal, oldVal) {
                 console.log("Watch props.activePlayer function called:" + newVal + ":"+oldVal+":"+this.activePlayer);
                 if (this.activePlayer == this.myindex)
