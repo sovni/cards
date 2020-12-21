@@ -17,8 +17,10 @@
                           <p class="message pt-0">{{ message.text }}</p>
                         </div>
                   </ScrollPanel >
-                  <InputText v-model="showMessage" type="text" class="p-mt-4 p-inputtext-sm" style="width: 70%;"/>
-                  <Button label="Send" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
+                  <form @submit.prevent="sendMessage">
+                    <InputText v-model="showMessage" type="text" class="p-mt-4 p-inputtext-sm" style="width: 70%;"/>
+                    <Button label="Send" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
+                  </form>
                 </div>
               </div> 
         </div>
