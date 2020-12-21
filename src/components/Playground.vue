@@ -16,7 +16,8 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;height:150px">
-            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" />
+            <!--<Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" />-->
+            <MyHand :handId="hands[2]" :handOn="handsOn[2]"  :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>
             </div>
             <div class="p-col" />
             <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
@@ -39,8 +40,8 @@
 
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>-->
-            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"/>
+            <MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>
+            <!--<Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"/>-->
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
