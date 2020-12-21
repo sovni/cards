@@ -37,7 +37,7 @@ require('cards');
                 trickDocRef: null
             }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','handOn','playerIndex'],      
         components: {
             CBCard
         },
@@ -59,7 +59,14 @@ require('cards');
                 }
                 if (this.handId != -1) {
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
-                    this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
+                    this.myindex = this.playerIndex;
+                    if (this.activePlayer == this.myindex)
+                        this.myturn = true;
+                    else
+                        this.myturn = false;
+                    this.myhand = this.handOn;
+
+                    /*this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
                             console.log("Hands onSnapshot launched (Hand 1)");
                             //this.roundId = doc.data().round;
                             console.log("Current round :" + this.roundId);
@@ -69,10 +76,14 @@ require('cards');
                             else
                                 this.myturn = false;                                    
                             this.myhand = doc.data().handOn;
-                    });
+                    });*/
                 }
                 else
                     this.handDocRef = null;
+            },
+            handOn: function() {
+                console.log("Watch props.handOn function called:" +this.handOn);
+                this.myhand = this.handOn;
             },
             playerId: function() {
                 this.activeUser = false;

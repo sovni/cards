@@ -15,7 +15,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;height:150px">
-            <Hand :handId="hands[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" />
+            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" />
             </div>
             <div class="p-col" />
             <div class="p-col-fixed atout"  style="width:200px;height:150px">
@@ -38,8 +38,8 @@
 
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <MyHand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>
-            <!--<Hand :handId="hands[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"/>-->
+            <MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>
+            <!--<Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"/>-->
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
@@ -49,14 +49,14 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <MyHand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState"/>
-            <!--<Hand :handId="hands[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"/>-->
+            <MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState"/>
+            <!--<Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"/>-->
             </div>
 
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:450px;height:400px">
-            <MyHand :handId="hands[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState"/>
+            <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState"/>
             </div>                  
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:100px;height:400px"/>
@@ -87,6 +87,8 @@ import Card from 'primevue/card';
       data() {
             return {
                hands: [[],[],[],[]],
+               handsOn: [[],[],[],[]],
+               handPlayersIndex: [-1,-1,-1,-1],
                players: ["","","",""],
                playersName: ["","","",""],
                playersIndex: [0,0,0,0],
@@ -167,6 +169,8 @@ import Card from 'primevue/card';
                console.log("Plays onSnapshot launched (Playground 1)");
                //this.roundId = doc.data().round;
                var handArray = [];
+               var handOnArray = [];
+               var playerIndexArray = [];
                var playerArray = [];
                var playerId = firebase.auth().currentUser.uid;
                var i = 0;
@@ -202,6 +206,8 @@ import Card from 'primevue/card';
                               i = rdoc.data().playerIndex;
                               console.log("doc : " + rdoc.data().handOn)
                               handArray[i] = rdoc.id;// data().handOn;
+                              handOnArray[i] = rdoc.data().handOn;
+                              playerIndexArray[i] = rdoc.data().playerIndex;
                               playerArray[i] = rdoc.data().player;
                               if (rdoc.data().player == firebase.auth().currentUser.uid) {
                                  active=i;
@@ -212,6 +218,8 @@ import Card from 'primevue/card';
                         console.log("round : " + round);
                         for (var j=0;j<this.hands.length;j++) {
                            var hand = handArray[(active+j)%this.hands.length];
+                           this.handsOn[j] = handOnArray[(active+j)%this.hands.length];
+                           this.handPlayersIndex[j] = playerIndexArray[(active+j)%this.hands.length];
                            if (this.hands[j] != hand) {
                               this.hands[j] = hand;
                               this.players[j] = playerArray[(active+j)%this.hands.length];
