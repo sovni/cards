@@ -44,7 +44,7 @@
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
                <!--<div class="p-d-flex p-jc-center">-->
-               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId"/>
+               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId" :state="roundState" :choice="choice"/>
                <!--</div>-->
             </div>
             <div class="p-col" />
@@ -107,6 +107,7 @@ import Card from 'primevue/card';
                bidPlayer: '',
                activePlayer: -1,
                roundState: '',
+               choice: [],
                scoresOptions: {
                   legend: false,
                   responsive: true,
@@ -231,6 +232,7 @@ import Card from 'primevue/card';
                         this.trickId = rdoc.data().currentTrick;
                         this.activePlayer = rdoc.data().active;
                         this.atout = rdoc.data().atout;
+                        this.choice = rdoc.data().choice;
                         this.roundState = rdoc.data().state;
                         this.bidPlayer = rdoc.data().bidPlayer;
                   });
