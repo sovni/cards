@@ -16,7 +16,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;height:150px">
-            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" />
+            <MyHand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState"/>
             </div>
             <div class="p-col" />
             <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
@@ -40,7 +40,7 @@
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>-->
-            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"/>
+            <MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState"/>
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
@@ -51,20 +51,23 @@
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState"/>-->
-            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"/>
+            <MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState"/>
             </div>
-
-            <div v-if="lastScore.length == 0" class="p-col-fixed"  style="width:100px;height:400px"/>
-            <div v-if="lastScore.length > 0" class="p-col-fixed p-card atout"  style="width:100px;height:400px">
-               {{ lastScore[0]}} / {{lastScore[1]}}
+            <div class="p-d-flex p-flex-column" style="width:100px;height:320px">
+            <div class="p-col-fixed"  style="width:100px;height:220px"/>
+            <div v-if="lastScore.length == 0" class="p-col-fixed"  style="width:100px;height:100px"/>
+            <div v-if="lastScore.length > 0" class="p-col-fixed p-card atout"  style="width:200px;height:100px">
+               <div class="p-col-12 p-text-center p-text-bold">DERNIERE PARTIE</div>
+               <div class="p-col-12 p-text-center p-text-bold">{{ lastScore[0]}} / {{lastScore[1]}}</div>
+            </div>
             </div>
 
             <div class="p-col" />
-            <div class="p-col-fixed"  style="width:450px;height:400px">
+            <div class="p-col-fixed"  style="width:450px;height:320px">
             <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState"/>
             </div>                  
             <div class="p-col" />
-            <div class="p-col-fixed"  style="width:100px;height:400px"/>
+            <div class="p-col-fixed"  style="width:100px;height:320px"/>
          </div>   
       </template>   
    </Card>
@@ -81,7 +84,7 @@
 
 <script>
 import firebase from 'firebase';
-import Hand from './Hand'
+//import Hand from './Hand'
 import MyHand from './MyHand'
 import Deck from './Deck'
 import '../plugins/firebase'
@@ -153,7 +156,7 @@ import Card from 'primevue/card';
       }, 
       props: ['playerUid','playerName'],
       components: {
-         Hand,
+         //Hand,
          MyHand,
          Deck,
          Chart,
@@ -196,7 +199,7 @@ import Card from 'primevue/card';
                }
                this.scoresData = {labels: ['Nous', 'Eux'], datasets: [{label: 'Scores',backgroundColor: ['#42A5F5','#FFA726'], data: [this.scores[0],this.scores[1]]}]};
 
-               /*if (doc.data().lastScore.length > 0)
+               if (typeof doc.data().lastScore != "undefined" && doc.data().lastScore.length > 0)
                   if (doc.data().players[0] == playerId || doc.data().players[2] == playerId)
                      this.lastScore = doc.data().lastScore;
                   else {
@@ -205,7 +208,7 @@ import Card from 'primevue/card';
                   }
                else {
                   this.lastScore = [];
-               }*/               
+               }             
 
                if (doc.data().round != this.roundId) {
                   if (this.roundDocSubs != null) {
