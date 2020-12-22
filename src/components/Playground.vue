@@ -240,8 +240,8 @@ import Card from 'primevue/card';
                         console.log("round : " + round);
                         for (var j=0;j<this.hands.length;j++) {
                            var hand = handArray[(active+j)%this.hands.length];
-                           this.handsOn[j] = handOnArray[(active+j)%this.hands.length];
                            this.handPlayersIndex[j] = playerIndexArray[(active+j)%this.hands.length];
+                           this.handsOn[j] = handOnArray[(active+j)%this.hands.length];
                            if (this.hands[j] != hand) {
                               this.hands[j] = hand;
                               this.players[j] = playerArray[(active+j)%this.hands.length];
