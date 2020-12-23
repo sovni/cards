@@ -1,14 +1,14 @@
 
 <template>
    <div class="wrapper">
-      <h1>Register Component</h1>
+      <h1>Inscription</h1>
         <form @submit.prevent="registerUser">
-         <input type="text" placeholder="Firstname" v-model="userData.firstname" /><br>
-         <input type="text" placeholder="Lastname" v-model="userData.lastname" /><br>
-         <input type="text" placeholder="Username" v-model="userData.username" /><br>
-         <input type="email" placeholder="Email" v-model="userData.email" /><br>
-         <input type="password" placeholder="Choose a password" v-model="userData.password" /><br>
-         <button>Create account</button>
+         <InputText type="text" class="p-mb-2" placeholder="Prénom" v-model="userData.firstname" /><br>
+         <InputText type="text" class="p-mb-2" placeholder="Nom" v-model="userData.lastname" /><br>
+         <InputText type="text" class="p-mb-2" placeholder="Pseudo" v-model="userData.username" /><br>
+         <InputText type="email" class="p-mb-2" placeholder="Email" v-model="userData.email" /><br>
+         <InputText type="password" class="p-mb-2" placeholder="Mot de passe" v-model="userData.password" /><br>
+         <Button>Créer le compte</Button>
         </form>
    </div>
 </template>
@@ -16,6 +16,8 @@
 <script>
 import firebase from 'firebase'
 import db from '../plugins/firebase'
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 
    export default {
       name: 'Register',
@@ -32,7 +34,10 @@ import db from '../plugins/firebase'
             errorMessage: ''
          }
       },
-      methods:{
+      components: {
+         InputText,
+         Button
+      },      methods:{
          registerUser(){
             firebase.auth().createUserWithEmailAndPassword(this.userData.email, this.userData.password)
                .then(() => {

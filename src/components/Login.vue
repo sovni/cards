@@ -1,6 +1,6 @@
 <template>
    <div class="wrapper">
-      <h1>Login Component</h1>
+      <h1>Connection</h1>
      <form @submit.prevent="login">
          <div class="p-d-inline-flex p-flex-column p-jc-center">
             <div class="p-mb-2">
@@ -16,15 +16,15 @@
                   <span class="p-inputgroup-addon">
                      <i class="pi pi-lock"></i>
                   </span>
-                  <InputText placeholder="Password" type="password" v-model="userpassword"/>
+                  <InputText placeholder="Mot de passe" type="password" v-model="userpassword"/>
                </div>
             </div>
             <div class="p-mb-2">
-                  <Button type="submit" label="Login" />
+                  <Button type="submit" label="Connection" />
             </div>
          </div>
      </form>
-     <Button label="Google" @click="glogin"/>
+     <Button label="Connection avec un compte Google" @click="glogin"/>
 
    </div>
 </template>

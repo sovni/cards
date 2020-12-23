@@ -24,23 +24,23 @@
                    to:'/'
                },               
                {
-                   label:'User',
+                   label:'Utilisateur',
                    icon:'pi pi-fw pi-user',
                    items:[
                       {
-                         label:'Login',
+                         label:'Connection',
                          icon:'pi pi-fw pi-user',
                          to:'/login',
                          visible: () => !this.currentUser
                       },
                       {
-                         label:'Register',
+                         label:'Inscription',
                          icon:'pi pi-fw pi-user-plus',
                          to:'/register',
                          visible: () => !this.currentUser
                       },
                       {
-                         label:'Logout',
+                         label:'Déconnection',
                          icon:'pi pi-fw pi-user-minus',
                          command: () => {this.logout();},
                          visible: () => this.currentUser
