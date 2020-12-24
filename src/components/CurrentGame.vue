@@ -267,17 +267,9 @@ const { decks } = require('cards');
             var hand = deck.draw(nb);
             var handArray = [];
             for (var j = 0; j < hand.length; j++) {
-               handArray.push({suit: hand[j].suit.name, rank: this.convertTarotName(hand[j].rank.shortName)});
+               handArray.push({suit: hand[j].suit.name, rank: hand[j].rank.shortName});
             }    
             return handArray;           
-         },
-         convertTarotName(shortName) {
-            var name = shortName;
-            switch (shortName) {
-               case 'trump0':
-                  name
-
-            }
          },
          selectPlay(){
             if (this.selectedPlay.uid) {
