@@ -458,18 +458,19 @@ require('cards');
                     points[0] = points[0] + points[2];
                     points[1] = points[1] + points[3];
                     if (points[0] == 0 && points[1] == 162)
-                        points[1] = 250;
+                        points[1] = 252;
                     else if (points[0] == 162 && points[1] == 0)
-                        points[0] = 250;
+                        points[0] = 252;
                     else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
-                        points[0] = 160;
+                        points[0] = 162;
                         points[1] = 0;
                     }
                     else if (points[1] > points[0] && (doc.data().bidIndex == 0 || doc.data().bidIndex == 2)) {
-                        points[1] = 160;
+                        points[1] = 162;
                         points[0] = 0;
                     }
                     this.roundDocRef.update({score:[points[0], points[1]]});
+                    this.playDocRef.update({lastScore:[points[0], points[1]]});
                 });
             },
             CalculateWinner(cards, indexes, atout) {

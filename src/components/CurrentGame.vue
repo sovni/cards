@@ -24,7 +24,7 @@
          <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
      </template>   
    </Card>
-   <Dialog header="Header" v-model:visible="display" >
+   <Dialog header="Header" v-if="visible">
       Content
    </Dialog>
 </template>
