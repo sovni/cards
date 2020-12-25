@@ -84,7 +84,7 @@
 
 <script>
 import firebase from 'firebase';
-//import Hand from './Hand'
+import Hand from './Hand'
 import MyHand from './MyHand'
 import Deck from './Deck'
 import '../plugins/firebase'
@@ -156,7 +156,7 @@ import Card from 'primevue/card';
       }, 
       props: ['playerUid','playerName'],
       components: {
-         //Hand,
+         Hand,
          MyHand,
          Deck,
          Chart,
