@@ -1,7 +1,7 @@
 <template>
     <!-- <div class="hhand active-hand"  style="width:400px;height:200px;">-->
     <div class="hhand active-hand fan" style="width:350px;height:250px;">
-        <CBCard v-for="(mycard, index) in mydeck" v-bind:key="mycard" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" /> 
+        <CBCard v-for="(mycard, index) in mydeck" v-bind:key="mycard" v-bind:mycard="mycard" v-bind:mystyle="getStyle(mycard, index)" :game="game"/> 
     </div>
 </template>
 <style>
@@ -30,7 +30,7 @@ require('cards');
                 trickDocSubs: null
         }
         },
-        props: ['myround','trickId','playId','playerId','playerIndex','nbPlayer','state','choice'],      
+        props: ['myround','trickId','playId','playerId','playerIndex','nbPlayer','state','choice','game'],      
         components: {
             CBCard
         },

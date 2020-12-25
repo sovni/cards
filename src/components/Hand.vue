@@ -3,7 +3,7 @@
         <div class="p-col-12" >  
             <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
             <div class="hhand active-hand fan highlight" >
-                <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:myturn="myturn" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" /> 
+                <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:myturn="myturn" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" :game="game" /> 
             </div>
        </div>
     </div>
@@ -37,7 +37,7 @@ require('cards');
                 trickDocRef: null
             }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','handOn','playerIndex'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','handOn','playerIndex','game'],      
         components: {
             CBCard
         },
@@ -66,17 +66,6 @@ require('cards');
                         this.myturn = false;
                     this.myhand = this.handOn;
 
-                    /*this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
-                            console.log("Hands onSnapshot launched (Hand 1)");
-                            //this.roundId = doc.data().round;
-                            console.log("Current round :" + this.roundId);
-                            this.myindex = doc.data().playerIndex;
-                            if (this.activePlayer == this.myindex)
-                                this.myturn = true;
-                            else
-                                this.myturn = false;                                    
-                            this.myhand = doc.data().handOn;
-                    });*/
                 }
                 else
                     this.handDocRef = null;
@@ -100,15 +89,6 @@ require('cards');
             }
         },
         methods: {
-            CalculatePoints(cards, atout) {
-                var points = 0;
-
-                for (var i=0;i<cards.length;i++) {
-                    points += this.GetCardPoints(cards[i], atout);
-                }
-
-                return points;
-            },
             getStyle(card, index) {
                 var n = this.myhand.length;
                 if (n === 0) {

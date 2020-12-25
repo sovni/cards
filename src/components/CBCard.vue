@@ -300,11 +300,10 @@ const cTRB = require('../assets/cards/RED_BACK.svg');
                 cTAXX: cTAXX,
                 cTAXXI: cTAXXI,
                 cTBB : cTBB,
-                cTRB : cTRB,
-                game : "belote"                
+                cTRB : cTRB
             }
         },
-        props: ['mycard','mystyle','myactive','myhand','myturn'],
+        props: ['mycard','mystyle','myactive','myhand','myturn','game'],
         components: {
         },
         methods: {
