@@ -35,7 +35,7 @@
                </div>
             </div>
             <div class="p-col-fixed"  style="width:200px;text-align: center;">
-               {{ playersName[1] }}
+               {{ playersName[3] }}
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;text-align: center;">
@@ -43,7 +43,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:200px;text-align: center;">
-               {{playersName[3]}}
+               {{playersName[1]}}
             </div>
 
 

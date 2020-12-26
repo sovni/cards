@@ -194,7 +194,11 @@ require('cards');
 
                         trickDoc.get().then((tdoc) => {  
                             
-                            var allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout);
+                            var allowed;
+                            if (tdoc.data().cards.length == doc.data().nbPlayers)
+                                allowed = false;
+                            else
+                                allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout);
 
                             if (allowed) {
                                 this.handDocRef.update({
