@@ -1,29 +1,46 @@
 <template>
    <div class="p-grid">
         <div v-if="indexUser == 0" class="p-col-12 p-d-flex p-jc-center" style="height:50px">  
-            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
-            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
+            <Button v-if="choose && game == 'belote'" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
+            <Button v-if="choose && game == 'belote'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
+            <Button v-if="choose && game == 'tarot'" label="Petite" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('petite')"/>
+            <Button v-if="choose && game == 'tarot'" label="Garde" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('garde')"/>
+            <Button v-if="choose && game == 'tarot'" label="Garde Sans" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardesans')"/>
+            <Button v-if="choose && game == 'tarot'" label="Garde Contre" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardecontre')"/>
+            <Button v-if="choose && game == 'tarot'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('swords')"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('wands')"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('coins')"/>
             <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
         </div>
         <div class="p-col-12" >  
         <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
         <div class="hhand active-hand fan" >
-            <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" @card-play="playCard"/> 
+            <CBCard v-for="(mycard, index) in myhand" v-bind:key="mycard" v-bind:myactive="activeUser" v-bind:mycard="mycard" v-bind:myhand="handId" v-bind:mystyle="getStyle(mycard, index)" @card-play="playCard" :game="game"/> 
         </div>
         </div>
        <div v-if="indexUser != 0" class="p-col-12 p-d-flex p-jc-center" style="height:50px">  
-            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
-            <Button v-if="choose" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')"/>
-            <Button v-if="choosebis" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
+            <Button v-if="choose && game == 'belote'" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="take()"/>
+            <Button v-if="choose && game == 'belote'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('spades')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('hearts')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')"/>
+            <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
+            <Button v-if="choose && game == 'tarot'" label="Petite" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('petite')"/>
+            <Button v-if="choose && game == 'tarot'" label="Garde" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('garde')"/>
+            <Button v-if="choose && game == 'tarot'" label="Garde Sans" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardesans')"/>
+            <Button v-if="choose && game == 'tarot'" label="Garde Contre" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardecontre')"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('swords')"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('wands')"/>
+            <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('coins')"/>
             <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
         </div>
     </div>
@@ -62,7 +79,7 @@ require('cards');
                 //atout: ""    
             }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','atout','state'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','atout','state','game'],      
         components: {
             CBCard,
             Button
@@ -177,7 +194,11 @@ require('cards');
 
                         trickDoc.get().then((tdoc) => {  
                             
-                            var allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout);
+                            var allowed;
+                            if (tdoc.data().cards.length == doc.data().nbPlayers)
+                                allowed = false;
+                            else
+                                allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout);
 
                             if (allowed) {
                                 this.handDocRef.update({
@@ -207,7 +228,7 @@ require('cards');
                                             winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
                                             console.log("winner : " + winnerIndex);
                                             points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
-                                            console.log("Points: "+ points[0] + "/" + points[1]);
+                                            //console.log("Points: "+ points[0] + "/" + points[1]);
                                             this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
 
                                             this.handDocRef.get().then((hdoc) => {
@@ -245,64 +266,139 @@ require('cards');
                                 console.log("Card Not allowed !!!!");
                         });
                     }
+                    else if (doc.data().active == this.myindex && doc.data().state == "choice-3") {
+                        this.handDocRef.update({
+                            handOn: firebase.firestore.FieldValue.arrayRemove(playedCard)
+                        });
+                        var nbDeck = doc.data().deck.length;
+                        this.roundDocRef.update({
+                            deck: firebase.firestore.FieldValue.arrayUnion(playedCard)
+                        });
+                        if (nbDeck == 2) {
+                            this.playDocRef.get().then((playDoc) => {
+                                var active;
+                                active = (doc.data().dealer+1)%playDoc.data().players.length;
+                                this.roundDocRef.update({state:"trick", active: active, starter: active});
+                                this.roundDocRef.collection("tricks").add({
+                                    roundId: this.roundId,
+                                    players: [],
+                                    playerIndex: [],
+                                    cards: []
+                                })
+                                .then((docRef) => {
+                                    console.log("Trick created with ID: ", docRef.id);
+                                    this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                    this.$emit("start-trick", docRef.id);
+                                })
+                                .catch(function(error) {
+                                    console.error("Error adding document: ", error);
+                                });
+                            });                            
+                        }
+                    }
+                });
+            },
+            contract(bid) {
+                this.roundDocRef.update({
+                    bid: this.playerId, bidIndex: this.myindex,
+                    bidPlayer: this.getUserName(),
+                    bidContract: bid,
+                    state: "choice-2"
                 });
             },
             take(suit="") {
-
                 this.roundDocRef.get().then((doc) => {
                     console.log("round : "+ doc.data().state);
-                    var takeCard = doc.data().choice[0];
-                    console.log("take : " + takeCard.suit, ":player : " + this.playerId);
-                    if (suit == "")
-                        this.roundDocRef.update({
-                            atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex,
-                            bidPlayer: this.getUserName(),
-                            choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
-                        });
-                    else
-                        this.roundDocRef.update({
-                            atout: suit, bid: this.playerId, bidIndex: this.myindex,
-                            bidPlayer: this.getUserName(),
-                            choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
-                        });
+                    if (this.game == "belote") {
+                        var takeCard = doc.data().choice[0];
+                        console.log("take : " + takeCard.suit, ":player : " + this.playerId);
+                        if (suit == "")
+                            this.roundDocRef.update({
+                                atout: takeCard.suit, bid: this.playerId, bidIndex: this.myindex,
+                                bidPlayer: this.getUserName(),
+                                choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
+                            });
+                        else
+                            this.roundDocRef.update({
+                                atout: suit, bid: this.playerId, bidIndex: this.myindex,
+                                bidPlayer: this.getUserName(),
+                                choice: firebase.firestore.FieldValue.arrayRemove(takeCard)
+                            });
 
-                    console.log("draw remaining cards");
+                        console.log("draw remaining cards");
 
-                    this.handDocRef.update({handOn: firebase.firestore.FieldValue.arrayUnion(takeCard)});
+                        this.handDocRef.update({handOn: firebase.firestore.FieldValue.arrayUnion(takeCard)});
 
-                    this.playDocRef.get().then((playDoc) => {
-                            var deckIndex = 0;
-                            var active;
-                            for (var i=0;i<playDoc.data().players.length;i++) {
-                                var playerId = playDoc.data().players[(i+doc.data().dealer)%playDoc.data().players.length];
-                                var handId = this.roundId + playerId;
-                                var nbCards = 3;
-                                if (this.playerId == playerId)
-                                    nbCards = 2;
-                                for (var j=0;j<nbCards;j++) {
-                                    var nextCard;
-                                    nextCard = doc.data().deck[deckIndex++];
-                                    this.roundDocRef.collection("hands").doc(handId).update({handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)});
+                        this.playDocRef.get().then((playDoc) => {
+                                var deckIndex = 0;
+                                var active;
+                                for (var i=0;i<playDoc.data().players.length;i++) {
+                                    var playerId = playDoc.data().players[(i+doc.data().dealer)%playDoc.data().players.length];
+                                    var handId = this.roundId + playerId;
+                                    var nbCards = 3;
+                                    if (this.playerId == playerId)
+                                        nbCards = 2;
+                                    for (var j=0;j<nbCards;j++) {
+                                        var nextCard;
+                                        nextCard = doc.data().deck[deckIndex++];
+                                        this.roundDocRef.collection("hands").doc(handId).update({handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)});
+                                    }
                                 }
-                            }
-                            active = (doc.data().dealer+1)%playDoc.data().players.length;
-                            this.roundDocRef.update({state:"trick", active: active, starter: active});
-                            this.roundDocRef.collection("tricks").add({
-                                roundId: this.roundId,
-                                players: [],
-                                playerIndex: [],
-                                cards: []
-                            })
-                            .then((docRef) => {
-                                console.log("Trick created with ID: ", docRef.id);
-                                this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                this.$emit("start-trick", docRef.id);
-                            })
-                            .catch(function(error) {
-                                console.error("Error adding document: ", error);
-                            });                                
+                                active = (doc.data().dealer+1)%playDoc.data().players.length;
+                                this.roundDocRef.update({state:"trick", active: active, starter: active});
+                                this.roundDocRef.collection("tricks").add({
+                                    roundId: this.roundId,
+                                    players: [],
+                                    playerIndex: [],
+                                    cards: []
+                                })
+                                .then((docRef) => {
+                                    console.log("Trick created with ID: ", docRef.id);
+                                    this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                    this.$emit("start-trick", docRef.id);
+                                })
+                                .catch(function(error) {
+                                    console.error("Error adding document: ", error);
+                                });                                
 
+                            });
+                    }
+                    else if (this.game == "tarot") {
+                        this.roundDocRef.get().then((doc) => {
+                            this.roundDocRef.update({
+                                atout: suit
+                            });
+                            if (doc.data().bidContract != "gardesans" && doc.data().bidContract != "gardecontre") {
+                                for (var k=0;k<doc.data().deck.length;k++) {
+                                    var nextCard;
+                                    nextCard = doc.data().deck[k];
+                                    this.handDocRef.update({handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)});
+                                }
+                                this.roundDocRef.update({state: "choice-3", deck: []});
+                            }
+                            else{
+                                this.playDocRef.get().then((playDoc) => {
+                                    var active;
+                                    active = (doc.data().dealer+1)%playDoc.data().players.length;
+                                    this.roundDocRef.update({state:"trick", active: active, starter: active});
+                                    this.roundDocRef.collection("tricks").add({
+                                        roundId: this.roundId,
+                                        players: [],
+                                        playerIndex: [],
+                                        cards: []
+                                    })
+                                    .then((docRef) => {
+                                        console.log("Trick created with ID: ", docRef.id);
+                                        this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                        this.$emit("start-trick", docRef.id);
+                                    })
+                                    .catch(function(error) {
+                                        console.error("Error adding document: ", error);
+                                    });
+                                });                                     
+                            }
                         });
+                    }
                 });                
             },
             pass() {

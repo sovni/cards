@@ -16,8 +16,6 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 
-
-
    export default {
       name: 'MyGamelist',
       data() {
@@ -44,8 +42,8 @@ import Button from 'primevue/button';
                      console.log("Plays onSnapshot launched (MyGamelist 1)");
                      // doc.data() is never undefined for query doc snapshots
                     console.log("Gamelist : " +doc.id, " => ", doc.data());
-                    this.mygames.push({"uid": doc.id, "name": "belote", "players": doc.data().players.length, "state": doc.data().state});
-                     if (doc.data().players.length == 4) {
+                    this.mygames.push({"uid": doc.id, "name": doc.data().game, "players": doc.data().players.length, "state": doc.data().state});
+                     if (doc.data().players.length == doc.data().nbPlayers) {
                         db.collection("plays").doc(doc.id).update({state:"prep"});
                      }
                });

@@ -5,7 +5,7 @@
       </template>
       <template v-slot:content >
          <div class="p-grid">
-            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+            <div v-if="playId != -1 && currentGame == 'belote'" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
                <!--<div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>-->
                <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>
                <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
@@ -14,9 +14,18 @@
                <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
                <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
             </div>
+            <div v-if="playId != -1 && currentGame == 'tarot'" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+               <!--<div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>-->
+               <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
+               <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
+               <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
+               <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
+               <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
+               <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
+            </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;height:150px">
-            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState"/>
+            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col" />
             <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
@@ -26,7 +35,7 @@
                </div>
             </div>
             <div class="p-col-fixed"  style="width:200px;text-align: center;">
-               {{ playersName[1] }}
+               {{ playersName[3] }}
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;text-align: center;">
@@ -34,24 +43,24 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:200px;text-align: center;">
-               {{playersName[3]}}
+               {{playersName[1]}}
             </div>
 
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState"/>-->
-            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState"/>
+            <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
+            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
                <!--<div class="p-d-flex p-jc-center">-->
-               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId" :state="roundState" :choice="choice"/>
+               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId" :state="roundState" :choice="choice" :game="currentGame"/>
                <!--</div>-->
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
-            <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState"/>-->
-            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState"/>
+            <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
+            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-d-flex p-flex-column" style="width:100px;height:320px">
             <div class="p-col-fixed"  style="width:100px;height:220px"/>
@@ -64,7 +73,7 @@
 
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:450px;height:320px">
-            <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState"/>
+            <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>
             </div>                  
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:100px;height:320px"/>
@@ -189,25 +198,28 @@ import Card from 'primevue/card';
                var round = -1;
                console.log("player id : " + playerId);
                console.log("players " + doc.data().players);
-               if (doc.data().players[0] == playerId || doc.data().players[2] == playerId) {
-                  this.scores[0] = doc.data().score[0];
-                  this.scores[1] = doc.data().score[1];
-               }
-               else {
-                  this.scores[1] = doc.data().score[0];
-                  this.scores[0] = doc.data().score[1];                  
-               }
-               this.scoresData = {labels: ['Nous', 'Eux'], datasets: [{label: 'Scores',backgroundColor: ['#42A5F5','#FFA726'], data: [this.scores[0],this.scores[1]]}]};
-
-               if (typeof doc.data().lastScore != "undefined" && doc.data().lastScore.length > 0)
-                  if (doc.data().players[0] == playerId || doc.data().players[2] == playerId)
-                     this.lastScore = doc.data().lastScore;
-                  else {
-                     this.lastScore[1] = doc.data().lastScore[0];
-                     this.lastScore[0] = doc.data().lastScore[1];
+               this.currentGame = doc.data().game;
+               if (this.currentGame == "belote") {
+                  if (doc.data().players[0] == playerId || doc.data().players[2] == playerId) {
+                     this.scores[0] = doc.data().score[0];
+                     this.scores[1] = doc.data().score[1];
                   }
-               else {
-                  this.lastScore = [];
+                  else {
+                     this.scores[1] = doc.data().score[0];
+                     this.scores[0] = doc.data().score[1];                  
+                  }
+                  this.scoresData = {labels: ['Nous', 'Eux'], datasets: [{label: 'Scores',backgroundColor: ['#42A5F5','#FFA726'], data: [this.scores[0],this.scores[1]]}]};
+
+                  if (typeof doc.data().lastScore != "undefined" && doc.data().lastScore.length > 0)
+                     if (doc.data().players[0] == playerId || doc.data().players[2] == playerId)
+                        this.lastScore = doc.data().lastScore;
+                     else {
+                        this.lastScore[1] = doc.data().lastScore[0];
+                        this.lastScore[0] = doc.data().lastScore[1];
+                     }
+                  else {
+                     this.lastScore = [];
+                  }
                }             
 
                if (doc.data().round != this.roundId) {
@@ -254,7 +266,6 @@ import Card from 'primevue/card';
                               this.playersIndex[j] = (active+j)%this.hands.length;
                            }
                         }
-
                   });
                   this.roundDocSubs = this.roundDocRef.onSnapshot((rdoc) => {
                      console.log("Rounds onSnapshot launched (Playground 2)");
