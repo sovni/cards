@@ -676,19 +676,36 @@ require('cards');
                             value=0;
                             break;
                     } 
-                    switch (card.suit) {
-                        case "hearts":
-                            value += 10;
-                            break;
-                        case "clubs":
-                            value += 20;
-                            break;
-                        case "diamonds":
-                            value += 30;
-                            break;
-                        default:
-                            break;
-                    }                   
+                    if (atout == 'spades' || atout == "clubs") {
+                        switch (card.suit) {
+                            case "hearts":
+                                value += 10;
+                                break;
+                            case "clubs":
+                                value += 20;
+                                break;
+                            case "diamonds":
+                                value += 30;
+                                break;
+                            default:
+                                break;
+                        }  
+                    }                 
+                    else {
+                        switch (card.suit) {
+                            case "clubs":
+                                value += 10;
+                                break;
+                            case "diamonds":
+                                value += 20;
+                                break;
+                            case "spades":
+                                value += 30;
+                                break;
+                            default:
+                                break;
+                        }  
+                    }
                 }
                 return value;
             },       
