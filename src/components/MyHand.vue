@@ -525,7 +525,7 @@ require('cards');
                 var best = 0;
                 var val;
                 for (var i=0;i<cards.length;i++) {
-                    if (cards[i].suit == atout) {
+                    if ((this.game == "belote" && cards[i].suit == atout) || (this.game == "tarot" && cards[i].suit == "trump")) {
                         val = this.GetCardValue(cards[i], atout);
                         if (val > best)
                             best = val;
