@@ -551,22 +551,27 @@ require('cards');
                         if (i==doc.data().scores.length-1)
                             points[doc.data().scores[i].winnerIndex] += 10;
                     }
-                    points[0] = points[0] + points[2];
-                    points[1] = points[1] + points[3];
-                    if (points[0] == 0 && points[1] == 162)
-                        points[1] = 252;
-                    else if (points[0] == 162 && points[1] == 0)
-                        points[0] = 252;
-                    else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
-                        points[0] = 162;
-                        points[1] = 0;
+                    if (this.game == "belote") {
+                        points[0] = points[0] + points[2];
+                        points[1] = points[1] + points[3];
+                        if (points[0] == 0 && points[1] == 162)
+                            points[1] = 252;
+                        else if (points[0] == 162 && points[1] == 0)
+                            points[0] = 252;
+                        else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
+                            points[0] = 162;
+                            points[1] = 0;
+                        }
+                        else if (points[1] > points[0] && (doc.data().bidIndex == 0 || doc.data().bidIndex == 2)) {
+                            points[1] = 162;
+                            points[0] = 0;
+                        }
+                        this.roundDocRef.update({score:[points[0], points[1]]});
+                        this.playDocRef.update({lastScore:[points[0], points[1]]});
                     }
-                    else if (points[1] > points[0] && (doc.data().bidIndex == 0 || doc.data().bidIndex == 2)) {
-                        points[1] = 162;
-                        points[0] = 0;
-                    }
-                    this.roundDocRef.update({score:[points[0], points[1]]});
-                    this.playDocRef.update({lastScore:[points[0], points[1]]});
+                    //else if (this.game == "tarot") {
+
+                    //}
                 });
             },
             CalculateWinner(cards, indexes, atout) {
@@ -579,7 +584,7 @@ require('cards');
                 for (var i=0;i<cards.length;i++) {
                     var value = this.GetCardValue(cards[i], atout);
                     console.log("card value: " + value + " (" + cards[i].suit + cards[i].rank + ")");
-                    if (cards[i].suit == atout) {
+                    if ((this.game == "belote" && cards[i].suit == atout) || (this.game == "tarot" && cards[i].suit == "trump")) {
                         if (value > bestAtout) {
                             winnerIndex = i;
                             console.log("best card" + i);
@@ -611,95 +616,236 @@ require('cards');
             },
             GetCardValue(card, atout) {
                 var value;
-                if (card.suit == atout) {
-                    switch (card.rank) {
-                        case "J":
-                            value = 107;
-                            break;
-                        case "9" :
-                            value=106;
-                            break;
-                        case "A" :
-                        case "As" :
-                            value=105;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=104;
-                            break;
-                        case "K" :
-                            value=103;
-                            break;
-                        case "Q" :
-                            value=102;
-                            break;
-                        case "8" : 
-                            value=101;
-                            break;
-                        case "7" :
-                            value=100;
-                            break;
-                        default:
-                            value=0;
-                            break;
-                    }
-                }
-                else {
-                    switch (card.rank) {
-                        case "A":
-                        case "As" :
-                            value = 8;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=7;
-                            break;
-                        case "K" :
-                            value=6;
-                            break;
-                        case "Q" :
-                            value=5;
-                            break;
-                        case "J" :
-                            value=4;
-                            break;
-                        case "9" :
-                            value=3;
-                            break;
-                        case "8" : 
-                            value=2;
-                            break;
-                        case "7" :
-                            value=1;
-                            break;
-                        default:
-                            value=0;
-                            break;
-                    } 
-                    if (atout == 'spades' || atout == "clubs") {
-                        switch (card.suit) {
-                            case "hearts":
-                                value += 10;
+                if (this.game == "belote") {
+                    if (card.suit == atout) {
+                        switch (card.rank) {
+                            case "J":
+                                value = 107;
                                 break;
-                            case "clubs":
-                                value += 20;
+                            case "9" :
+                                value=106;
                                 break;
-                            case "diamonds":
-                                value += 30;
+                            case "A" :
+                            case "As" :
+                                value=105;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=104;
+                                break;
+                            case "K" :
+                                value=103;
+                                break;
+                            case "Q" :
+                                value=102;
+                                break;
+                            case "8" : 
+                                value=101;
+                                break;
+                            case "7" :
+                                value=100;
                                 break;
                             default:
+                                value=0;
                                 break;
-                        }  
-                    }                 
+                        }
+                    }
                     else {
+                        switch (card.rank) {
+                            case "A":
+                            case "As" :
+                                value = 8;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=7;
+                                break;
+                            case "K" :
+                                value=6;
+                                break;
+                            case "Q" :
+                                value=5;
+                                break;
+                            case "J" :
+                                value=4;
+                                break;
+                            case "9" :
+                                value=3;
+                                break;
+                            case "8" : 
+                                value=2;
+                                break;
+                            case "7" :
+                                value=1;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        } 
+                        if (atout == 'spades' || atout == "clubs") {
+                            switch (card.suit) {
+                                case "hearts":
+                                    value += 10;
+                                    break;
+                                case "clubs":
+                                    value += 20;
+                                    break;
+                                case "diamonds":
+                                    value += 30;
+                                    break;
+                                default:
+                                    break;
+                            }  
+                        }                 
+                        else {
+                            switch (card.suit) {
+                                case "clubs":
+                                    value += 10;
+                                    break;
+                                case "diamonds":
+                                    value += 20;
+                                    break;
+                                case "spades":
+                                    value += 30;
+                                    break;
+                                default:
+                                    break;
+                            }  
+                        }
+                    }
+                }
+                else if (this.game == "tarot") {
+                    if (card.suit == "trump") {
+                        switch (card.rank) {
+                            case "XXI":
+                                value = 121;
+                                break;
+                            case "XX":
+                                value = 120;
+                                break;
+                            case "XIX":
+                                value = 119;
+                                break;
+                            case "XVIII":
+                                value = 118;
+                                break;
+                            case "XVII":
+                                value = 117;
+                                break;
+                            case "XVI":
+                                value = 116;
+                                break;
+                            case "XV":
+                                value = 115;
+                                break;
+                            case "XIV":
+                                value = 114;
+                                break;
+                            case "XIII":
+                                value = 113;
+                                break;
+                            case "XII":
+                                value = 112;
+                                break;
+                            case "XI":
+                                value = 111;
+                                break;
+                            case "X":
+                                value = 110;
+                                break;
+                            case "IX":
+                                value = 109;
+                                break;
+                            case "VIII":
+                                value = 108;
+                                break;
+                            case "VII":
+                                value = 107;
+                                break;
+                            case "VI":
+                                value = 106;
+                                break;
+                            case "V":
+                                value = 105;
+                                break;
+                            case "IV":
+                                value = 104;
+                                break;
+                            case "III":
+                                value = 103;
+                                break;
+                            case "II":
+                                value = 102;
+                                break;
+                            case "I":
+                                value = 101;
+                                break;
+                            case "0":
+                                value = 0;
+                                break;
+                            default:
+                                value = 0;
+                                break;
+                        }
+                    }
+                    else {
+                        switch (card.rank) {
+                            case "K" :
+                                value=14;
+                                break;
+                            case "Q" :
+                                value=13;
+                                break;
+                            case "J" :
+                                value=12;
+                                break;
+                            case "P" :
+                                value=11;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=10;
+                                break;
+                            case "9" :
+                                value=9;
+                                break;
+                            case "8" : 
+                                value=8;
+                                break;
+                            case "7" :
+                                value=7;
+                                break;
+                            case "6" :
+                                value=6;
+                                break;
+                            case "5" :
+                                value=5;
+                                break;
+                            case "4" :
+                                value=4;
+                                break;
+                            case "3" :
+                                value=3;
+                                break;
+                            case "2" :
+                                value=2;
+                                break;
+                            case "A":
+                            case "As" :
+                                value = 1;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        } 
                         switch (card.suit) {
-                            case "clubs":
+                            case "cups":
                                 value += 10;
                                 break;
-                            case "diamonds":
+                            case "wands":
                                 value += 20;
                                 break;
-                            case "spades":
+                            case "coins":
                                 value += 30;
                                 break;
                             default:
@@ -711,71 +857,110 @@ require('cards');
             },       
            GetCardPoints(card, atout) {
                 var value;
-                if (card.suit == atout) {
-                    switch (card.rank) {
-                        case "J":
-                            value = 20;
-                            break;
-                        case "9" :
-                            value=14;
-                            break;
-                        case "A" :
-                        case "As" :
-                            value=11;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=10;
-                            break;
-                        case "K" :
-                            value=4;
-                            break;
-                        case "Q" :
-                            value=3;
-                            break;
-                        case "8" : 
-                            value=0;
-                            break;
-                        case "7" :
-                            value=0;
-                            break;
-                        default:
-                            value=0;
-                            break;
+                if (this.game == "belote") {
+                    if (card.suit == atout) {
+                        switch (card.rank) {
+                            case "J":
+                                value = 20;
+                                break;
+                            case "9" :
+                                value=14;
+                                break;
+                            case "A" :
+                            case "As" :
+                                value=11;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=10;
+                                break;
+                            case "K" :
+                                value=4;
+                                break;
+                            case "Q" :
+                                value=3;
+                                break;
+                            case "8" : 
+                                value=0;
+                                break;
+                            case "7" :
+                                value=0;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        }
+                    }
+                    else {
+                        switch (card.rank) {
+                            case "A":
+                            case "As" :
+                                value = 11;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=10;
+                                break;
+                            case "K" :
+                                value=4;
+                                break;
+                            case "Q" :
+                                value=3;
+                                break;
+                            case "J" :
+                                value=2;
+                                break;
+                            case "9" :
+                                value=0;
+                                break;
+                            case "8" : 
+                                value=0;
+                                break;
+                            case "7" :
+                                value=0;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        }                    
                     }
                 }
-                else {
-                    switch (card.rank) {
-                        case "A":
-                        case "As" :
-                            value = 11;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=10;
-                            break;
-                        case "K" :
-                            value=4;
-                            break;
-                        case "Q" :
-                            value=3;
-                            break;
-                        case "J" :
-                            value=2;
-                            break;
-                        case "9" :
-                            value=0;
-                            break;
-                        case "8" : 
-                            value=0;
-                            break;
-                        case "7" :
-                            value=0;
-                            break;
-                        default:
-                            value=0;
-                            break;
-                    }                    
+                else if (this.game == "tarot") {
+                    if (card.suit == "trump") {
+                        switch (card.rank) {
+                            case "XXI":
+                                value = 4.5;
+                                break;
+                            case "I":
+                                value = 4.5;
+                                break;
+                            case "0":
+                                value = 4.5;
+                                break;
+                            default :     
+                                value = 0.5;
+                                break;
+                        }
+                    }
+                    else {            
+                        switch (card.rank) {
+                            case "K":
+                                value = 4.5;
+                                break;
+                            case "Q" :
+                                value = 3.5;
+                                break;
+                            case "J" :
+                                value = 2.5;
+                                break;
+                            case "P" :
+                                value = 1.5;
+                                break;
+                            default :
+                                value = 0.5;
+                                break;    
+                        }
+                    }
                 }
                 return value;
             },
