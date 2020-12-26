@@ -4,19 +4,10 @@
          Sélectionnez ou créez une partie
       </template>
       <template v-slot:content >
-         <div class="p-grid">
-            <div v-if="playId != -1 && currentGame == 'belote'" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+         <div class="p-grid" v-if="currentGame == 'belote'">
+            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
                <!--<div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>-->
                <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>
-               <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
-               <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
-               <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
-               <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
-               <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
-            </div>
-            <div v-if="playId != -1 && currentGame == 'tarot'" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
-               <!--<div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">ATOUT</div>-->
-               <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
                <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
                <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
                <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
@@ -61,6 +52,77 @@
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
             <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            </div>
+            <div class="p-d-flex p-flex-column" style="width:100px;height:320px">
+            <div class="p-col-fixed"  style="width:100px;height:220px"/>
+            <div v-if="lastScore.length == 0" class="p-col-fixed"  style="width:100px;height:100px"/>
+            <div v-if="lastScore.length > 0" class="p-col-fixed p-card atout"  style="width:200px;height:100px">
+               <div class="p-col-12 p-text-center p-text-bold">DERNIERE PARTIE</div>
+               <div class="p-col-12 p-text-center p-text-bold">{{ lastScore[0]}} / {{lastScore[1]}}</div>
+            </div>
+            </div>
+
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:450px;height:320px">
+            <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>
+            </div>                  
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:100px;height:320px"/>
+         </div>   
+
+         <div class="p-grid" v-if="currentGame == 'tarot'">
+
+            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+               <div v-if="bidContract != ''" class="p-col-12 p-text-center p-text-bold">{{bidContract}}</div>-->
+               <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
+               <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
+               <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
+               <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
+               <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
+               <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
+            </div>
+            <!--<div class="p-col" /> -->
+            <div class="p-col-fixed"  style="width:200px;height:150px">
+            <Hand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            </div>
+            <div class="p-col-fixed"  style="width:200px;height:150px">
+            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            </div>
+            <!--<div class="p-col" /> -->
+            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+               <div class="p-col-12 p-text-center p-text-bold">SCORE</div>
+               <div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center">
+                  <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
+               </div>
+            </div>
+
+            <!--<div class="p-col-fixed"  style="width:200px;text-align: center;">
+               {{ playersName[3] }}
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:250px;text-align: center;">
+               {{playersName[2]}}
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:200px;text-align: center;">
+               {{playersName[1]}}
+            </div>-->
+
+
+            <div class="p-col-fixed"  style="width:150px;height:500px">
+            <!--<MyHand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
+            <Hand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:350px;height:250px">
+               <!--<div class="p-d-flex p-jc-center">-->
+               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId" :state="roundState" :choice="choice" :game="currentGame"/>
+               <!--</div>-->
+            </div>
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:150px;height:250px">
+            <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
+            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="4" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-d-flex p-flex-column" style="width:100px;height:320px">
             <div class="p-col-fixed"  style="width:100px;height:220px"/>
