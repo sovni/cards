@@ -8,7 +8,7 @@
          <InputText type="text" class="p-mb-2" placeholder="Pseudo" v-model="userData.username" /><br>
          <InputText type="email" class="p-mb-2" placeholder="Email" v-model="userData.email" /><br>
          <InputText type="password" class="p-mb-2" placeholder="Mot de passe" v-model="userData.password" /><br>
-         <Button>Créer le compte</Button>
+         <Button type="submit" label="Créer le compte" />
         </form>
    </div>
 </template>
@@ -37,8 +37,10 @@ import Button from 'primevue/button';
       components: {
          InputText,
          Button
-      },      methods:{
+      },
+      methods:{
          registerUser(){
+            console.log("Register :" + this.userData.email);
             firebase.auth().createUserWithEmailAndPassword(this.userData.email, this.userData.password)
                .then(() => {
                   firebase.auth().currentUser.updateProfile({
