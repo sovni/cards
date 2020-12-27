@@ -101,7 +101,6 @@ require('cards');
                 var height = Math.floor(width * 1.4); // hack: for a hidden hand
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
-                console.log("!!!!!!!!!!!!!!!!Calculate Box : " + box.width + ":" + box.height);
                 //console.log("Add : " + Math.floor((width - box.width)*0.5))
                 var rotationAngle = Math.round(coords[index].angle);
                 if (this.indexUser == 0)
@@ -132,7 +131,16 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                startAngle = startAngle + (this.indexUser) * 90;
+                if (this.game == "belote")
+                    startAngle = startAngle + (this.indexUser) * 90;
+                else if (this.game == "tarot") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 90;
+                    else if (this.indexUser == 2 || this.indexUser == 3)
+                        startAngle = startAngle + 180;
+                    else if (this.indexUser == 4)
+                        startAngle = startAngle + 270;
+                }
 
                 var coords = [];
                 var i;

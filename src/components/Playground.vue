@@ -109,7 +109,7 @@
             </div>-->
 
 
-            <div class="p-col-fixed"  style="width:150px;height:500px">
+            <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
             <Hand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
@@ -167,12 +167,12 @@ import Card from 'primevue/card';
       name: 'Playground',
       data() {
             return {
-               hands: [[],[],[],[]],
-               handsOn: [[],[],[],[]],
-               handPlayersIndex: [-1,-1,-1,-1],
-               players: ["","","",""],
-               playersName: ["","","",""],
-               playersIndex: [0,0,0,0],
+               hands: [[],[],[],[],[]],
+               handsOn: [[],[],[],[],[]],
+               handPlayersIndex: [-1,-1,-1,-1,-1],
+               players: ["","","","",""],
+               playersName: ["","","","",""],
+               playersIndex: [0,0,0,0,0],
                playId: -1,
                roundId: -1,
                trickId: -1,
@@ -262,6 +262,8 @@ import Card from 'primevue/card';
                console.log("players " + doc.data().players);
                this.currentGame = doc.data().game;
                if (this.currentGame == "belote") {
+                  this.cardWidth = 78;
+                  this.myCardWidth = 140;
                   if (doc.data().players[0] == playerId || doc.data().players[2] == playerId) {
                      this.scores[0] = doc.data().score[0];
                      this.scores[1] = doc.data().score[1];
@@ -282,7 +284,11 @@ import Card from 'primevue/card';
                   else {
                      this.lastScore = [];
                   }
-               }             
+               }
+               else if (this.currentGame == "tarot") {
+                  this.cardWidth = 58;
+                  this.myCardWidth = 120;
+               } 
 
                if (doc.data().round != this.roundId) {
                   if (this.roundDocSubs != null) {
