@@ -37,6 +37,7 @@
             <Button v-if="choose && game == 'tarot'" label="Garde" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('garde')"/>
             <Button v-if="choose && game == 'tarot'" label="Garde Sans" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardesans')"/>
             <Button v-if="choose && game == 'tarot'" label="Garde Contre" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardecontre')"/>
+            <Button v-if="choose && game == 'tarot'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('swords')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('wands')"/>
@@ -442,6 +443,12 @@ require('cards');
 
                 if (trick.length == 0)
                     return true;
+                
+                if (this.game == "tarot") {
+                    atout = "trump";
+                    if (playedCard.suit == "trump" && playedCard.rank == "0")
+                        return true;
+                }
 
                 suitPlayed = trick[0].suit;
                 //for (var i=0;i<trick.length;i++) {
@@ -481,7 +488,7 @@ require('cards');
                 }
                 else if (!this.hasSuit(atout))
                     allowed = true;
-                else if (this.isPartnerMaster(trick, atout)) {
+                else if (this.game == "belore" && this.isPartnerMaster(trick, atout)) {
                     allowed = true;
                 }
                 else {
@@ -508,8 +515,11 @@ require('cards');
             },
             hasSuit(suit){
                 for (var i=0;i<this.myhand.length;i++) {
-                    if (this.myhand[i].suit == suit)
+                    if (this.myhand[i].suit == suit) {
+                        if (this.game == "tarot" && suit == "trump" && this.myhand[i].rank == "0")
+                            continue;
                         return true;
+                    }
                 }
                 return false;
             },
@@ -843,13 +853,13 @@ require('cards');
                         } 
                         switch (card.suit) {
                             case "cups":
-                                value += 10;
-                                break;
-                            case "wands":
                                 value += 20;
                                 break;
+                            case "wands":
+                                value += 40;
+                                break;
                             case "coins":
-                                value += 30;
+                                value += 60;
                                 break;
                             default:
                                 break;
@@ -1005,8 +1015,16 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                startAngle = startAngle + (this.indexUser) * 90;
-
+                if (this.game == "belote")
+                    startAngle = startAngle + (this.indexUser) * 90;
+                else if (this.game == "tarot") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 90;
+                    else if (this.indexUser == 2 || this.indexUser == 3)
+                        startAngle = startAngle + 180;
+                    else if (this.indexUser == 4)
+                        startAngle = startAngle + 270;
+                }
                 var coords = [];
                 var i;
                 var minX = 99999;

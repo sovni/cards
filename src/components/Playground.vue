@@ -74,21 +74,21 @@
 
             <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:150px;height:150px">
                <div v-if="bidContract != ''" class="p-col-12 p-text-center p-text-bold">{{bidContract}}</div>
-               <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
                <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
-               <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
-               <div v-if="atout == 'diamonds'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
-               <div v-if="atout == 'clubs'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
-               <div v-if="atout == 'hearts'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
+               <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
+               <div v-if="atout == 'swords'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
+               <div v-if="atout == 'coins'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
+               <div v-if="atout == 'wands'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
+               <div v-if="atout == 'cups'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
             </div>
-            <!--<div class="p-col" /> -->
+            <div class="p-col" />
             <div class="p-col-fixed"  style="width:200px;height:150px">
-            <Hand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col-fixed"  style="width:200px;height:150px">
-            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
-            <!--<div class="p-col" /> -->
+            <div class="p-col" />
             <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:150px;height:150px">
                <div class="p-col-12 p-text-center p-text-bold">SCORE</div>
                <div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center">
@@ -96,22 +96,25 @@
                </div>
             </div>
 
-            <!--<div class="p-col-fixed"  style="width:200px;text-align: center;">
-               {{ playersName[3] }}
-            </div>
-            <div class="p-col" />
-            <div class="p-col-fixed"  style="width:250px;text-align: center;">
-               {{playersName[2]}}
+            <div class="p-col-fixed"  style="width:150px;text-align: center;">
+               {{ playersName[4] }}
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:200px;text-align: center;">
+               {{playersName[3]}}
+            </div>
+            <div class="p-col-fixed"  style="width:200px;text-align: center;">
+               {{playersName[2]}}
+            </div>            <div class="p-col" />
+            <div class="p-col" />
+            <div class="p-col-fixed"  style="width:150px;text-align: center;">
                {{playersName[1]}}
-            </div>-->
+            </div>
 
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
@@ -122,7 +125,7 @@
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="4" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="4" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-d-flex p-flex-column" style="width:100px;height:320px">
             <div class="p-col-fixed"  style="width:100px;height:220px"/>
@@ -188,6 +191,7 @@ import Card from 'primevue/card';
                handDocSubs: null,
                atout: '',
                bidPlayer: '',
+               bidContract: '',
                activePlayer: -1,
                roundState: '',
                lastScore: [],
@@ -245,6 +249,7 @@ import Card from 'primevue/card';
             }
             this.atout = "";
             this.bidPlayer = "";
+            this.bidContract = "";
             this.playId = uid;
             this.playDocRef = db.collection("plays").doc(this.playId);
             this.playDocSubs = this.playDocRef.onSnapshot((doc) => {
@@ -344,6 +349,7 @@ import Card from 'primevue/card';
                         this.choice = rdoc.data().choice;
                         this.roundState = rdoc.data().state;
                         this.bidPlayer = rdoc.data().bidPlayer;
+                        this.bidContract = rdoc.data().bidContract;
                   });
                }
             });

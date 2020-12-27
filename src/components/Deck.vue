@@ -43,7 +43,7 @@ require('cards');
                     this.roundDocSubs = null;
                 }
                 if (this.myround != -1) {
-                    this.roundDocRef = db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround)
+                    this.roundDocRef = db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround);
                     /*this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
                             console.log("Rounds onSnapshot launched (Deck 1)");
                             if (doc.data().state == "choice-1" || doc.data().state == "choice-2") {
@@ -61,6 +61,9 @@ require('cards');
                     this.trickDocSubs = null;
                 }
                 if (this.trickId != -1) {
+                    if (this.roundDocRef == null) {
+                        this.roundDocRef = db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround);
+                    }
                     this.trickDocRef = this.roundDocRef.collection("tricks").doc(this.trickId);
                     this.trickDocSubs = this.trickDocRef.onSnapshot((doc) => {
                             console.log("Tricks onSnapshot launched (Deck 2)");
@@ -99,12 +102,13 @@ require('cards');
                 }
                 var width = this.cwidth; // hack: for a hidden hand
                 var height = Math.floor(width * 1.4); // hack: for a hidden hand
-                var p2left = Math.floor(deckWidth*0.5)-Math.floor(width*0.5);
+                var p2left = Math.floor(deckWidth*0.5)-Math.floor(width*0.5) + width*0.5;
+                var p3left = Math.floor(deckWidth*0.5)-Math.floor(width*0.5) - width*0.5;
                 var p0left = Math.floor(deckWidth*0.5)-(Math.floor(width*0.5));
                 var p0top = deckHeight - height;
                 var p1left = deckWidth-height;
                 var p1top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
-                var p3top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+                var p4top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
                 //var box = {};
                 var style="";
         
@@ -120,7 +124,9 @@ require('cards');
                 else if (pindex == 2)
                     style = "width:"+width+"px; left:"+ p2left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
                 else if (pindex == 3)
-                    style = "width:"+width+"px; left:25px;top:" + p3top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
+                    style = "width:"+width+"px; left:"+ p3left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
+                else if (pindex == 4)
+                    style = "width:"+width+"px; left:25px;top:" + p4top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
                 console.log("style : " + style);
                 return style;
                 //var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    

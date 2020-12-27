@@ -68,7 +68,11 @@ require('cards');
                     else
                         this.myturn = false;
                     this.myhand = this.handOn;
-
+                    if (this.game == "belote")
+                        this.cspacing = 0.24;
+                    else if (this.game == "tarot") {
+                        this.cspacing = 0.1;
+                    }
                 }
                 else
                     this.handDocRef = null;
