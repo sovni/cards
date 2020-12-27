@@ -343,8 +343,11 @@ const cTRB = require('../assets/cards/RED_BACK.svg');
                         break;
                 }
                 var game = "";
-                if (this.game == "tarot")
+                if (this.game == "tarot") {
                     game = "T";
+                    if (card.suit == "trump")
+                        return eval("this.c"+game+suit+card.rank);
+                }
                 //return eval("this.c"+card.rank.shortName+suit);
                 return eval("this.c"+game+card.rank+suit);
             },

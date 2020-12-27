@@ -201,7 +201,7 @@ const { decks } = require('cards');
             if (game == "belote")
                deck = new decks.PiquetDeck();
             else if (game == "tarot")
-               deck = new decks.TarotDeck();
+               deck = new decks.TarotDeck("modern");
             deck.shuffleAll();
             console.log("Draw cards " + playId);
             db.collection("plays").doc(playId).update({state:"distrib-1"});

@@ -72,8 +72,8 @@
 
          <div class="p-grid" v-if="currentGame == 'tarot'">
 
-            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
-               <div v-if="bidContract != ''" class="p-col-12 p-text-center p-text-bold">{{bidContract}}</div>-->
+            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:150px;height:150px">
+               <div v-if="bidContract != ''" class="p-col-12 p-text-center p-text-bold">{{bidContract}}</div>
                <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
                <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}}</div>
                <div v-if="atout == 'spades'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
@@ -89,7 +89,7 @@
             <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <!--<div class="p-col" /> -->
-            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
+            <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:150px;height:150px">
                <div class="p-col-12 p-text-center p-text-bold">SCORE</div>
                <div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center">
                   <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>

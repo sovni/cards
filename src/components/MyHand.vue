@@ -101,6 +101,9 @@ require('cards');
                     this.handDocSubs = null;
                 }
                 if (this.handId != -1) {
+                    if (this.playDocRef == null) {
+                        this.playDocRef = db.collection("plays").doc(this.playId);
+                    }
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
                     this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
                             console.log("Hands onSnapshot launched (MyHand 1)");

@@ -52,12 +52,15 @@ require('cards');
             },
             handId: function(newVal, oldVal) { // watch it
                 console.log("Watch props.handid function called:" + newVal + ":"+oldVal+":"+this.handId);
-                console.log("play id:" + this.playId);
+                console.log("play id:" + this.playId + "/ round id:" + this.roundId);
                 if (this.handDocSubs != null) {
                     this.handDocSubs();
                     this.handDocSubs = null;
                 }
                 if (this.handId != -1) {
+                    if (this.playDocRef == null) {
+                        this.playDocRef = db.collection("plays").doc(this.playId);
+                    }
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
                     this.myindex = this.playerIndex;
                     if (this.activePlayer == this.myindex)
