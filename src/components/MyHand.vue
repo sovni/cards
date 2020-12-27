@@ -232,33 +232,43 @@ require('cards');
                                             winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
                                             console.log("winner : " + winnerIndex);
                                             points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
-                                            //console.log("Points: "+ points[0] + "/" + points[1]);
-                                            this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
+                                            console.log("Points: "+ points[0] + "/" + points[1]);
+                                            this.roundDocRef.update({
+                                                state:"trick", 
+                                                active: winnerIndex, 
+                                                starter: winnerIndex, 
+                                                scores:firebase.firestore.FieldValue.arrayUnion({
+                                                    winnerIndex: winnerIndex, 
+                                                    points:points
+                                                })
+                                            })
+                                            .then(() => {
 
-                                            this.handDocRef.get().then((hdoc) => {
-                                                if (hdoc.data().handOn.length == 0) {  
-                                                    // END TRICK, START another one
-                                                    this.CalculateRoundScore();
-                                                    this.roundDocRef.update({state:"end-round"});
-                                                    this.playDocRef.update({state:"end-round"});
-                                                }
-                                                else {
-                                                    this.roundDocRef.collection("tricks").add({
-                                                        roundId: this.roundId,
-                                                        players: [],
-                                                        playerIndex: [],
-                                                        cards: []
-                                                    })
-                                                    .then((docRef) => {
-                                                        console.log("Trick created with ID: ", docRef.id);
-                                                        this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                                        this.$emit("start-trick", docRef.id);
+                                                this.handDocRef.get().then((hdoc) => {
+                                                    if (hdoc.data().handOn.length == 0) {  
+                                                        // END TRICK, START another one
+                                                        this.CalculateRoundScore();
+                                                        this.roundDocRef.update({state:"end-round"});
+                                                        this.playDocRef.update({state:"end-round"});
+                                                    }
+                                                    else {
+                                                        this.roundDocRef.collection("tricks").add({
+                                                            roundId: this.roundId,
+                                                            players: [],
+                                                            playerIndex: [],
+                                                            cards: []
+                                                        })
+                                                        .then((docRef) => {
+                                                            console.log("Trick created with ID: ", docRef.id);
+                                                            this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                                            this.$emit("start-trick", docRef.id);
 
-                                                    })
-                                                    .catch(function(error) {
-                                                        console.error("Error adding document: ", error);
-                                                    });      
-                                                }
+                                                        })
+                                                        .catch(function(error) {
+                                                            console.error("Error adding document: ", error);
+                                                        });      
+                                                    }
+                                                });
                                             });
                                         });
                                     }, 1500);

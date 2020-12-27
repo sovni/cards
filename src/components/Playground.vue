@@ -16,7 +16,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:250px;height:150px">
-            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col" />
             <div v-if="playId != -1" class="p-col-fixed p-card atout"  style="width:200px;height:150px">
@@ -40,18 +40,18 @@
 
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="1"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:350px;height:250px">
                <!--<div class="p-d-flex p-jc-center">-->
-               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="players.length" :playerIndex="playersIndex[0]" :playId="playId" :state="roundState" :choice="choice" :game="currentGame"/>
+               <Deck :myround="roundId" :trickId="trickId" :playerId="players[0]" :nbPlayer="4" :playerIndex="playersIndex[0]" :playId="playId" :state="roundState" :choice="choice" :game="currentGame"/>
                <!--</div>-->
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:150px;height:250px">
             <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="3" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-d-flex p-flex-column" style="width:100px;height:320px">
             <div class="p-col-fixed"  style="width:100px;height:220px"/>
@@ -83,7 +83,7 @@
             </div>
             <div class="p-col" />
             <div class="p-col-fixed"  style="width:200px;height:150px">
-            <MyHand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <Hand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col-fixed"  style="width:200px;height:150px">
             <MyHand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>

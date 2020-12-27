@@ -117,15 +117,16 @@ require('cards');
                 pindex = (pindex + this.nbPlayer)%this.nbPlayer;
 
                 console.log("pindex: " + pindex + ":" + this.playersIndex[index] +" - index: " + index);
+                console.log("nb players : " + this.nbPlayer);
                 if (pindex == 0)
                     style = "width:"+width+"px; left:"+ p0left + "px;top:" + p0top + "px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 else if (pindex == 1)
                     style = "width:"+width+"px; left:" + p1left + "px;top:" + p1top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
                 else if (pindex == 2)
                     style = "width:"+width+"px; left:"+ p2left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
-                else if (pindex == 3)
+                else if (pindex == 3 && this.nbPlayer == 5)
                     style = "width:"+width+"px; left:"+ p3left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
-                else if (pindex == 4)
+                else if (pindex == 4 || (pindex == 3 && this.nbPlayer == 4))
                     style = "width:"+width+"px; left:25px;top:" + p4top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
                 console.log("style : " + style);
                 return style;
