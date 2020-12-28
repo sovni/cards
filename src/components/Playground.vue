@@ -71,7 +71,7 @@
                   </div>
                </div>
                <div class="p-col-2">
-                  <div class="p-col-12 p-text-bold"  style="text-align: left;">
+                  <div class="p-col-12 p-text-bold"  style="text-align: right;">
                      {{ playersName[1] }}
                   </div>
                </div>           
