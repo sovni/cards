@@ -55,6 +55,9 @@
             </div>
             <div class="p-d-flex p-flex-column" style="width:100px;height:320px">
             <div class="p-col-fixed"  style="width:100px;height:220px"/>
+
+
+
             <div v-if="lastScore.length == 0" class="p-col-fixed"  style="width:100px;height:100px"/>
             <div v-if="lastScore.length > 0" class="p-col-fixed p-card atout"  style="width:200px;height:100px">
                <div class="p-col-12 p-text-center p-text-bold">DERNIERE PARTIE</div>
@@ -323,20 +326,20 @@ import Card from 'primevue/card';
                               i++;
                            });
                         console.log("round : " + round);
-                        for (var j=0;j<this.hands.length;j++) {
-                           var hand = handArray[(active+j)%this.hands.length];
-                           this.handPlayersIndex[j] = playerIndexArray[(active+j)%this.hands.length];
-                           this.handsOn[j] = handOnArray[(active+j)%this.hands.length];
+                        for (var j=0;j<doc.data().nbPlayers;j++) {
+                           var hand = handArray[(active+j)%doc.data().nbPlayers];
+                           this.handPlayersIndex[j] = playerIndexArray[(active+j)%doc.data().nbPlayers];
+                           this.handsOn[j] = handOnArray[(active+j)%doc.data().nbPlayers];
                            if (this.hands[j] != hand) {
                               this.hands[j] = hand;
-                              this.players[j] = playerArray[(active+j)%this.hands.length];
+                              this.players[j] = playerArray[(active+j)%doc.data().nbPlayers];
                               for (var k=0;k<doc.data().playersName.length;k++) {
                                  if (doc.data().playersName[k].id == this.players[j])  {
                                     this.playersName[j] = doc.data().playersName[k].name;
                                     break;
                                  }
                               }
-                              this.playersIndex[j] = (active+j)%this.hands.length;
+                              this.playersIndex[j] = (active+j)%doc.data().nbPlayers;
                            }
                         }
                   });

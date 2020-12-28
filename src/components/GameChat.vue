@@ -65,18 +65,18 @@ import Card from 'primevue/card';
                return "";
             return this.currentUser.displayName.split(" ")[0];
         },      
-    updateUsername() {
-      this.name = this.userName;
-      console.log(this.userName);
-      this.userName = "";
-    },
-    sendMessage() {
-        if (this.playId != -1) {
-            const message = {text: this.showMessage, username: this.name};
-            firebase.database().ref('chat/' + this.playId + '/messages').push(message);
-            this.showMessage = "";
+        updateUsername() {
+            this.name = this.userName;
+            console.log(this.userName);
+            this.userName = "";
+        },
+        sendMessage() {
+            if (this.playId != -1) {
+                const message = {text: this.showMessage, username: this.name};
+                firebase.database().ref('chat/' + this.playId + '/messages').push(message);
+                this.showMessage = "";
+            }
         }
-    }
   },
     mounted() {
         this.emitter.on("select-play", (uid) => {
@@ -87,16 +87,18 @@ import Card from 'primevue/card';
 
             const itemsRef = firebase.database().ref('chat/' + this.playId + '/messages');
             itemsRef.on("value", snapshot => {
-              let data = snapshot.val();
-              let messages = [];
-              Object.keys(data).forEach(key => {
-                messages.unshift({
-                  id: key,
-                  username: data[key].username,
-                  text: data[key].text
-                });
-              });
-              viewMessage.messages = messages;
+                let data = snapshot.val();
+                let messages = [];
+                if (data != null) {
+                    Object.keys(data).forEach(key => {
+                        messages.unshift({
+                        id: key,
+                        username: data[key].username,
+                        text: data[key].text
+                        });
+                    });
+                    viewMessage.messages = messages;
+                }
             });
         });    
     }
