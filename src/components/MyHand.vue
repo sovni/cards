@@ -33,10 +33,10 @@
             <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('clubs')"/>
             <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('diamonds')"/>
             <Button v-if="choosebis && game == 'belote'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="passbis()"/>
-            <Button v-if="choose && game == 'tarot'" label="Petite" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('petite')"/>
-            <Button v-if="choose && game == 'tarot'" label="Garde" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('garde')"/>
-            <Button v-if="choose && game == 'tarot'" label="Garde Sans" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardesans')"/>
-            <Button v-if="choose && game == 'tarot'" label="Garde Contre" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardecontre')"/>
+            <Button v-if="choose && game == 'tarot' && bidContract == ''" label="Petite" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('petite')"/>
+            <Button v-if="choose && game == 'tarot' && (bidContract == '' || bidContract == 'petite')" label="Garde" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('garde')"/>
+            <Button v-if="choose && game == 'tarot' && bidContract != 'gardesans' && bidContract != 'gardecontre'" label="Garde Sans" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardesans')"/>
+            <Button v-if="choose && game == 'tarot' && bidContract != 'gardecontre'" label="Garde Contre" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardecontre')"/>
             <Button v-if="choose && game == 'tarot'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('swords')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
@@ -76,11 +76,12 @@ require('cards');
                 handDocSubs: null,
                 roundDocRef: null,
                 roundDocSubs: null,
-                trickDocRef: null
+                trickDocRef: null,
+                currentBid: "'"
                 //atout: ""    
             }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','atout','state','game'],      
+        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','atout','state','game','bidContract'],      
         components: {
             CBCard,
             Button
