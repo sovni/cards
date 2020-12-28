@@ -17,7 +17,7 @@
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('wands')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('coins')"/>
-            <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
+            <Button v-if="myturn" class="p-button-raised p-button-rounded" style="z-index:10;" icon="pi pi-arrow-circle-up" />
         </div>
         <div class="p-col-12" >  
         <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
@@ -999,8 +999,10 @@ require('cards');
                 console.log("!!!!!!!!!!!!!!!!Calculate Box : " + box.width + ":" + box.height);
                 //console.log("Add : " + Math.floor((width - box.width)*0.5))
                 var rotationAngle = Math.round(coords[index].angle);
-                if (this.indexUser == 0)
+                if (this.indexUser == 0) {
                     coords[index].x += Math.floor((450 - box.width)*0.5);
+                    //coords[index].y -= 20;
+                }
                 /*else if (this.indexUser == 2) {
                     console.log("Before : " + coords[index].x);
                     coords[index].x += Math.floor((250 - box.width)*0.5);

@@ -71,7 +71,7 @@ require('cards');
                     if (this.game == "belote")
                         this.cspacing = 0.24;
                     else if (this.game == "tarot") {
-                        this.cspacing = 0.1;
+                        this.cspacing = 0.12;
                     }
                 }
                 else
@@ -140,8 +140,10 @@ require('cards');
                 else if (this.game == "tarot") {
                     if (this.indexUser == 1)
                         startAngle = startAngle + 90;
-                    else if (this.indexUser == 2 || this.indexUser == 3)
-                        startAngle = startAngle + 180;
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 160;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 200;                        
                     else if (this.indexUser == 4)
                         startAngle = startAngle + 270;
                 }

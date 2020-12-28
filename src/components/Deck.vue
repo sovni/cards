@@ -95,14 +95,14 @@ require('cards');
             getStyle(card, index) {
                 console.log("index " + index);
                 var n = this.mydeck.length;
-                var deckWidth = 350;
+                var deckWidth = 385;//350;
                 var deckHeight = 250;
                 if (n === 0) {
                     return;
                 }
                 var width = this.cwidth; // hack: for a hidden hand
                 var height = Math.floor(width * 1.4); // hack: for a hidden hand
-                var p2left = Math.floor(deckWidth*0.5)-Math.floor(width*0.5) + width*0.5;
+                var p2left = Math.floor(deckWidth*0.5)-Math.floor(width*0.5);// + width*0.5;
                 var p3left = Math.floor(deckWidth*0.5)-Math.floor(width*0.5) - width*0.5;
                 var p0left = Math.floor(deckWidth*0.5)-(Math.floor(width*0.5));
                 var p0top = deckHeight - height;
@@ -122,10 +122,12 @@ require('cards');
                     style = "width:"+width+"px; left:"+ p0left + "px;top:" + p0top + "px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
                 else if (pindex == 1)
                     style = "width:"+width+"px; left:" + p1left + "px;top:" + p1top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
-                else if (pindex == 2)
+                else if (pindex == 2 && this.nbPlayer == 4)
                     style = "width:"+width+"px; left:"+ p2left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
+                else if (pindex == 2 && this.nbPlayer == 5)
+                    style = "width:"+width+"px; left:"+ p2left + "px;top:0px; transform:" + "rotate(195deg)" + " translateZ(0);";
                 else if (pindex == 3 && this.nbPlayer == 5)
-                    style = "width:"+width+"px; left:"+ p3left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
+                    style = "width:"+width+"px; left:"+ p3left + "px;top:0px; transform:" + "rotate(165deg)" + " translateZ(0);";
                 else if (pindex == 4 || (pindex == 3 && this.nbPlayer == 4))
                     style = "width:"+width+"px; left:25px;top:" + p4top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
                 console.log("style : " + style);
