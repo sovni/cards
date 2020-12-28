@@ -1,5 +1,5 @@
 <template>
-   <Card style="width:400px;height:380px;">
+   <Card style="width:400px;height:392px;">
       <template v-slot:title>
          Parties
       </template>

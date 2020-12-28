@@ -17,7 +17,7 @@
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('wands')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('coins')"/>
-            <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
+            <Button v-if="myturn" class="p-button-raised p-button-rounded" style="z-index:10;" icon="pi pi-arrow-circle-up" />
         </div>
         <div class="p-col-12" >  
         <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
@@ -37,6 +37,7 @@
             <Button v-if="choose && game == 'tarot'" label="Garde" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('garde')"/>
             <Button v-if="choose && game == 'tarot'" label="Garde Sans" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardesans')"/>
             <Button v-if="choose && game == 'tarot'" label="Garde Contre" class="p-button-raised p-button-rounded" icon="pi pi-check" @click="contract('gardecontre')"/>
+            <Button v-if="choose && game == 'tarot'" class="p-button-raised p-button-rounded" icon="pi pi-times" @click="pass()"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&spades;" @click="take('swords')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('wands')"/>
@@ -101,6 +102,9 @@ require('cards');
                     this.handDocSubs = null;
                 }
                 if (this.handId != -1) {
+                    if (this.playDocRef == null) {
+                        this.playDocRef = db.collection("plays").doc(this.playId);
+                    }
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
                     this.handDocSubs = this.handDocRef.onSnapshot((doc) => {
                             console.log("Hands onSnapshot launched (MyHand 1)");
@@ -112,6 +116,10 @@ require('cards');
                             this.myhand = this.OrderHand(doc.data().handOn, this.atout);
 
                     });
+                    if (this.game == "tarot")
+                        this.cradius = 250;
+                    else   
+                        this.cradius = 166;
                 }
                 else
                     this.handDocRef = null;
@@ -210,57 +218,68 @@ require('cards');
                                     players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
                                     playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),
                                     cards: firebase.firestore.FieldValue.arrayUnion(playedCard),
+                                })
+                                .then(() => {
 
-                                });
+                                    active = (doc.data().active+1)%doc.data().nbPlayers;
+                                    if (active == doc.data().starter) {
+                                        var winnerIndex;
 
-                                active = (doc.data().active+1)%doc.data().nbPlayers;
-                                if (active == doc.data().starter) {
-                                    var winnerIndex;
+                                        setTimeout(() => { 
+                                            this.roundDocRef.update({state: "end-trick"});
 
-                                    setTimeout(() => { 
-                                        this.roundDocRef.update({state: "end-trick"});
+                                            console.log ("round finished : check who won the trick");
 
-                                        console.log ("round finished : check who won the trick");
+                                            var points;
+                                            trickDoc.get().then((tdoc) => {  
 
-                                        var points;
-                                        trickDoc.get().then((tdoc) => {  
-
-                                            winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
-                                            console.log("winner : " + winnerIndex);
-                                            points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
-                                            //console.log("Points: "+ points[0] + "/" + points[1]);
-                                            this.roundDocRef.update({state:"trick", active: winnerIndex, starter: winnerIndex, scores:firebase.firestore.FieldValue.arrayUnion({winnerIndex: winnerIndex, points:points})});
-
-                                            this.handDocRef.get().then((hdoc) => {
-                                                if (hdoc.data().handOn.length == 0) {  
-                                                    // END TRICK, START another one
-                                                    this.CalculateRoundScore();
-                                                    this.roundDocRef.update({state:"end-round"});
-                                                    this.playDocRef.update({state:"end-round"});
-                                                }
-                                                else {
-                                                    this.roundDocRef.collection("tricks").add({
-                                                        roundId: this.roundId,
-                                                        players: [],
-                                                        playerIndex: [],
-                                                        cards: []
+                                                winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
+                                                console.log("winner : " + winnerIndex);
+                                                points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
+                                                console.log("Points: "+ points[0] + "/" + points[1]);
+                                                this.roundDocRef.update({
+                                                    state:"trick", 
+                                                    active: winnerIndex, 
+                                                    starter: winnerIndex, 
+                                                    scores:firebase.firestore.FieldValue.arrayUnion({
+                                                        winnerIndex: winnerIndex, 
+                                                        points:points
                                                     })
-                                                    .then((docRef) => {
-                                                        console.log("Trick created with ID: ", docRef.id);
-                                                        this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                                        this.$emit("start-trick", docRef.id);
+                                                })
+                                                .then(() => {
 
-                                                    })
-                                                    .catch(function(error) {
-                                                        console.error("Error adding document: ", error);
-                                                    });      
-                                                }
+                                                    this.handDocRef.get().then((hdoc) => {
+                                                        if (hdoc.data().handOn.length == 0) {  
+                                                            // END TRICK, START another one
+                                                            this.CalculateRoundScore();
+                                                            this.roundDocRef.update({state:"end-round"});
+                                                            this.playDocRef.update({state:"end-round"});
+                                                        }
+                                                        else {
+                                                            this.roundDocRef.collection("tricks").add({
+                                                                roundId: this.roundId,
+                                                                players: [],
+                                                                playerIndex: [],
+                                                                cards: []
+                                                            })
+                                                            .then((docRef) => {
+                                                                console.log("Trick created with ID: ", docRef.id);
+                                                                this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                                                this.$emit("start-trick", docRef.id);
+
+                                                            })
+                                                            .catch(function(error) {
+                                                                console.error("Error adding document: ", error);
+                                                            });      
+                                                        }
+                                                    });
+                                                });
                                             });
-                                        });
-                                    }, 1500);
-                                }
-                                else
-                                    this.roundDocRef.update({active: active});                    
+                                        }, 1500);
+                                    }
+                                    else
+                                        this.roundDocRef.update({active: active});                    
+                                });
                             }
                             else
                                 console.log("Card Not allowed !!!!");
@@ -299,11 +318,27 @@ require('cards');
                 });
             },
             contract(bid) {
-                this.roundDocRef.update({
-                    bid: this.playerId, bidIndex: this.myindex,
-                    bidPlayer: this.getUserName(),
-                    bidContract: bid,
-                    state: "choice-2"
+                this.roundDocRef.get().then((doc) => {
+                    var index;
+                    index = doc.data().active;
+                    if (index == doc.data().dealer) {
+                        this.roundDocRef.update({
+                            bid: this.playerId, bidIndex: this.myindex,
+                            bidPlayer: this.getUserName(),
+                            bidContract: bid,
+                            state: "choice-2"
+                        });
+                    }
+                    else {
+                       index = (index+1)%doc.data().nbPlayers;
+                        //this.roundDocRef.update({state: "choice-2", active: index});
+                        this.roundDocRef.update({
+                            bid: this.playerId, bidIndex: this.myindex,
+                            bidPlayer: this.getUserName(),
+                            bidContract: bid,
+                            active: index
+                        });               
+                    }
                 });
             },
             take(suit="") {
@@ -364,6 +399,33 @@ require('cards');
                             });
                     }
                     else if (this.game == "tarot") {
+                        this.roundDocRef.collection("hands").get().then((querySnapshot) => {
+                            var bidPartnerIndex = -1;
+                            var bidPartnerId;
+                            querySnapshot.forEach((hdoc) => {
+                                if (bidPartnerIndex != -1) {
+                                    for (var i=0;i<hdoc.data().handOn.length;i++) {
+                                        if (hdoc.data().handOn[i].suit == suit && hdoc.data().handOn[i].rank == "K") {
+                                            bidPartnerIndex = hdoc.data().playerIndex;
+                                            bidPartnerId = hdoc.data().player;
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
+                            if (bidPartnerIndex != -1) {
+                                this.roundDocRef.update({
+                                    bidPartner: bidPartnerId,
+                                    bidPartnerIndex: bidPartnerIndex
+                                });
+                            }
+                            else {
+                                this.roundDocRef.update({
+                                    bidPartnerIndex: -1
+                                });                                
+                            }
+                        });
+
                         this.roundDocRef.get().then((doc) => {
                             this.roundDocRef.update({
                                 atout: suit
@@ -407,8 +469,23 @@ require('cards');
                 this.roundDocRef.get().then((doc) => {
                     index = doc.data().active;
                     if (index == doc.data().dealer) {
-                        index = (index+1)%doc.data().nbPlayers;
-                        this.roundDocRef.update({state: "choice-2", active: index});
+                        if (this.game == "belote") {
+                            index = (index+1)%doc.data().nbPlayers;
+                            this.roundDocRef.update({state: "choice-2", active: index});
+                        }
+                        else if (this.game == "tarot") {
+                            if (doc.data().bidContract != "") {
+                                this.roundDocRef.update({
+                                    active: doc.data().bidIndex,
+                                    state: "choice-2"
+                                });
+                            }
+                            else {
+                                index = (index+1)%doc.data().nbPlayers;
+                                this.roundDocRef.update({state: "end-round", active: index});
+                                this.playDocRef.update({state: "end-round"});                                
+                            }
+                        }
                     }
                     else {
                         index = (index+1)%doc.data().nbPlayers;
@@ -439,6 +516,12 @@ require('cards');
 
                 if (trick.length == 0)
                     return true;
+                
+                if (this.game == "tarot") {
+                    atout = "trump";
+                    if (playedCard.suit == "trump" && playedCard.rank == "0")
+                        return true;
+                }
 
                 suitPlayed = trick[0].suit;
                 //for (var i=0;i<trick.length;i++) {
@@ -478,7 +561,7 @@ require('cards');
                 }
                 else if (!this.hasSuit(atout))
                     allowed = true;
-                else if (this.isPartnerMaster(trick, atout)) {
+                else if (this.game == "belote" && this.isPartnerMaster(trick, atout)) {
                     allowed = true;
                 }
                 else {
@@ -505,8 +588,11 @@ require('cards');
             },
             hasSuit(suit){
                 for (var i=0;i<this.myhand.length;i++) {
-                    if (this.myhand[i].suit == suit)
+                    if (this.myhand[i].suit == suit) {
+                        if (this.game == "tarot" && suit == "trump" && this.myhand[i].rank == "0")
+                            continue;
                         return true;
+                    }
                 }
                 return false;
             },
@@ -525,7 +611,7 @@ require('cards');
                 var best = 0;
                 var val;
                 for (var i=0;i<cards.length;i++) {
-                    if (cards[i].suit == atout) {
+                    if ((this.game == "belote" && cards[i].suit == atout) || (this.game == "tarot" && cards[i].suit == "trump")) {
                         val = this.GetCardValue(cards[i], atout);
                         if (val > best)
                             best = val;
@@ -551,22 +637,27 @@ require('cards');
                         if (i==doc.data().scores.length-1)
                             points[doc.data().scores[i].winnerIndex] += 10;
                     }
-                    points[0] = points[0] + points[2];
-                    points[1] = points[1] + points[3];
-                    if (points[0] == 0 && points[1] == 162)
-                        points[1] = 252;
-                    else if (points[0] == 162 && points[1] == 0)
-                        points[0] = 252;
-                    else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
-                        points[0] = 162;
-                        points[1] = 0;
+                    if (this.game == "belote") {
+                        points[0] = points[0] + points[2];
+                        points[1] = points[1] + points[3];
+                        if (points[0] == 0 && points[1] == 162)
+                            points[1] = 252;
+                        else if (points[0] == 162 && points[1] == 0)
+                            points[0] = 252;
+                        else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
+                            points[0] = 162;
+                            points[1] = 0;
+                        }
+                        else if (points[1] > points[0] && (doc.data().bidIndex == 0 || doc.data().bidIndex == 2)) {
+                            points[1] = 162;
+                            points[0] = 0;
+                        }
+                        this.roundDocRef.update({score:[points[0], points[1]]});
+                        this.playDocRef.update({lastScore:[points[0], points[1]]});
                     }
-                    else if (points[1] > points[0] && (doc.data().bidIndex == 0 || doc.data().bidIndex == 2)) {
-                        points[1] = 162;
-                        points[0] = 0;
-                    }
-                    this.roundDocRef.update({score:[points[0], points[1]]});
-                    this.playDocRef.update({lastScore:[points[0], points[1]]});
+                    //else if (this.game == "tarot") {
+
+                    //}
                 });
             },
             CalculateWinner(cards, indexes, atout) {
@@ -579,7 +670,7 @@ require('cards');
                 for (var i=0;i<cards.length;i++) {
                     var value = this.GetCardValue(cards[i], atout);
                     console.log("card value: " + value + " (" + cards[i].suit + cards[i].rank + ")");
-                    if (cards[i].suit == atout) {
+                    if ((this.game == "belote" && cards[i].suit == atout) || (this.game == "tarot" && cards[i].suit == "trump")) {
                         if (value > bestAtout) {
                             winnerIndex = i;
                             console.log("best card" + i);
@@ -611,154 +702,351 @@ require('cards');
             },
             GetCardValue(card, atout) {
                 var value;
-                if (card.suit == atout) {
-                    switch (card.rank) {
-                        case "J":
-                            value = 107;
-                            break;
-                        case "9" :
-                            value=106;
-                            break;
-                        case "A" :
-                        case "As" :
-                            value=105;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=104;
-                            break;
-                        case "K" :
-                            value=103;
-                            break;
-                        case "Q" :
-                            value=102;
-                            break;
-                        case "8" : 
-                            value=101;
-                            break;
-                        case "7" :
-                            value=100;
-                            break;
-                        default:
-                            value=0;
-                            break;
+                if (this.game == "belote") {
+                    if (card.suit == atout) {
+                        switch (card.rank) {
+                            case "J":
+                                value = 107;
+                                break;
+                            case "9" :
+                                value=106;
+                                break;
+                            case "A" :
+                            case "As" :
+                                value=105;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=104;
+                                break;
+                            case "K" :
+                                value=103;
+                                break;
+                            case "Q" :
+                                value=102;
+                                break;
+                            case "8" : 
+                                value=101;
+                                break;
+                            case "7" :
+                                value=100;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        }
+                    }
+                    else {
+                        switch (card.rank) {
+                            case "A":
+                            case "As" :
+                                value = 8;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=7;
+                                break;
+                            case "K" :
+                                value=6;
+                                break;
+                            case "Q" :
+                                value=5;
+                                break;
+                            case "J" :
+                                value=4;
+                                break;
+                            case "9" :
+                                value=3;
+                                break;
+                            case "8" : 
+                                value=2;
+                                break;
+                            case "7" :
+                                value=1;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        } 
+                        if (atout == 'spades' || atout == "clubs") {
+                            switch (card.suit) {
+                                case "hearts":
+                                    value += 10;
+                                    break;
+                                case "clubs":
+                                    value += 20;
+                                    break;
+                                case "diamonds":
+                                    value += 30;
+                                    break;
+                                default:
+                                    break;
+                            }  
+                        }                 
+                        else {
+                            switch (card.suit) {
+                                case "clubs":
+                                    value += 10;
+                                    break;
+                                case "diamonds":
+                                    value += 20;
+                                    break;
+                                case "spades":
+                                    value += 30;
+                                    break;
+                                default:
+                                    break;
+                            }  
+                        }
                     }
                 }
-                else {
-                    switch (card.rank) {
-                        case "A":
-                        case "As" :
-                            value = 8;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=7;
-                            break;
-                        case "K" :
-                            value=6;
-                            break;
-                        case "Q" :
-                            value=5;
-                            break;
-                        case "J" :
-                            value=4;
-                            break;
-                        case "9" :
-                            value=3;
-                            break;
-                        case "8" : 
-                            value=2;
-                            break;
-                        case "7" :
-                            value=1;
-                            break;
-                        default:
-                            value=0;
-                            break;
-                    } 
-                    switch (card.suit) {
-                        case "hearts":
-                            value += 10;
-                            break;
-                        case "clubs":
-                            value += 20;
-                            break;
-                        case "diamonds":
-                            value += 30;
-                            break;
-                        default:
-                            break;
-                    }                   
+                else if (this.game == "tarot") {
+                    if (card.suit == "trump") {
+                        switch (card.rank) {
+                            case "XXI":
+                                value = 121;
+                                break;
+                            case "XX":
+                                value = 120;
+                                break;
+                            case "XIX":
+                                value = 119;
+                                break;
+                            case "XVIII":
+                                value = 118;
+                                break;
+                            case "XVII":
+                                value = 117;
+                                break;
+                            case "XVI":
+                                value = 116;
+                                break;
+                            case "XV":
+                                value = 115;
+                                break;
+                            case "XIV":
+                                value = 114;
+                                break;
+                            case "XIII":
+                                value = 113;
+                                break;
+                            case "XII":
+                                value = 112;
+                                break;
+                            case "XI":
+                                value = 111;
+                                break;
+                            case "X":
+                                value = 110;
+                                break;
+                            case "IX":
+                                value = 109;
+                                break;
+                            case "VIII":
+                                value = 108;
+                                break;
+                            case "VII":
+                                value = 107;
+                                break;
+                            case "VI":
+                                value = 106;
+                                break;
+                            case "V":
+                                value = 105;
+                                break;
+                            case "IV":
+                                value = 104;
+                                break;
+                            case "III":
+                                value = 103;
+                                break;
+                            case "II":
+                                value = 102;
+                                break;
+                            case "I":
+                                value = 101;
+                                break;
+                            case "0":
+                                value = 0;
+                                break;
+                            default:
+                                value = 0;
+                                break;
+                        }
+                    }
+                    else {
+                        switch (card.rank) {
+                            case "K" :
+                                value=14;
+                                break;
+                            case "Q" :
+                                value=13;
+                                break;
+                            case "J" :
+                                value=12;
+                                break;
+                            case "P" :
+                                value=11;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=10;
+                                break;
+                            case "9" :
+                                value=9;
+                                break;
+                            case "8" : 
+                                value=8;
+                                break;
+                            case "7" :
+                                value=7;
+                                break;
+                            case "6" :
+                                value=6;
+                                break;
+                            case "5" :
+                                value=5;
+                                break;
+                            case "4" :
+                                value=4;
+                                break;
+                            case "3" :
+                                value=3;
+                                break;
+                            case "2" :
+                                value=2;
+                                break;
+                            case "A":
+                            case "As" :
+                                value = 1;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        } 
+                        switch (card.suit) {
+                            case "cups":
+                                value += 20;
+                                break;
+                            case "wands":
+                                value += 40;
+                                break;
+                            case "coins":
+                                value += 60;
+                                break;
+                            default:
+                                break;
+                        }  
+                    }
                 }
                 return value;
             },       
            GetCardPoints(card, atout) {
                 var value;
-                if (card.suit == atout) {
-                    switch (card.rank) {
-                        case "J":
-                            value = 20;
-                            break;
-                        case "9" :
-                            value=14;
-                            break;
-                        case "A" :
-                        case "As" :
-                            value=11;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=10;
-                            break;
-                        case "K" :
-                            value=4;
-                            break;
-                        case "Q" :
-                            value=3;
-                            break;
-                        case "8" : 
-                            value=0;
-                            break;
-                        case "7" :
-                            value=0;
-                            break;
-                        default:
-                            value=0;
-                            break;
+                if (this.game == "belote") {
+                    if (card.suit == atout) {
+                        switch (card.rank) {
+                            case "J":
+                                value = 20;
+                                break;
+                            case "9" :
+                                value=14;
+                                break;
+                            case "A" :
+                            case "As" :
+                                value=11;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=10;
+                                break;
+                            case "K" :
+                                value=4;
+                                break;
+                            case "Q" :
+                                value=3;
+                                break;
+                            case "8" : 
+                                value=0;
+                                break;
+                            case "7" :
+                                value=0;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        }
+                    }
+                    else {
+                        switch (card.rank) {
+                            case "A":
+                            case "As" :
+                                value = 11;
+                                break;
+                            case "10" :
+                            case "T" :
+                                value=10;
+                                break;
+                            case "K" :
+                                value=4;
+                                break;
+                            case "Q" :
+                                value=3;
+                                break;
+                            case "J" :
+                                value=2;
+                                break;
+                            case "9" :
+                                value=0;
+                                break;
+                            case "8" : 
+                                value=0;
+                                break;
+                            case "7" :
+                                value=0;
+                                break;
+                            default:
+                                value=0;
+                                break;
+                        }                    
                     }
                 }
-                else {
-                    switch (card.rank) {
-                        case "A":
-                        case "As" :
-                            value = 11;
-                            break;
-                        case "10" :
-                        case "T" :
-                            value=10;
-                            break;
-                        case "K" :
-                            value=4;
-                            break;
-                        case "Q" :
-                            value=3;
-                            break;
-                        case "J" :
-                            value=2;
-                            break;
-                        case "9" :
-                            value=0;
-                            break;
-                        case "8" : 
-                            value=0;
-                            break;
-                        case "7" :
-                            value=0;
-                            break;
-                        default:
-                            value=0;
-                            break;
-                    }                    
+                else if (this.game == "tarot") {
+                    if (card.suit == "trump") {
+                        switch (card.rank) {
+                            case "XXI":
+                                value = 4.5;
+                                break;
+                            case "I":
+                                value = 4.5;
+                                break;
+                            case "0":
+                                value = 4.5;
+                                break;
+                            default :     
+                                value = 0.5;
+                                break;
+                        }
+                    }
+                    else {            
+                        switch (card.rank) {
+                            case "K":
+                                value = 4.5;
+                                break;
+                            case "Q" :
+                                value = 3.5;
+                                break;
+                            case "J" :
+                                value = 2.5;
+                                break;
+                            case "P" :
+                                value = 1.5;
+                                break;
+                            default :
+                                value = 0.5;
+                                break;    
+                        }
+                    }
                 }
                 return value;
             },
@@ -774,8 +1062,13 @@ require('cards');
                 console.log("!!!!!!!!!!!!!!!!Calculate Box : " + box.width + ":" + box.height);
                 //console.log("Add : " + Math.floor((width - box.width)*0.5))
                 var rotationAngle = Math.round(coords[index].angle);
-                if (this.indexUser == 0)
+                if (this.indexUser == 0) {
                     coords[index].x += Math.floor((450 - box.width)*0.5);
+                    if (this.game == "tarot")
+                        coords[index].y -= 40;
+                }
+                else if (this.indexUser == 1)
+                    coords[index].x += 50;
                 /*else if (this.indexUser == 2) {
                     console.log("Before : " + coords[index].x);
                     coords[index].x += Math.floor((250 - box.width)*0.5);
@@ -800,8 +1093,25 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                startAngle = startAngle + (this.indexUser) * 90;
 
+                if (this.game == "belote") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 270;
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 180;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 90;                        
+                }
+                else if (this.game == "tarot") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 270;
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 200;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 160;                        
+                    else if (this.indexUser == 4)
+                        startAngle = startAngle + 90;
+                }                
                 var coords = [];
                 var i;
                 var minX = 99999;

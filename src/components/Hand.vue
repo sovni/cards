@@ -52,12 +52,15 @@ require('cards');
             },
             handId: function(newVal, oldVal) { // watch it
                 console.log("Watch props.handid function called:" + newVal + ":"+oldVal+":"+this.handId);
-                console.log("play id:" + this.playId);
+                console.log("play id:" + this.playId + "/ round id:" + this.roundId);
                 if (this.handDocSubs != null) {
                     this.handDocSubs();
                     this.handDocSubs = null;
                 }
                 if (this.handId != -1) {
+                    if (this.playDocRef == null) {
+                        this.playDocRef = db.collection("plays").doc(this.playId);
+                    }
                     this.handDocRef = this.playDocRef.collection("rounds").doc(this.roundId).collection("hands").doc(this.handId);
                     this.myindex = this.playerIndex;
                     if (this.activePlayer == this.myindex)
@@ -65,7 +68,11 @@ require('cards');
                     else
                         this.myturn = false;
                     this.myhand = this.handOn;
-
+                    if (this.game == "belote")
+                        this.cspacing = 0.24;
+                    else if (this.game == "tarot") {
+                        this.cspacing = 0.12;
+                    }
                 }
                 else
                     this.handDocRef = null;
@@ -98,18 +105,19 @@ require('cards');
                 var height = Math.floor(width * 1.4); // hack: for a hidden hand
                 var box = {};
                 var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    
-                console.log("!!!!!!!!!!!!!!!!Calculate Box : " + box.width + ":" + box.height);
                 //console.log("Add : " + Math.floor((width - box.width)*0.5))
                 var rotationAngle = Math.round(coords[index].angle);
                 if (this.indexUser == 0)
                     coords[index].x += Math.floor((450 - box.width)*0.5);
-                else if (this.indexUser == 2) {
+                else if (this.indexUser == 2 && this.game == "belote") {
                     console.log("Before : " + coords[index].x);
                     coords[index].y -= 20;
 
                     //coords[index].x += Math.floor((250 - box.width)*0.5);
                     console.log("After : " + coords[index].x);
                 }
+                else if (this.indexUser == 1)
+                    coords[index].x += 50;
                 /*else if (this.indexUser == 1)
                     coords[index].y += Math.floor((250 - box.height)*0.5);
                 else if (this.indexUser == 3)
@@ -129,7 +137,24 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                startAngle = startAngle + (this.indexUser) * 90;
+                if (this.game == "belote") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 270;
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 180;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 90;
+                }
+                else if (this.game == "tarot") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 270;
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 200;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 160;                        
+                    else if (this.indexUser == 4)
+                        startAngle = startAngle + 90;
+                }
 
                 var coords = [];
                 var i;

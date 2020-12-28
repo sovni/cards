@@ -80,7 +80,7 @@ const cT4C = require('../assets/cards-tarot/4C.png');
 const cT4D = require('../assets/cards-tarot/4D.png');
 const cT4H = require('../assets/cards-tarot/4H.png');
 const cT4S = require('../assets/cards-tarot/4S.png');
-const cT5C = require('../assets/cards-tarot/5C.png');
+const cT5C = require('../assets/cards-tarot/5Cs.png');
 const cT5D = require('../assets/cards-tarot/5D.png');
 const cT5H = require('../assets/cards-tarot/5H.png');
 const cT5S = require('../assets/cards-tarot/5S.png');
@@ -343,8 +343,11 @@ const cTRB = require('../assets/cards/RED_BACK.svg');
                         break;
                 }
                 var game = "";
-                if (this.game == "tarot")
+                if (this.game == "tarot") {
                     game = "T";
+                    if (card.suit == "trump")
+                        return eval("this.c"+game+suit+card.rank);
+                }
                 //return eval("this.c"+card.rank.shortName+suit);
                 return eval("this.c"+game+card.rank+suit);
             },

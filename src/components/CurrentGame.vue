@@ -1,5 +1,5 @@
 <template>
-   <Card style="width:400px;height:380px;">
+   <Card style="width:400px;height:392px;">
       <template v-slot:title>
          Mes Parties
       </template>
@@ -45,7 +45,7 @@ import Dialog from 'primevue/dialog';
 const { decks } = require('cards');
 
    export default {
-      name: 'MyGamelist',
+      name: 'CurrentGame',
       data() {
             return {
                 mygames: [],
@@ -201,7 +201,7 @@ const { decks } = require('cards');
             if (game == "belote")
                deck = new decks.PiquetDeck();
             else if (game == "tarot")
-               deck = new decks.TarotDeck();
+               deck = new decks.TarotDeck("modern");
             deck.shuffleAll();
             console.log("Draw cards " + playId);
             db.collection("plays").doc(playId).update({state:"distrib-1"});

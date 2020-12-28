@@ -1,8 +1,8 @@
 <template>
-   <div class="p-d-inline-flex p-flex-column p-flex-lg-row">
-      <div class="p-d-inline-flex p-flex-row p-flex-lg-column">
-         <CurrentGame class="p-m-2" :playerUid="playerUid" :playerName="playerName"/>
-         <Gamelist  class="p-m-2" :playerUid="playerUid" :playerName="playerName"/>
+   <div class="p-d-inline-flex p-flex-column p-flex-lg-row p-m-2">
+      <div class="p-d-inline-flex p-flex-row p-flex-lg-column p-m-2">
+         <CurrentGame class="p-my-2" :playerUid="playerUid" :playerName="playerName"/>
+         <Gamelist  class="p-my-3" :playerUid="playerUid" :playerName="playerName"/>
       </div>
 
       <Playground class="p-m-2"  :playerUid="playerUid" :playerName="playerName"/>
