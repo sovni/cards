@@ -107,8 +107,19 @@ require('cards');
                 var p0left = Math.floor(deckWidth*0.5)-(Math.floor(width*0.5));
                 var p0top = deckHeight - height;
                 var p1left = deckWidth-height;
-                var p1top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
-                var p4top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+                var p1top;//Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+                var p4top;//Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+
+                if (this.nbPlayer == 5) {
+                    p1top = 0;//Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+                    p4top = 0;//Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+                    p0top = 50;
+                }
+                else {
+                    p1top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+                    p4top = Math.floor(Math.floor(deckHeight*0.5)-(this.cwidth*0.5));
+
+                }
                 //var box = {};
                 var style="";
         

@@ -1005,8 +1005,11 @@ require('cards');
                 var rotationAngle = Math.round(coords[index].angle);
                 if (this.indexUser == 0) {
                     coords[index].x += Math.floor((450 - box.width)*0.5);
-                    //coords[index].y -= 20;
+                    if (this.game == "tarot")
+                        coords[index].y -= 40;
                 }
+                else if (this.indexUser == 1)
+                    coords[index].x += 50;
                 /*else if (this.indexUser == 2) {
                     console.log("Before : " + coords[index].x);
                     coords[index].x += Math.floor((250 - box.width)*0.5);
@@ -1031,16 +1034,25 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                if (this.game == "belote")
-                    startAngle = startAngle + (this.indexUser) * 90;
+
+                if (this.game == "belote") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 270;
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 180;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 90;                        
+                }
                 else if (this.game == "tarot") {
                     if (this.indexUser == 1)
-                        startAngle = startAngle + 90;
-                    else if (this.indexUser == 2 || this.indexUser == 3)
-                        startAngle = startAngle + 180;
-                    else if (this.indexUser == 4)
                         startAngle = startAngle + 270;
-                }
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 200;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 160;                        
+                    else if (this.indexUser == 4)
+                        startAngle = startAngle + 90;
+                }                
                 var coords = [];
                 var i;
                 var minX = 99999;

@@ -116,6 +116,8 @@ require('cards');
                     //coords[index].x += Math.floor((250 - box.width)*0.5);
                     console.log("After : " + coords[index].x);
                 }
+                else if (this.indexUser == 1)
+                    coords[index].x += 50;
                 /*else if (this.indexUser == 1)
                     coords[index].y += Math.floor((250 - box.height)*0.5);
                 else if (this.indexUser == 3)
@@ -135,17 +137,23 @@ require('cards');
                 var angleOffset = ({ "N": 270, "S": 90, "E": 0, "W": 180 })[direction];
 
                 var startAngle = angleOffset - 0.5 * anglePerCard * (numCards - 1);
-                if (this.game == "belote")
-                    startAngle = startAngle + (this.indexUser) * 90;
+                if (this.game == "belote") {
+                    if (this.indexUser == 1)
+                        startAngle = startAngle + 270;
+                    else if (this.indexUser == 2)
+                        startAngle = startAngle + 180;
+                    else if (this.indexUser == 3)
+                        startAngle = startAngle + 90;
+                }
                 else if (this.game == "tarot") {
                     if (this.indexUser == 1)
-                        startAngle = startAngle + 90;
+                        startAngle = startAngle + 270;
                     else if (this.indexUser == 2)
                         startAngle = startAngle + 200;
                     else if (this.indexUser == 3)
                         startAngle = startAngle + 160;                        
                     else if (this.indexUser == 4)
-                        startAngle = startAngle + 270;
+                        startAngle = startAngle + 90;
                 }
 
                 var coords = [];
