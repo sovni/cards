@@ -109,7 +109,7 @@ require('cards');
                 var rotationAngle = Math.round(coords[index].angle);
                 if (this.indexUser == 0)
                     coords[index].x += Math.floor((450 - box.width)*0.5);
-                else if (this.indexUser == 2) {
+                else if (this.indexUser == 2 && this.game == "belote") {
                     console.log("Before : " + coords[index].x);
                     coords[index].y -= 20;
 
