@@ -141,9 +141,9 @@ require('cards');
                     if (this.indexUser == 1)
                         startAngle = startAngle + 90;
                     else if (this.indexUser == 2)
-                        startAngle = startAngle + 160;
+                        startAngle = startAngle + 200;
                     else if (this.indexUser == 3)
-                        startAngle = startAngle + 200;                        
+                        startAngle = startAngle + 160;                        
                     else if (this.indexUser == 4)
                         startAngle = startAngle + 270;
                 }

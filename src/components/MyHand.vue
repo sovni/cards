@@ -116,6 +116,10 @@ require('cards');
                             this.myhand = this.OrderHand(doc.data().handOn, this.atout);
 
                     });
+                    if (this.game == "tarot")
+                        this.cradius = 250;
+                    else   
+                        this.cradius = 166;
                 }
                 else
                     this.handDocRef = null;
