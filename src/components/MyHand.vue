@@ -382,6 +382,33 @@ require('cards');
                             });
                     }
                     else if (this.game == "tarot") {
+                        this.roundDocRef.collection("hands").get().then((querySnapshot) => {
+                            var bidPartnerIndex = -1;
+                            var bidPartnerId;
+                            querySnapshot.forEach((hdoc) => {
+                                if (bidPartnerIndex != -1) {
+                                    for (var i=0;i<hdoc.data().handOn.length;i++) {
+                                        if (hdoc.data().handOn[i].suit == "suit" && hdoc.data().handOn[i].rank == "K") {
+                                            bidPartnerIndex = hdoc.data().playerIndex;
+                                            bidPartnerId = hdoc.data().player;
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
+                            if (bidPartnerIndex != -1) {
+                                this.roundDocRef.update({
+                                    bidPartner: bidPartnerId,
+                                    bidPartnerIndex: bidPartnerIndex
+                                });
+                            }
+                            else {
+                                this.roundDocRef.update({
+                                    bidPartnerIndex: -1
+                                });                                
+                            }
+                        });
+
                         this.roundDocRef.get().then((doc) => {
                             this.roundDocRef.update({
                                 atout: suit
