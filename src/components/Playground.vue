@@ -373,6 +373,8 @@ import Card from 'primevue/card';
                         this.roundState = rdoc.data().state;
                         this.bidPlayer = rdoc.data().bidPlayer;
                         this.bidContract = rdoc.data().bidContract;
+                        if (this.bidContract == undefined || this.bidContract == null)
+                           this.bidContract = "";
                   });
                }
             });
