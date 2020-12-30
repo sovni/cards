@@ -21,11 +21,18 @@
                   </template>
             </Column>      
          </DataTable>
-         <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createGame()"/>
+         <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createBeloteGame()"/>
      </template>   
    </Card>
-   <Dialog header="Header" v-if="visible">
-      Content
+   <Dialog header="Header" v-model:visible="visible">
+      <template #header>
+         <h3>Résultats</h3>
+      </template>
+      <ol id="example-1">
+         <li v-for="result in results" :key="result['player']">
+            {{ result["player"] }} : {{ result["score"] }} 
+         </li>
+      </ol>
    </Dialog>
 </template>
 
@@ -51,7 +58,8 @@ const { decks } = require('cards');
                 mygames: [],
                 roundId: -1,
                 selectedPlay: [],
-                visible: false
+                visible: false,
+                results: []
             }
       },      
       props: ['playerUid','playerName'],      
@@ -94,14 +102,39 @@ const { decks } = require('cards');
                               score += "/" + doc.data().score[i];
                         }
                      }
+                     if (doc.data().state == "final" && this.selectedPlay.uid == doc.id) {
+                        var results = [];
+                        if (doc.data().game == "belote") {
+                           results[0] = [];
+                           results[1] = [];
+                           results[0]["player"] = "Equipe " + doc.data().playersName[0].name + "/" + doc.data().playersName[2].name;
+                           results[0]["score"] = doc.data().score[0];
+                           results[1]["player"] = "Equipe " + doc.data().playersName[1].name + "/" + doc.data().playersName[3].name;
+                           results[1]["score"] = doc.data().score[1];
+                        }
+                        else if (doc.data().game == "belote") {
+                           for (i=0;i<doc.data().score.length;i++) {
+                              results[i] = [];
+                              results[i]["player"] = doc.data().playersName[i].name;
+                              results[i]["score"] = doc.data().score[i];
+                           }
+                        }
+                        results.sort(function (a, b) {
+                           return b["score"] - a["score"];
+                        });
+                        this.results = results;
+                        this.visible = true;
+                     }
                      this.mygames.unshift({"uid": doc.id, "name": doc.data().game, "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "score": score, "names": strPlayers});
                   }
                   else {
                      this.mygames.push({"uid": doc.id, "name": doc.data().game, "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "names": strPlayers});
                      if (doc.data().players.length == doc.data().nbPlayers) {
-                        db.collection("plays").doc(doc.id).update({state:"prep"});
+                        db.collection("plays").doc(doc.id).update({state:"start-round"});
                      }                     
                   }
+                  if (doc.data().players.length == 0)
+                     db.collection("plays").doc(doc.id).delete();
                });
                //if (this.mygames.length > 0)
                //   this.emitter.emit("select-play", this.this.mygames[0].uid);
@@ -112,49 +145,92 @@ const { decks } = require('cards');
             //.where("state", "==", "prep")
             .onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {
                querySnapshot.forEach((doc) => {
-                  console.log("Plays onSnapshot launched (CurrentGame 2)");
+                  console.log("Plays onSnapshot launched (CurrentGame 2) : " + doc.metadata.hasPendingWrites);
                   if (!doc.metadata.hasPendingWrites) {
-                     if (doc.data().state == "prep") {
-                        console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
-                        db.collection("plays").doc(doc.id).update({state:"start-play"});
-                        console.log("starting game");
-                     }
-                     else if (doc.data().state == "start-play") {
-                        console.log("CurrentGame start-play state : " +doc.id, " => ", doc.data());
-                        db.collection("plays").doc(doc.id).update({state:"start-round"});
-                        console.log("starting round");
-                     }
-                     else if (doc.data().state == "start-round") {
+                     if (doc.data().state == "start-round") {
                         console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
                         this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length,doc.data().game);
                         console.log("distribute cards round 1");
                         db.collection("plays").doc(doc.id).update({state:"playing"});
                      }          
                      else if (doc.data().state == "end-round") {
-                        this.calculateScore(doc.id);
+                        var points = doc.data().score;
                         var roundIndex = doc.data().roundIndex +1;
-                        console.log("CurrentGame end-round state : " +doc.id, " => ", doc.data());
-                        db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex});
-                        console.log("starting next round");          
-                     }        
+                        var playedRounds = doc.data().playedRounds;
+
+                        db.collection("plays").doc(doc.id).collection("rounds").doc(doc.data().round).get().then((rdoc) => {
+                           var playEnd = false;
+                           if (rdoc.data().score.length != 0) {
+                              playedRounds = playedRounds + 1;
+                              for (var i=0;i<rdoc.data().score.length;i++) {
+                                    points[i] += rdoc.data().score[i];
+                                    if (points[i] >= doc.data().maxScore) {
+                                       playEnd = true;
+                                    }
+                              }
+                              if (playedRounds >= doc.data().maxRounds) {
+                                 playEnd = true;
+                              }
+                           }
+                           if (playEnd)
+                              db.collection("plays").doc(doc.id).update({state:"final", playedRounds: playedRounds, score:points});
+                           else
+                              db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex, playedRounds: playedRounds, score:points});
+                        });
+
+                        //this.calculateScore(doc.id);
+
+
+                        //console.log("CurrentGame end-round state : " +doc.id, " => ", doc.data());
+                        //db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex, playedRounds: playedRounds});
+                        //console.log("starting next round");          
+                     }
+                     
+                     if (doc.data().players.length == 0)
+                        db.collection("plays").doc(doc.id).delete();
                   }
                });
             });
       },
       methods: {
-         createGame() {
+         createBeloteGame() {
                db.collection("plays").add({
                   players: [this.playerUid],
                   playersName: [{id: this.playerUid, name: this.playerName}],
                   game: "belote",
                   state: "created",
                   creator: this.playerUid,
-                  score: [],
+                  score: [0,0],
+                  maxScore: 1000,
+                  playedRounds: 0,
+                  maxRounds: 100,
                   nbPlayers: 4,
                   roundIndex: 0
                })
                .then(function(docRef) {
-                  console.log("Plays written with ID: ", docRef.id);
+                  console.log("Plays Belote written with ID: ", docRef.id);
+                  //this.roundID = docRef.id;
+               })
+               .catch(function(error) {
+                  console.error("Error adding document: ", error);
+               });                           
+         },
+         createTarotGame() {
+               db.collection("plays").add({
+                  players: [this.playerUid],
+                  playersName: [{id: this.playerUid, name: this.playerName}],
+                  game: "tarot",
+                  state: "created",
+                  creator: this.playerUid,
+                  score: [0,0,0,0,0],
+                  maxScore: 10000,
+                  playedRounds: 0,
+                  maxRounds: 10,
+                  nbPlayers: 5,
+                  roundIndex: 0
+               })
+               .then(function(docRef) {
+                  console.log("Plays Tarot written with ID: ", docRef.id);
                   //this.roundID = docRef.id;
                })
                .catch(function(error) {
@@ -169,7 +245,7 @@ const { decks } = require('cards');
                playersName: firebase.firestore.FieldValue.arrayRemove({id: currentUser.uid, name: currentUser.displayName.split(" ")[0]})
             })
          },
-        calculateScore(playId) {
+         /*calculateScore(playId) {
             var points = [];
             //points[0] = 0;
             //points[1] = 0;
@@ -185,7 +261,6 @@ const { decks } = require('cards');
                         else
                            points[i] += doc.data().score[i];
                      }
-                     //console.log("!!!!! CalculateScore round : " + points[0] + "/" + points[1]);
                });
                db.collection("plays").doc(playId).update({score:points});
             })
@@ -194,8 +269,8 @@ const { decks } = require('cards');
             });
 
 
-         },
-        drawCards(playId, players, dealer, game) {
+         },*/
+         drawCards(playId, players, dealer, game) {
             var deck;
             this.roundId = -1;
             if (game == "belote")
@@ -219,13 +294,34 @@ const { decks } = require('cards');
                score: []
             })
             .then((docRef) => {
-               var i;
+               var i, j, tmpHands;
                this.roundId = docRef.id;
                console.log("Round this written with ID: ", docRef.id);
                //db.collection("plays").doc(playId).update({round: this.roundId});
 
                if (game == "belote") {
+                  tmpHands=[];
                   for (i = 0; i < players.length; i++) {
+                     tmpHands[i] = [];
+                     this.addHand(deck, 3, tmpHands[i]);
+                  }
+                  for (i = 0; i < players.length; i++) {
+                     this.addHand(deck, 2, tmpHands[i]);
+                  }
+                  for (i = 0; i < players.length; i++) {
+                     db.collection("plays").doc(playId)
+                     .collection("rounds").doc(this.roundId)
+                     .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
+                        play: playId,
+                        round: this.roundId,
+                        player: players[(i+dealer)%players.length],
+                        playerIndex: (i+dealer)%players.length,
+                        handOn: tmpHands[i],
+                        handNext: [],
+                        handOff: []
+                     });
+                  }
+                  /*for (i = 0; i < players.length; i++) {
                      db.collection("plays").doc(playId)
                      .collection("rounds").doc(this.roundId)
                      .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
@@ -241,19 +337,41 @@ const { decks } = require('cards');
                   console.log("Second draw turn");
                   for (i = 0; i < players.length; i++) {
                      this.drawHand(playId, deck, 2, players[(i+dealer)%players.length]);
-                  }          
-                  console.log("Draw atout");
+                  }*/          
+                  console.log("Draw atout and store remaining hands");
                   db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
-                     choice: this.getHand(deck, 1)
-                  });
-                  console.log("Store remaining deck");
-                  db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
+                     choice: this.getHand(deck, 1),
                      deck: this.getHand(deck, 11), state: "choice-1"
                   });
+                  /*console.log("Store remaining deck");
+                  db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
+                     deck: this.getHand(deck, 11), state: "choice-1"
+                  });*/
                }
                else if (game == "tarot") {
-                  if (players.length == 5) {
+                  tmpHands=[];
+                  for (j=0;j<5;j++) {
                      for (i = 0; i < players.length; i++) {
+                        if (j == 0)
+                           tmpHands[i] = [];
+                        this.addHand(deck, 3, tmpHands[i]);
+                     }
+                  }
+                  for (i = 0; i < players.length; i++) {
+                     db.collection("plays").doc(playId)
+                     .collection("rounds").doc(this.roundId)
+                     .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
+                        play: playId,
+                        round: this.roundId,
+                        player: players[(i+dealer)%players.length],
+                        playerIndex: (i+dealer)%players.length,
+                        handOn: tmpHands[i],
+                        handNext: [],
+                        handOff: []
+                     });
+                  }                 
+                  //if (players.length == 5) {
+                     /*for (i = 0; i < players.length; i++) {
                         db.collection("plays").doc(playId)
                         .collection("rounds").doc(this.roundId)
                         .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
@@ -265,17 +383,17 @@ const { decks } = require('cards');
                            handNext: [],
                            handOff: []
                         });
-                     }
-                     for (var j=0;j<4;j++) {
+                     }*/
+                     /*for (j=0;j<4;j++) {
                         for (i = 0; i < players.length; i++) {
                            this.drawHand(playId, deck, 3, players[(i+dealer)%players.length]);
                         }
-                     }
+                     }*/
                      console.log("Store remaining deck");
                      db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
                         deck: this.getHand(deck, 3), state: "choice-1"
                      });                 
-                  }
+                  //}
                }          
                db.collection("plays").doc(playId).update({round: this.roundId});
             })
@@ -308,7 +426,12 @@ const { decks } = require('cards');
             }    
             return handArray;           
          },
-         selectPlay(){
+         addHand(deck, nb, handArray) {
+            var hand = deck.draw(nb);
+            for (var j = 0; j < hand.length; j++) {
+               handArray.push({suit: hand[j].suit.name, rank: hand[j].rank.shortName});
+            }    
+         },         selectPlay(){
             if (this.selectedPlay.uid) {
                db.collection("plays").doc(this.selectedPlay.uid)
                   .get().then((doc) => {
