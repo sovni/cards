@@ -227,7 +227,7 @@ require('cards');
                                         var winnerIndex;
 
                                         setTimeout(() => { 
-                                            this.roundDocRef.update({state: "end-trick"});
+                                            //this.roundDocRef.update({state: "end-trick"});
 
                                             console.log ("round finished : check who won the trick");
 
@@ -475,7 +475,7 @@ require('cards');
                             this.roundDocRef.update({state: "choice-2", active: index});
                         }
                         else if (this.game == "tarot") {
-                            if (doc.data().bidContract != "") {
+                            if (doc.data().bidContract != "" && doc.data().bidContract != undefined) {
                                 this.roundDocRef.update({
                                     active: doc.data().bidIndex,
                                     state: "choice-2"

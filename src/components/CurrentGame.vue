@@ -130,7 +130,7 @@ const { decks } = require('cards');
                   else {
                      this.mygames.push({"uid": doc.id, "name": doc.data().game, "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "names": strPlayers});
                      if (doc.data().players.length == doc.data().nbPlayers) {
-                        db.collection("plays").doc(doc.id).update({state:"prep"});
+                        db.collection("plays").doc(doc.id).update({state:"start-round"});
                      }                     
                   }
                   if (doc.data().players.length == 0)
@@ -145,19 +145,9 @@ const { decks } = require('cards');
             //.where("state", "==", "prep")
             .onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {
                querySnapshot.forEach((doc) => {
-                  console.log("Plays onSnapshot launched (CurrentGame 2)");
+                  console.log("Plays onSnapshot launched (CurrentGame 2) : " + doc.metadata.hasPendingWrites);
                   if (!doc.metadata.hasPendingWrites) {
-                     if (doc.data().state == "prep") {
-                        console.log("CurrentGame prep state : " +doc.id, " => ", doc.data());
-                        db.collection("plays").doc(doc.id).update({state:"start-play"});
-                        console.log("starting game");
-                     }
-                     else if (doc.data().state == "start-play") {
-                        console.log("CurrentGame start-play state : " +doc.id, " => ", doc.data());
-                        db.collection("plays").doc(doc.id).update({state:"start-round"});
-                        console.log("starting round");
-                     }
-                     else if (doc.data().state == "start-round") {
+                     if (doc.data().state == "start-round") {
                         console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
                         this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length,doc.data().game);
                         console.log("distribute cards round 1");
@@ -304,13 +294,34 @@ const { decks } = require('cards');
                score: []
             })
             .then((docRef) => {
-               var i;
+               var i, j, tmpHands;
                this.roundId = docRef.id;
                console.log("Round this written with ID: ", docRef.id);
                //db.collection("plays").doc(playId).update({round: this.roundId});
 
                if (game == "belote") {
+                  tmpHands=[];
                   for (i = 0; i < players.length; i++) {
+                     tmpHands[i] = [];
+                     this.addHand(deck, 3, tmpHands[i]);
+                  }
+                  for (i = 0; i < players.length; i++) {
+                     this.addHand(deck, 2, tmpHands[i]);
+                  }
+                  for (i = 0; i < players.length; i++) {
+                     db.collection("plays").doc(playId)
+                     .collection("rounds").doc(this.roundId)
+                     .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
+                        play: playId,
+                        round: this.roundId,
+                        player: players[(i+dealer)%players.length],
+                        playerIndex: (i+dealer)%players.length,
+                        handOn: tmpHands[i],
+                        handNext: [],
+                        handOff: []
+                     });
+                  }
+                  /*for (i = 0; i < players.length; i++) {
                      db.collection("plays").doc(playId)
                      .collection("rounds").doc(this.roundId)
                      .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
@@ -326,19 +337,41 @@ const { decks } = require('cards');
                   console.log("Second draw turn");
                   for (i = 0; i < players.length; i++) {
                      this.drawHand(playId, deck, 2, players[(i+dealer)%players.length]);
-                  }          
-                  console.log("Draw atout");
+                  }*/          
+                  console.log("Draw atout and store remaining hands");
                   db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
-                     choice: this.getHand(deck, 1)
-                  });
-                  console.log("Store remaining deck");
-                  db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
+                     choice: this.getHand(deck, 1),
                      deck: this.getHand(deck, 11), state: "choice-1"
                   });
+                  /*console.log("Store remaining deck");
+                  db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
+                     deck: this.getHand(deck, 11), state: "choice-1"
+                  });*/
                }
                else if (game == "tarot") {
-                  if (players.length == 5) {
+                  tmpHands=[];
+                  for (j=0;j<5;j++) {
                      for (i = 0; i < players.length; i++) {
+                        if (j == 0)
+                           tmpHands[i] = [];
+                        this.addHand(deck, 3, tmpHands[i]);
+                     }
+                  }
+                  for (i = 0; i < players.length; i++) {
+                     db.collection("plays").doc(playId)
+                     .collection("rounds").doc(this.roundId)
+                     .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
+                        play: playId,
+                        round: this.roundId,
+                        player: players[(i+dealer)%players.length],
+                        playerIndex: (i+dealer)%players.length,
+                        handOn: tmpHands[i],
+                        handNext: [],
+                        handOff: []
+                     });
+                  }                 
+                  //if (players.length == 5) {
+                     /*for (i = 0; i < players.length; i++) {
                         db.collection("plays").doc(playId)
                         .collection("rounds").doc(this.roundId)
                         .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
@@ -350,17 +383,17 @@ const { decks } = require('cards');
                            handNext: [],
                            handOff: []
                         });
-                     }
-                     for (var j=0;j<4;j++) {
+                     }*/
+                     /*for (j=0;j<4;j++) {
                         for (i = 0; i < players.length; i++) {
                            this.drawHand(playId, deck, 3, players[(i+dealer)%players.length]);
                         }
-                     }
+                     }*/
                      console.log("Store remaining deck");
                      db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
                         deck: this.getHand(deck, 3), state: "choice-1"
                      });                 
-                  }
+                  //}
                }          
                db.collection("plays").doc(playId).update({round: this.roundId});
             })
@@ -393,7 +426,12 @@ const { decks } = require('cards');
             }    
             return handArray;           
          },
-         selectPlay(){
+         addHand(deck, nb, handArray) {
+            var hand = deck.draw(nb);
+            for (var j = 0; j < hand.length; j++) {
+               handArray.push({suit: hand[j].suit.name, rank: hand[j].rank.shortName});
+            }    
+         },         selectPlay(){
             if (this.selectedPlay.uid) {
                db.collection("plays").doc(this.selectedPlay.uid)
                   .get().then((doc) => {

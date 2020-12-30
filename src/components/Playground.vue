@@ -81,8 +81,8 @@
          <div class="p-grid" v-if="currentGame == 'tarot'">
 
             <div v-if="playId != -1" class="p-col-2 p-card atout" style="height:150px">
-               <div v-if="bidPlayer != ''" class="p-col-12 p-text-center p-text-bold">{{bidPlayer}} : {{bidContract}}</div>
-               <div v-if="atout != ''" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
+               <div v-if="bidPlayer != '' && bidPlayer != undefined" class="p-col-12 p-text-center p-text-bold">{{bidPlayer + ":"}}{{bidContract}}</div>
+               <div v-if="atout != '' && atout != undefined" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
                <div v-if="atout == 'swords'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
                <div v-if="atout == 'coins'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
                <div v-if="atout == 'wands'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
