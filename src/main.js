@@ -33,6 +33,8 @@ const store = createStore({
   }
 });
 
+firebase.analytics();
+
 let app = '';
 firebase.auth().onAuthStateChanged(function() {
   if(!app){
