@@ -237,14 +237,15 @@ require('cards');
                                                 winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
                                                 console.log("winner : " + winnerIndex);
                                                 points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
-                                                console.log("Points: "+ points[0] + "/" + points[1]);
+                                                console.log("Points: "+ points);
                                                 this.roundDocRef.update({
                                                     state:"trick", 
                                                     active: winnerIndex, 
                                                     starter: winnerIndex, 
                                                     scores:firebase.firestore.FieldValue.arrayUnion({
                                                         winnerIndex: winnerIndex, 
-                                                        points:points
+                                                        points:points,
+                                                        trick:tdoc.id
                                                     })
                                                 })
                                                 .then(() => {
