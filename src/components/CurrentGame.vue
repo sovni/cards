@@ -157,6 +157,8 @@ const { decks } = require('cards');
                         var points = doc.data().score;
                         var roundIndex = doc.data().roundIndex +1;
                         var playedRounds = doc.data().playedRounds;
+                        if (playedRounds == undefined)
+                           playedRounds = 0;
 
                         db.collection("plays").doc(doc.id).collection("rounds").doc(doc.data().round).get().then((rdoc) => {
                            var playEnd = false;

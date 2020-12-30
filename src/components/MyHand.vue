@@ -254,8 +254,8 @@ require('cards');
                                                         if (hdoc.data().handOn.length == 0) {  
                                                             // END TRICK, START another one
                                                             this.CalculateRoundScore();
-                                                            this.roundDocRef.update({state:"end-round"});
-                                                            this.playDocRef.update({state:"end-round"});
+                                                            //this.roundDocRef.update({state:"end-round"});
+                                                            //this.playDocRef.update({state:"end-round"});
                                                         }
                                                         else {
                                                             this.roundDocRef.collection("tricks").add({
@@ -654,12 +654,13 @@ require('cards');
                             points[1] = 162;
                             points[0] = 0;
                         }
-                        this.roundDocRef.update({score:[points[0], points[1]]});
-                        this.playDocRef.update({lastScore:[points[0], points[1]]});
+                        this.roundDocRef.update({score:[points[0], points[1]], state:"end-round"});
+                        this.playDocRef.update({lastScore:[points[0], points[1]], state:"end-round"});
                     }
-                    //else if (this.game == "tarot") {
-
-                    //}
+                    else if (this.game == "tarot") {
+                        this.roundDocRef.update({state:"end-round"});
+                        this.playDocRef.update({state:"end-round"});
+                    }
                 });
             },
             CalculateWinner(cards, indexes, atout) {
