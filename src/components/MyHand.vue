@@ -215,6 +215,9 @@ require('cards');
                                     handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)
                                 }); 
                                 //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
+                                if (this.game == "tarot" && playedCard.suit == "trump" && playedCard.rank == "0")
+                                    this.roundDocRef.update({bidExcuse: this.myindex});
+
                                 trickDoc.update({
                                     players: firebase.firestore.FieldValue.arrayUnion(this.playerId),
                                     playerIndex: firebase.firestore.FieldValue.arrayUnion(this.myindex),
@@ -225,6 +228,7 @@ require('cards');
                                     active = (doc.data().active+1)%doc.data().nbPlayers;
                                     if (active == doc.data().starter) {
                                         var winnerIndex;
+                                        var bouts = 0;
 
                                         setTimeout(() => { 
                                             //this.roundDocRef.update({state: "end-trick"});
@@ -235,6 +239,7 @@ require('cards');
                                             trickDoc.get().then((tdoc) => {  
 
                                                 winnerIndex = this.CalculateWinner(tdoc.data().cards, tdoc.data().playerIndex, doc.data().atout);
+                                                bouts = this.CalculateNbBouts(tdoc.data().cards);
                                                 console.log("winner : " + winnerIndex);
                                                 points = this.CalculatePoints(tdoc.data().cards, doc.data().atout);
                                                 console.log("Points: "+ points);
@@ -242,9 +247,11 @@ require('cards');
                                                     state:"trick", 
                                                     active: winnerIndex, 
                                                     starter: winnerIndex, 
+                                                    lastTrick: tdoc.data().cards,
                                                     scores:firebase.firestore.FieldValue.arrayUnion({
                                                         winnerIndex: winnerIndex, 
                                                         points:points,
+                                                        bouts: bouts,
                                                         trick:tdoc.id
                                                     })
                                                 })
@@ -254,8 +261,8 @@ require('cards');
                                                         if (hdoc.data().handOn.length == 0) {  
                                                             // END TRICK, START another one
                                                             this.CalculateRoundScore();
-                                                            this.roundDocRef.update({state:"end-round"});
-                                                            this.playDocRef.update({state:"end-round"});
+                                                            //this.roundDocRef.update({state:"end-round"});
+                                                            //this.playDocRef.update({state:"end-round"});
                                                         }
                                                         else {
                                                             this.roundDocRef.collection("tricks").add({
@@ -405,7 +412,7 @@ require('cards');
                             var bidPartnerIndex = -1;
                             var bidPartnerId;
                             querySnapshot.forEach((hdoc) => {
-                                if (bidPartnerIndex != -1) {
+                                if (bidPartnerIndex == -1) {
                                     for (var i=0;i<hdoc.data().handOn.length;i++) {
                                         if (hdoc.data().handOn[i].suit == suit && hdoc.data().handOn[i].rank == "K") {
                                             bidPartnerIndex = hdoc.data().playerIndex;
@@ -629,14 +636,17 @@ require('cards');
             },            
             CalculateRoundScore() {
                 var points = [];
+                var bouts = [];
 
                 this.roundDocRef.get().then((doc) => {
                    for (var i=0;i<doc.data().nbPlayers;i++) {
                         points[i] = 0;
+                        bouts[i] = 0;
                     }
                     for (i=0;i<doc.data().scores.length;i++) {
                         points[doc.data().scores[i].winnerIndex] += doc.data().scores[i].points;
-                        if (i==doc.data().scores.length-1)
+                        bouts[doc.data().scores[i].winnerIndex] += doc.data().scores[i].bouts;
+                        if (i==doc.data().scores.length-1 && this.game == "belote")
                             points[doc.data().scores[i].winnerIndex] += 10;
                     }
                     if (this.game == "belote") {
@@ -654,13 +664,76 @@ require('cards');
                             points[1] = 162;
                             points[0] = 0;
                         }
-                        this.roundDocRef.update({score:[points[0], points[1]]});
-                        this.playDocRef.update({lastScore:[points[0], points[1]]});
+                        this.roundDocRef.update({score:[points[0], points[1]], state:"end-round"});
+                        this.playDocRef.update({lastScore:[points[0], points[1]], state:"end-round"});
                     }
-                    //else if (this.game == "tarot") {
+                    else if (this.game == "tarot") {
+                        var bidPoints;
+                        var score;
+                        var result;
+                        var boutTotal = bouts[doc.data().bidIndex];
+                        if (doc.data().bidPartnerIndex != -1)
+                            boutTotal += bouts[doc.data().bidPartnerIndex];
+                        if (doc.data().bidIndex == doc.data().bidExcuse || doc.data().bidPartnerIndex == doc.data().bidExcuse)
+                            boutTotal += 1;
+                        bidPoints = points[doc.data().bidIndex];  
+                        if (doc.data().bidPartnerIndex != -1)
+                            bidPoints += points[doc.data().bidPartnerIndex];
 
-                    //}
+                        if (boutTotal == 0)
+                            score = bidPoints - 56;
+                        else if (boutTotal == 1)
+                            score = bidPoints - 51;
+                        else if (boutTotal == 2)
+                            score = bidPoints - 41;
+                        else if (boutTotal == 3)
+                            score = bidPoints - 36;
+                        
+                        if (score > 0)
+                            result = 25 + score;
+                        else
+                            result = -25 + score;
+                        switch (doc.data().bidContract) {
+                            case "petite" :
+                                break;
+                            case "garde" :
+                                result = result*2;
+                                break;
+                            case "gardesans" :
+                                result = result*4;
+                                break;
+                            case "gardecontre" :
+                                result = result*6;
+                                break;
+                            default :
+                                break;
+                        }
+                        console.log("Tarot score : result :" + result + " score : " + score + " points : " + bidPoints + " Bouts : " + boutTotal);
+                        for (i=0;i<doc.data().nbPlayers;i++) {
+                            points[i] = 0;
+                        }
+                        for (i=0;i<doc.data().nbPlayers;i++) {
+                            if (i == doc.data().bidIndex && doc.data().bidPartnerIndex == -1)
+                                points[i] = result * 4;
+                            else if (i == doc.data().bidIndex)
+                                points[i] = result * 2;
+                            else if (i == doc.data().bidPartnerIndex)
+                                points[i] = result;
+                            else
+                                points[i] = -result;
+                        }
+                        this.roundDocRef.update({score: points, state:"end-round"});
+                        this.playDocRef.update({lastScore: points, lastBid: doc.data().bidContract, lastNbBouts: boutTotal, lastResult: bidPoints, state:"end-round"});
+                    }
                 });
+            },
+            CalculateNbBouts(cards) {
+                var bouts = 0;
+                for (var i=0;i<cards.length;i++) {
+                    if (cards[i].suit == "trump" && (cards[i].rank == "I" || cards[i].rank == "XXI"))
+                        bouts = bouts + 1;
+                }
+                return bouts;
             },
             CalculateWinner(cards, indexes, atout) {
                 var winnerIndex = -1;

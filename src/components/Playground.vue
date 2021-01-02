@@ -1,4 +1,6 @@
 <template>
+   <div class="p-grid" style="width:800px">
+      <div class="p-col-12">
    <Card style="width:800px;height:800px;" class="tapis">
       <template v-slot:title v-if="playId == -1">
          Sélectionnez ou créez une partie
@@ -74,34 +76,54 @@
                   <div class="p-col-12 p-text-bold"  style="text-align: right;">
                      {{ playersName[1] }}
                   </div>
+                  <div class="p-col-12 p-m-0 p-p-0" style="height:320px">
+                     <div class="p-col-12"  style="height:60px"/>
+                     <div v-if="lastTrick.length == 0" class="p-col-12"  style="height:100px"/>
+                     <div v-if="lastTrick.length > 0" class="p-col-12 p-m-0 p-p-0 p-card atout" >
+                        <div class="p-col-12 p-text-center p-text-bold">DERNIER PLI</div>
+                        <div class="p-col-12 p-m-0 p-p-0  p-grid " v-for="pcard of lastTrick" :key="pcard.rank">
+                           <div v-if="pcard.rank == 'K'" class="p-col-6 p-text-center p-text-bold">Roi</div>
+                           <div v-else-if="pcard.rank == 'Q'" class="p-col-6 p-text-center p-text-bold">Dame</div>
+                           <div v-else-if="pcard.rank == 'J'" class="p-col-6 p-text-center p-text-bold">Valet</div>
+                           <div v-else-if="pcard.rank == 'A'" class="p-col-6 p-text-center p-text-bold">As</div>
+                           <div v-else class="p-col-6 p-text-center p-text-bold">{{ pcard.rank }}</div>
+                           <div v-if="pcard.suit == 'spades'" class="p-col-6 p-text-center" ><span style="color: black;">&spades;</span></div>
+                           <div v-if="pcard.suit == 'diamonds'" class="p-col-6 p-text-center" ><span style="color: red;">&diams;</span></div>
+                           <div v-if="pcard.suit == 'clubs'" class="p-col-6 p-text-center" ><span style="color: black;">&clubs;</span></div>
+                           <div v-if="pcard.suit == 'hearts'" class="p-col-6 p-text-center" ><span style="color: red;">&hearts;</span></div>
+                           <!--<div class="p-col-6 p-text-center p-text-bold">{{ pcard.rank }}</div>
+                           <div class="p-col-6 p-text-center p-text-bold">{{ pcard.suit }}</div>-->
+                        </div>
+                     </div>
+                  </div>
                </div>           
             </div> 
          </div>   
 
          <div class="p-grid" v-if="currentGame == 'tarot'">
-
-            <div v-if="playId != -1" class="p-col-2 p-card atout" style="height:150px">
-               <div v-if="bidPlayer != '' && bidPlayer != undefined" class="p-col-12 p-text-center p-text-bold">{{bidPlayer + ":"}}{{bidContract}}</div>
-               <div v-if="atout != '' && atout != undefined" class="p-col-12 p-text-center p-text-bold">Roi Appelé</div>
-               <div v-if="atout == 'swords'" class="p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
-               <div v-if="atout == 'coins'" class="p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
-               <div v-if="atout == 'wands'" class="p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
-               <div v-if="atout == 'cups'" class="p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
-            </div>
             <div class="p-col-3"  style="height:150px">
                <Hand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame" :bidContract="bidContract"/>
             </div>
-            <div class="p-col-2" />
+            <div class="p-col" />
+            <div v-if="playId != -1" class="p-col-4 p-card atout p-grid" style="height:150px">
+               <div v-if="bidPlayer != '' && bidPlayer != undefined" class="p-col-6 p-text-center p-text-bold">Contrat: </div>
+               <div class="p-col-6 p-text-center p-text-bold" v-if="bidContract == 'petite'">Petite</div>
+               <div class="p-col-6 p-text-center p-text-bold" v-if="bidContract == 'garde'">Garde</div>
+               <div class="p-col-6 p-text-center p-text-bold" v-if="bidContract == 'gardesans'">Garde Sans</div>
+               <div class="p-col-6 p-text-center p-text-bold" v-if="bidContract == 'gardecontre'">Garde Contre</div>
+               <div v-if="bidPlayer != '' && bidPlayer != undefined" class="p-col-6 p-text-center p-text-bold">Joueur:</div>
+               <div v-if="bidPlayer != '' && bidPlayer != undefined" class="p-col-6 p-text-center p-text-bold">{{ bidPlayer }}</div>
+               <div v-if="atout != '' && atout != undefined" class="p-col-6 p-text-center p-text-bold king">Roi Appelé:</div>
+               <div v-if="atout == 'swords'" class="p-col-6 p-text-center" ><span style="font-size: 250%; color: black;">&spades;</span></div>
+               <div v-if="atout == 'coins'" class="p-col-6 p-text-center" ><span style="font-size: 250%; color: red;">&diams;</span></div>
+               <div v-if="atout == 'wands'" class="p-col-6 p-text-center" ><span style="font-size: 250%; color: black;">&clubs;</span></div>
+               <div v-if="atout == 'cups'" class="p-col-6 p-text-center" ><span style="font-size: 250%; color: red;">&hearts;</span></div>
+            </div>
+
+            <div class="p-col" />
             <div class="p-col-3" style="height:150px">
                <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame" :bidContract="bidContract"/>
             </div>
-            <div v-if="playId != -1" class="p-col-2 p-card atout"  style="height:150px">
-               <div class="p-col-12 p-text-center p-text-bold">SCORE</div>
-               <div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center">
-                  <Chart type="horizontalBar" :data="scoresData" :options="scoresOptions"/>
-               </div>
-            </div>
-
 
             <div class="p-col-2"  style="text-align: center;" />
             <div class="p-col-3 p-text-bold"  style="text-align: center;">
@@ -133,14 +155,6 @@
                   <div class="p-col-12 p-text-bold"  style="text-align: left;">
                      {{ playersName[4] }}
                   </div>
-                  <div class="p-col-12 p-m-0 p-p-0" style="height:320px">
-                     <div class="p-col-12"  style="height:165px"/>
-                     <div v-if="lastScore.length == 0" class="p-col-12"  style="height:100px"/>
-                     <div v-if="lastScore.length > 0" class="p-col-12 p-card atout"  style="height:100px">
-                        <div class="p-col-12 p-text-center p-text-bold">DERNIERE PARTIE</div>
-                        <div class="p-col-12 p-text-center p-text-bold">{{ lastScore[0]}} / {{lastScore[1]}}</div>
-                     </div>
-                  </div>
                </div>
                <div class="p-col-8">
                   <div class="p-col-12"  style="height:320px">
@@ -156,6 +170,48 @@
          </div>   
       </template>   
    </Card>
+      </div>
+      <div class="p-col-6">
+         <Card v-if="playId != -1 && currentGame == 'tarot'"  class="tapis">
+            <template v-slot:title>
+               Dernière Partie
+            </template>
+            <template v-slot:content >
+               <div v-if="lastBid != ''" class="p-col-12 p-card p-grid atout" >
+                  <div class="p-col-6 p-text-center p-text-bold">Contrat</div>
+                  <div class="p-col-6 p-text-center p-text-bold" v-if="lastBid == 'petite'">Petite</div>
+                  <div class="p-col-6 p-text-center p-text-bold" v-if="lastBid == 'garde'">Garde</div>
+                  <div class="p-col-6 p-text-center p-text-bold" v-if="lastBid == 'gardesans'">Garde Sans</div>
+                  <div class="p-col-6 p-text-center p-text-bold" v-if="lastBid == 'gardecontre'">Garde Contre</div>
+                  <div class="p-col-6 p-text-center p-text-bold">Résultat</div>
+                  <div class="p-col-6 p-text-center p-text-bold">{{ (lastResult >= 0) ? 'GAGNE' : 'PERDU' }}</div>
+                  <div class="p-col-6 p-text-center p-text-bold">Nombre de bouts</div>
+                  <div class="p-col-6 p-text-center p-text-bold">{{ lastNbBouts }}</div>
+                  <div class="p-col-6 p-text-center p-text-bold">Points</div>
+                  <div class="p-col-6 p-text-center p-text-bold">{{ lastResult }}</div>
+               </div>
+               <div class="p-col-12"/>
+               <div class="p-col-12 p-card p-grid  atout" v-for="pscore of lastScore" :key="pscore.name">
+                  <div class="p-col-6 p-text-center p-text-bold">{{ pscore.name }}</div>
+                  <div class="p-col-6 p-text-center p-text-bold">{{ pscore.score }}</div>
+               </div>
+            </template>   
+         </Card>
+      </div>
+      <div class="p-col-6">
+         <Card v-if="playId != -1 && currentGame == 'tarot'"  class="tapis">
+            <template v-slot:title>
+               Score
+            </template>
+            <template v-slot:content >
+               <!--<div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center"> -->
+               <div class="p-text-center">
+                  <Chart type="horizontalBar" :data="scoresData" :options="scoresTarotOptions"/>
+               </div>
+            </template>   
+         </Card>
+      </div>
+</div>
 </template>
 <style>
 .atout {
@@ -170,6 +226,9 @@
     background-image: url("../assets/tapis.jpg") !important;
    background-size: 800px 800px !important;
 }*/
+.king {
+  vertical-align: middle;
+}
 </style>
 
 <script>
@@ -211,6 +270,10 @@ import Card from 'primevue/card';
                activePlayer: -1,
                roundState: '',
                lastScore: [],
+               lastTrick: [],
+               lastBid: '',
+               lastResult: 0,
+               lastNbBouts: -1,
                choice: [],
                scoresOptions: {
                   legend: false,
@@ -232,17 +295,26 @@ import Card from 'primevue/card';
                      ]
                   }
                },
-               basicData: {
+               scoresTarotOptions: {
+                  legend: false,
+                  responsive: false,
+                  hoverMode: 'index',
+                  scales: {
+                     xAxes: [
+                        {
+                           type: 'linear',
+                           display: true,
+                           position: 'left',
+                           id: 'x-axis-1',
+                           ticks: {
+                              min: -1000,
+                              max: 1000
+                           }
+                        }
 
-                  labels: ['Nous', 'Eux'], 
-                  datasets: [
-                     {
-                        label: 'Scores',
-                        backgroundColor: '#42A5F5',
-                        data: [35,45]
-                     }        
-                  ]
-               }  
+                     ]
+                  }
+               }
             }
       }, 
       props: ['playerUid','playerName'],
@@ -270,6 +342,10 @@ import Card from 'primevue/card';
             this.playersName = ["","","","",""];
             this.playersIndex = [0,0,0,0,0];
             this.lastScore = [];
+            this.lastTrick = [];
+            this.lastBid = "";
+            this.lastNbBouts = -1;
+            this.lastResult = 0;
             this.atout = "";
             this.bidPlayer = "";
             this.bidContract = "";
@@ -311,11 +387,31 @@ import Card from 'primevue/card';
                      }
                   else {
                      this.lastScore = [];
-                  }
+                  }                 
                }
                else if (this.currentGame == "tarot") {
                   this.cardWidth = 70;
                   this.myCardWidth = 120;
+                  var chartLabels = [];
+                  var chartScores = [];
+
+                  for (i=0;i<doc.data().playersName.length;i++) {
+                     //if (doc.data().playersName[i].name.length > 3)
+                     //   chartLabels.push(doc.data().playersName[i].name.substring(0,3) + "...");
+                     //else
+                        chartLabels.push(doc.data().playersName[i].name);
+                     chartScores.push(doc.data().score[i]);
+                     this.lastScore[i] = {name: doc.data().playersName[i].name, score:doc.data().score[i]}
+                     //this.lastScore[i].name = doc.data().playersName[i].name;
+                     //this.lastScore[i].score = doc.data().score[i];
+                  }
+                  this.scoresData = {labels: chartLabels, datasets: [{label: 'Scores',backgroundColor: ['#42A5F5','#FFA726'], data: chartScores}]};
+
+                  if (typeof doc.data().lastBid != "undefined") {
+                     this.lastBid = doc.data().lastBid;
+                     this.lastNbBouts = doc.data().lastNbBouts;
+                     this.lastResult = doc.data().lastResult;
+                  }
                } 
 
                if (doc.data().round != this.roundId) {
@@ -367,14 +463,18 @@ import Card from 'primevue/card';
                      console.log("Rounds onSnapshot launched (Playground 2)");
                      if (rdoc.data().tricks.length > 0)
                         this.trickId = rdoc.data().currentTrick;
-                        this.activePlayer = rdoc.data().active;
-                        this.atout = rdoc.data().atout;
-                        this.choice = rdoc.data().choice;
-                        this.roundState = rdoc.data().state;
-                        this.bidPlayer = rdoc.data().bidPlayer;
-                        this.bidContract = rdoc.data().bidContract;
-                        if (this.bidContract == undefined || this.bidContract == null)
-                           this.bidContract = "";
+                     this.activePlayer = rdoc.data().active;
+                     this.atout = rdoc.data().atout;
+                     this.choice = rdoc.data().choice;
+                     this.roundState = rdoc.data().state;
+                     this.bidPlayer = rdoc.data().bidPlayer;
+                     this.bidContract = rdoc.data().bidContract;
+                     if (this.bidContract == undefined || this.bidContract == null)
+                        this.bidContract = "";
+                     if (typeof rdoc.data().lastTrick != "undefined" && rdoc.data().lastTrick.length > 0)
+                        this.lastTrick = rdoc.data().lastTrick;
+                     else
+                        this.lastTrick = [];
                   });
                }
             });
