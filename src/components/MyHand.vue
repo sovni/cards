@@ -246,11 +246,11 @@ require('cards');
                                                 this.roundDocRef.update({
                                                     state:"trick", 
                                                     active: winnerIndex, 
-                                                    bouts: bouts,
                                                     starter: winnerIndex, 
                                                     scores:firebase.firestore.FieldValue.arrayUnion({
                                                         winnerIndex: winnerIndex, 
                                                         points:points,
+                                                        bouts: bouts,
                                                         trick:tdoc.id
                                                     })
                                                 })
@@ -689,9 +689,9 @@ require('cards');
                             score = bidPoints - 36;
                         
                         if (score > 0)
-                            result = 30 + score;
+                            result = 25 + score;
                         else
-                            result = -30 + score;
+                            result = -25 + score;
                         switch (doc.data().bidContract) {
                             case "petite" :
                                 break;
@@ -707,10 +707,11 @@ require('cards');
                             default :
                                 break;
                         }
+                        console.log("Tarot score : result :" + result + " score : " + score + " points : " + bidPoints + " Bouts : " + boutTotal);
                         for (i=0;i<doc.data().nbPlayers;i++) {
                             points[i] = 0;
                         }
-                        for (i=0;i<doc.data().scores.length;i++) {
+                        for (i=0;i<doc.data().nbPlayers;i++) {
                             if (i == doc.data().bidIndex && doc.data().bidPartnerIndex == -1)
                                 points[i] = result * 4;
                             else if (i == doc.data().bidIndex)
@@ -721,7 +722,7 @@ require('cards');
                                 points[i] = -result;
                         }
                         this.roundDocRef.update({score: points, state:"end-round"});
-                        this.playDocRef.update({lastScore: points, state:"end-round"});
+                        this.playDocRef.update({lastScore: points, lastBid: doc.data().bidContract, lastNbBouts: boutTotal, lastResult: bidPoints, state:"end-round"});
                     }
                 });
             },
