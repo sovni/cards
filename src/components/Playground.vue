@@ -1,6 +1,6 @@
 <template>
    <div class="p-grid" style="width:800px">
-      <div class="p-col-12">
+      <div class="p-col-12 p-m-0 p-p-0">
    <Card style="width:800px;height:800px;" class="tapis">
       <template v-slot:title v-if="playId == -1">
          Sélectionnez ou créez une partie
@@ -405,7 +405,7 @@ import Card from 'primevue/card';
                      //this.lastScore[i].name = doc.data().playersName[i].name;
                      //this.lastScore[i].score = doc.data().score[i];
                   }
-                  this.scoresData = {labels: chartLabels, datasets: [{label: 'Scores',backgroundColor: ['#42A5F5','#FFA726'], data: chartScores}]};
+                  this.scoresData = {labels: chartLabels, datasets: [{label: 'Scores',backgroundColor: ['#EC407A','#AB47BC','#42A5F5','#7E57C2','#66BB6A'], data: chartScores}]};
 
                   if (typeof doc.data().lastBid != "undefined") {
                      this.lastBid = doc.data().lastBid;

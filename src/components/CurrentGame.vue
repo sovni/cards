@@ -207,7 +207,8 @@ const { decks } = require('cards');
                   playedRounds: 0,
                   maxRounds: 100,
                   nbPlayers: 4,
-                  roundIndex: 0
+                  roundIndex: 0,
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp()                  
                })
                .then(function(docRef) {
                   console.log("Plays Belote written with ID: ", docRef.id);
@@ -229,7 +230,8 @@ const { decks } = require('cards');
                   playedRounds: 0,
                   maxRounds: 10,
                   nbPlayers: 5,
-                  roundIndex: 0
+                  roundIndex: 0,
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp()                  
                })
                .then(function(docRef) {
                   console.log("Plays Tarot written with ID: ", docRef.id);
