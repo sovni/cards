@@ -247,6 +247,7 @@ require('cards');
                                                     state:"trick", 
                                                     active: winnerIndex, 
                                                     starter: winnerIndex, 
+                                                    lastTrick: tdoc.data().cards,
                                                     scores:firebase.firestore.FieldValue.arrayUnion({
                                                         winnerIndex: winnerIndex, 
                                                         points:points,

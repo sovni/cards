@@ -18,7 +18,7 @@
             </div>
             <div class="p-col-1" />
             <div class="p-col-4"  style="height:150px">
-            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col-1" />
             <div v-if="playId != -1" class="p-col-3 p-card atout"  style="height:150px">
@@ -41,7 +41,7 @@
 
             <div class="p-col-3"  style="height:250px">
             <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col-6"  style="height:250px">
                <!--<div class="p-d-flex p-jc-center">-->
@@ -50,7 +50,7 @@
             </div>
             <div class="p-col-3"  style="height:250px">
             <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
 
             <div class="p-grid p-col-12 nested-grid">
@@ -75,6 +75,26 @@
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: right;">
                      {{ playersName[1] }}
+                  </div>
+                  <div class="p-col-12 p-m-0 p-p-0" style="height:320px">
+                     <div class="p-col-12"  style="height:60px"/>
+                     <div v-if="lastTrick.length == 0" class="p-col-12"  style="height:100px"/>
+                     <div v-if="lastTrick.length > 0" class="p-col-12 p-m-0 p-p-0 p-card atout" >
+                        <div class="p-col-12 p-text-center p-text-bold">DERNIER PLI</div>
+                        <div class="p-col-12 p-m-0 p-p-0  p-grid " v-for="pcard of lastTrick" :key="pcard.rank">
+                           <div v-if="pcard.rank == 'K'" class="p-col-6 p-text-center p-text-bold">Roi</div>
+                           <div v-else-if="pcard.rank == 'Q'" class="p-col-6 p-text-center p-text-bold">Dame</div>
+                           <div v-else-if="pcard.rank == 'J'" class="p-col-6 p-text-center p-text-bold">Valet</div>
+                           <div v-else-if="pcard.rank == 'A'" class="p-col-6 p-text-center p-text-bold">As</div>
+                           <div v-else class="p-col-6 p-text-center p-text-bold">{{ pcard.rank }}</div>
+                           <div v-if="pcard.suit == 'spades'" class="p-col-6 p-text-center" ><span style="color: black;">&spades;</span></div>
+                           <div v-if="pcard.suit == 'diamonds'" class="p-col-6 p-text-center" ><span style="color: red;">&diams;</span></div>
+                           <div v-if="pcard.suit == 'clubs'" class="p-col-6 p-text-center" ><span style="color: black;">&clubs;</span></div>
+                           <div v-if="pcard.suit == 'hearts'" class="p-col-6 p-text-center" ><span style="color: red;">&hearts;</span></div>
+                           <!--<div class="p-col-6 p-text-center p-text-bold">{{ pcard.rank }}</div>
+                           <div class="p-col-6 p-text-center p-text-bold">{{ pcard.suit }}</div>-->
+                        </div>
+                     </div>
                   </div>
                </div>           
             </div> 
@@ -250,6 +270,7 @@ import Card from 'primevue/card';
                activePlayer: -1,
                roundState: '',
                lastScore: [],
+               lastTrick: [],
                lastBid: '',
                lastResult: 0,
                lastNbBouts: -1,
@@ -321,6 +342,7 @@ import Card from 'primevue/card';
             this.playersName = ["","","","",""];
             this.playersIndex = [0,0,0,0,0];
             this.lastScore = [];
+            this.lastTrick = [];
             this.lastBid = "";
             this.lastNbBouts = -1;
             this.lastResult = 0;
@@ -365,7 +387,7 @@ import Card from 'primevue/card';
                      }
                   else {
                      this.lastScore = [];
-                  }
+                  }                 
                }
                else if (this.currentGame == "tarot") {
                   this.cardWidth = 70;
@@ -441,14 +463,18 @@ import Card from 'primevue/card';
                      console.log("Rounds onSnapshot launched (Playground 2)");
                      if (rdoc.data().tricks.length > 0)
                         this.trickId = rdoc.data().currentTrick;
-                        this.activePlayer = rdoc.data().active;
-                        this.atout = rdoc.data().atout;
-                        this.choice = rdoc.data().choice;
-                        this.roundState = rdoc.data().state;
-                        this.bidPlayer = rdoc.data().bidPlayer;
-                        this.bidContract = rdoc.data().bidContract;
-                        if (this.bidContract == undefined || this.bidContract == null)
-                           this.bidContract = "";
+                     this.activePlayer = rdoc.data().active;
+                     this.atout = rdoc.data().atout;
+                     this.choice = rdoc.data().choice;
+                     this.roundState = rdoc.data().state;
+                     this.bidPlayer = rdoc.data().bidPlayer;
+                     this.bidContract = rdoc.data().bidContract;
+                     if (this.bidContract == undefined || this.bidContract == null)
+                        this.bidContract = "";
+                     if (typeof rdoc.data().lastTrick != "undefined" && rdoc.data().lastTrick.length > 0)
+                        this.lastTrick = rdoc.data().lastTrick;
+                     else
+                        this.lastTrick = [];
                   });
                }
             });
