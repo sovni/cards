@@ -1,5 +1,5 @@
 <template>
-    <Card style="width:400px;height:800px;">
+    <Card v-if="playId != -1" style="width:400px;height:800px;">
         <template v-slot:title>
             Chat
         </template>
