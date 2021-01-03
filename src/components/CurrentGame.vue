@@ -17,11 +17,11 @@
             </Column>
             <Column header="Action">
                   <template #body="slotProps">
-                     <Button v-if="slotProps.data.state == 'created'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+                     <Button v-if="slotProps.data.state == 'created' || slotProps.data.state == 'final'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
                   </template>
             </Column>      
          </DataTable>
-         <Button class="p-button-raised p-button-rounded p-button-sm" icon="pi pi-plus" @click="createBeloteGame()"/>
+         <Button class="p-button-raised p-button-rounded p-button-sm p-mt-4" v-tooltip="'Créer un nouveau jeu'"  icon="pi pi-plus" @click="toggle"/>
      </template>   
    </Card>
    <Dialog header="Header" v-model:visible="visible">
@@ -34,6 +34,26 @@
          </li>
       </ol>
    </Dialog>
+   <OverlayPanel ref="gameop" :showCloseIcon="true" :dismissable="true" style="width:350px">
+      <div class="p-d-flex p-flex-column">
+         <div class="p-mb-2">Jeu : {{ selectedGame.name }}</div>
+         <div class="p-mb-4">
+            <Dropdown v-model="selectedGame" :options="gameList" optionLabel="name" placeholder="Sélectionner un jeu" />
+         </div>
+         <div class="p-mb-4">Nombre de Joueurs: {{ selectedGame.code == "tarot" ? "5" : "4" }}</div>
+         <div class="p-mb-2">Nombre de Points max: {{ gamePoints }}</div>
+         <div class="p-mb-4">
+            <Slider v-model="gamePoints" :step="100" :min="100" :max="2000" />
+         </div>
+         <div class="p-mb-2">Nombre de Tours max: {{ gameRounds }}</div>
+         <div class="p-mb-2">
+            <Slider v-model="gameRounds" :step="1" :min="5" :max="100" />
+         </div>
+         <div class="p-mt-4">
+            <Button class="p-button-raised p-button-rounded p-button-sm" label="Créer le jeu" icon="pi pi-plus" @click="createGame"/>
+         </div>
+      </div>
+   </OverlayPanel>
 </template>
 
 <script>
@@ -48,6 +68,10 @@ import Button from 'primevue/button';
 import Tooltip from 'primevue/tooltip';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
+import Dropdown from 'primevue/dropdown';
+import OverlayPanel from 'primevue/overlaypanel';
+import Slider from 'primevue/slider';
+
 
 const { decks } = require('cards');
 
@@ -55,11 +79,18 @@ const { decks } = require('cards');
       name: 'CurrentGame',
       data() {
             return {
-                mygames: [],
-                roundId: -1,
-                selectedPlay: [],
-                visible: false,
-                results: []
+               mygames: [],
+               roundId: -1,
+               selectedPlay: [],
+               visible: false,
+               results: [],
+               selectedGame: '',
+               gameList:[
+                  {name: 'Belote', code: 'belote'},
+                  {name: 'Tarot', code: 'tarot'}
+               ],
+               gamePoints: 1000,
+               gameRounds: 10
             }
       },      
       props: ['playerUid','playerName'],      
@@ -68,7 +99,10 @@ const { decks } = require('cards');
          Button,
          Column,
          Dialog,
-         Card
+         Card,
+         OverlayPanel,
+         Dropdown,
+         Slider
       },
       directives: {
          'tooltip': Tooltip
@@ -195,6 +229,17 @@ const { decks } = require('cards');
             });
       },
       methods: {
+         toggle(event) {
+            this.$refs.gameop.toggle(event);
+         },
+         createGame(event) {
+            this.$refs.gameop.toggle(event);
+            console.log("create game : " + this.selectedGame.code + " Points :" + this.gamePoints + " Rounds :" + this.gameRounds);
+            if (this.selectedGame.code == "belote")
+               this.createBeloteGame();
+            else if (this.selectedGame.code == "tarot")
+               this.createTarotGame();
+         },
          createBeloteGame() {
                db.collection("plays").add({
                   players: [this.playerUid],
@@ -203,9 +248,9 @@ const { decks } = require('cards');
                   state: "created",
                   creator: this.playerUid,
                   score: [0,0],
-                  maxScore: 1000,
+                  maxScore: this.gamePoints,
                   playedRounds: 0,
-                  maxRounds: 100,
+                  maxRounds: this.gameRounds,
                   nbPlayers: 4,
                   roundIndex: 0,
                   createdAt: firebase.firestore.FieldValue.serverTimestamp()                  
@@ -226,9 +271,9 @@ const { decks } = require('cards');
                   state: "created",
                   creator: this.playerUid,
                   score: [0,0,0,0,0],
-                  maxScore: 10000,
+                  maxScore: this.gamePoints,
                   playedRounds: 0,
-                  maxRounds: 10,
+                  maxRounds: this.gameRounds,
                   nbPlayers: 5,
                   roundIndex: 0,
                   createdAt: firebase.firestore.FieldValue.serverTimestamp()                  
