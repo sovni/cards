@@ -7,15 +7,22 @@
             <div class="p-d-flex p-flex-column" style="width:100%;height:100%">
                 <div class="p-mb-2" style="width: 100%">          
                     <div class="p-mb-2">          
-                        <ScrollPanel style="width: 100%; height: 100%;height: 500px;">
-                            <div
+                        <ScrollPanel style="width: 100%; height: 100%;height: 450px;">
+                            <!--<div
                                 class="border pl-2 pt-1 ml-1 message-text mb-1"
                                 v-for="message in messages"
                                 :key="message"
                             >
                                 <span class="mg-text">{{ message.username }}</span>
-                                <p class="message pt-0">{{ message.text }}</p>
+                                <p class="pt-0">{{ message.text }}</p>
+                            </div>-->
+                            <div  v-for="message in messages" :key="message">
+                                <Divider align="center">
+                                    <span class="p-tag">{{ message.username }}</span>
+                                </Divider>
+                                <div>{{ message.text }}</div>
                             </div>
+
                         </ScrollPanel >
                     </div> 
                     <div class="p-mb-2">          
@@ -26,6 +33,14 @@
                     </div> 
                 </div> 
                 <div class="p-mt-2">          
+                    <Button label="😄" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('😄')"/>
+                    <Button label="🤣" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('🤣')"/>
+                    <Button label="😉" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('😉')"/>
+                    <Button label="😒" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('😒')"/>
+                    <Button label="😕" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('😕')"/>
+                    <Button label="😭" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('😭')"/>
+                    <Button label="😠" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('😠')"/>
+                    <Button label="👏" class="p-button-sm p-button-raised p-button-text p-mb-1 p-button-rounded"  @click="addMessage('👏')"/>
                     <Button label="Bien joué !" class="p-button-sm p-button-success p-m-1 p-button-rounded"  @click="addMessage('Bien joué !')"/>
                     <Button label="Bonne partie !" class="p-button-sm p-button-success p-m-1 p-button-rounded"  @click="addMessage('Bonne partie !')"/>
                     <Button label="C'te chance !" class="p-button-sm p-button-warning p-m-1 p-button-rounded"  @click="addMessage('C\'te chance !')"/>
@@ -50,6 +65,7 @@ import ScrollPanel from 'primevue/scrollpanel';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
+import Divider from 'primevue/divider';
 
     export default {
     name: "GameChat",
@@ -67,7 +83,8 @@ import Card from 'primevue/card';
         ScrollPanel,
         InputText,
         Button,
-        Card
+        Card,
+        Divider
     },
     methods: {
         getUserName(){
