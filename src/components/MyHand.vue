@@ -207,7 +207,7 @@ require('cards');
                             if (tdoc.data().cards.length == doc.data().nbPlayers)
                                 allowed = false;
                             else
-                                allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout);
+                                allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout, doc.data().tricks.length);
 
                             if (allowed) {
                                 this.handDocRef.update({
@@ -518,13 +518,18 @@ require('cards');
                     }
                 });
             },
-            checkPlayAllowed(playedCard, trick, atout) {
+            checkPlayAllowed(playedCard, trick, atout, indexTrick) {
                 var allowed = true;
                 var suitPlayed = '';
                 var bestAtoutTrick;
 
-                if (trick.length == 0)
+                if (trick.length == 0) {
+                    if (this.game == "tarot" && indexTrick == 1) {
+                        if (playedCard.suit == atout && playedCard.rank != 'K')
+                            return false;
+                    }
                     return true;
+                }
                 
                 if (this.game == "tarot") {
                     atout = "trump";
