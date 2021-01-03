@@ -4,12 +4,12 @@
             Chat
         </template>
         <template v-slot:content>
-            <div class="p-grid">
-                <div class="p-col-12">          
-                    <div id="chat" style="width:100%;height:650px">
-                        <ScrollPanel style="width: 100%; height: 100%">
+            <div class="p-d-flex p-flex-column" style="width:100%;height:100%">
+                <div class="p-mb-2" style="width: 100%">          
+                    <div class="p-mb-2">          
+                        <ScrollPanel style="width: 100%; height: 100%;height: 500px;">
                             <div
-                                class="border pl-2 pt-1 ml-2 message-text mb-2"
+                                class="border pl-2 pt-1 ml-1 message-text mb-1"
                                 v-for="message in messages"
                                 :key="message"
                             >
@@ -17,11 +17,22 @@
                                 <p class="message pt-0">{{ message.text }}</p>
                             </div>
                         </ScrollPanel >
+                    </div> 
+                    <div class="p-mb-2">          
                         <form @submit.prevent="sendMessage">
                             <InputText v-model="showMessage" type="text" class="p-mt-4 p-inputtext-sm" style="width: 70%;"/>
                             <Button label="Envoyer" class="p-button-sm p-ml-4"  @click="sendMessage()"/>
                         </form>
-                    </div>
+                    </div> 
+                </div> 
+                <div class="p-mt-2">          
+                    <Button label="Bien joué !" class="p-button-sm p-button-success p-m-1 p-button-rounded"  @click="addMessage('Bien joué !')"/>
+                    <Button label="Bonne partie !" class="p-button-sm p-button-success p-m-1 p-button-rounded"  @click="addMessage('Bonne partie !')"/>
+                    <Button label="C'te chance !" class="p-button-sm p-button-warning p-m-1 p-button-rounded"  @click="addMessage('C\'te chance !')"/>
+                    <Button label="Tu es sûr de toi là ?" class="p-button-sm p-button-warning p-m-1 p-button-rounded"  @click="addMessage('Tu es sûr de toi là ?')"/>
+                    <Button label="Tu me fends le coeur" class="p-button-sm p-button-danger p-m-1 p-button-rounded"  @click="addMessage('!!! ATTENTION !!!! TENTATIVE DE TRICHE DE CE JOUEUR !!!')"/>
+                    <Button label="Oulaaa, ça pique" class="p-button-sm p-button-danger p-m-1 p-button-rounded"  @click="addMessage('!!! ATTENTION !!!! TENTATIVE DE TRICHE DE CE JOUEUR !!!')"/>
+                    <Button label="Me laisse pas sur le carreau" class="p-button-sm p-button-danger p-m-1 p-button-rounded"  @click="addMessage('!!! ATTENTION !!!! TENTATIVE DE TRICHE DE CE JOUEUR !!!')"/>
                 </div> 
             </div>
         </template>   
@@ -76,8 +87,14 @@ import Card from 'primevue/card';
                 firebase.database().ref('chat/' + this.playId + '/messages').push(message);
                 this.showMessage = "";
             }
-        }
-  },
+        },
+        addMessage(txt) {
+            if (this.playId != -1) {
+                const message = {text: txt, username: this.name};
+                firebase.database().ref('chat/' + this.playId + '/messages').push(message);
+                this.showMessage = "";
+            }
+        }},
     mounted() {
         this.emitter.on("select-play", (uid) => {
             let viewMessage = this;
