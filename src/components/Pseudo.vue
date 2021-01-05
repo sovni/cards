@@ -1,6 +1,7 @@
 <template>
    <div class="wrapper">
       <h1>Mon Compte</h1>
+      <h3>Pseudo</h3>
      <form @submit.prevent="changePseudo">
          <div class="p-d-inline-flex p-flex-column p-jc-center">
             <div class="p-mb-2">
@@ -8,7 +9,7 @@
                   <span class="p-inputgroup-addon">
                      <i class="pi pi-user"></i>
                   </span>
-                  <InputText type="text" placeholder="Email"  v-model="username"/>
+                  <InputText type="text" label="PSeudo" placeholder="Email"  v-model="username"/>
                </div>
             </div>
             <div class="p-mb-2">
