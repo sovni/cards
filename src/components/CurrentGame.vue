@@ -17,11 +17,12 @@
             </Column>
             <Column header="Action">
                   <template #body="slotProps">
-                     <Button v-if="slotProps.data.state == 'created' || slotProps.data.state == 'final'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+                     <Button v-if="slotProps.data.state == 'created'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-text p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+                     <Button v-if="slotProps.data.state == 'final'" icon="pi pi-check" v-tooltip="'Terminer'" class="p-button-rounded p-button-text" @click="endGame(slotProps.data)" />
                   </template>
             </Column>      
          </DataTable>
-         <Button class="p-button-raised p-button-rounded p-button-sm p-mt-4" v-tooltip="'Créer un nouveau jeu'"  icon="pi pi-plus" @click="toggle"/>
+         <Button class="p-button-rounded p-button-text p-button-sm p-mt-2" v-tooltip="'Créer un nouveau jeu'"  icon="pi pi-plus" @click="toggle"/>
      </template>   
    </Card>
    <Dialog header="Header" v-model:visible="visible">
@@ -294,6 +295,10 @@ const { decks } = require('cards');
                players: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
                playersName: firebase.firestore.FieldValue.arrayRemove({id: currentUser.uid, name: currentUser.displayName.split(" ")[0]})
             })
+         },
+         endGame(play) {
+            console.log("End Game : " + play.uid);
+            db.collection("plays").doc(play.uid).update({state: 'ended'});
          },
          /*calculateScore(playId) {
             var points = [];
