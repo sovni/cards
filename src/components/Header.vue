@@ -40,6 +40,12 @@
                          visible: () => !this.currentUser
                       },
                       {
+                         label:'Mon Compte',
+                         icon:'pi pi-fw pi-user',
+                         to:'/pseudo',
+                         visible: () => this.currentUser
+                      },                                            
+                      {
                          label:'Déconnection',
                          icon:'pi pi-fw pi-user-minus',
                          command: () => {this.logout();},

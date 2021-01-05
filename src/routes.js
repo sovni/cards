@@ -2,6 +2,7 @@ import Home from './components/Home'
 import Login from './components/Login'
 import Register from './components/Register'
 import Dashboard from './components/Dashboard'
+import Pseudo from './components/Pseudo'
 
 export const routes = [
    {
@@ -19,6 +20,10 @@ export const routes = [
       path: '/login',
       name: 'login',
       component: Login
+   },{
+      path: '/pseudo',
+      name: 'pseudo',
+      component: Pseudo
    },{
       path: '/dashboard',
       name: 'Dashboard',
