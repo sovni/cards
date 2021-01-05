@@ -480,7 +480,8 @@ const { decks } = require('cards');
             for (var j = 0; j < hand.length; j++) {
                handArray.push({suit: hand[j].suit.name, rank: hand[j].rank.shortName});
             }    
-         },         selectPlay(){
+         },
+         selectPlay(){
             if (this.selectedPlay.uid) {
                db.collection("plays").doc(this.selectedPlay.uid)
                   .get().then((doc) => {
