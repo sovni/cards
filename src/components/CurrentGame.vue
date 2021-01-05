@@ -17,11 +17,12 @@
             </Column>
             <Column header="Action">
                   <template #body="slotProps">
-                     <Button v-if="slotProps.data.state == 'created' || slotProps.data.state == 'final'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+                     <Button v-if="slotProps.data.state == 'created'" icon="pi pi-sign-out" v-tooltip="'Partir'" class="p-button-rounded p-button-text p-button-danger p-button-sm" @click="leaveGame(slotProps.data)" />
+                     <Button v-if="slotProps.data.state == 'final'" icon="pi pi-check" v-tooltip="'Terminer'" class="p-button-rounded p-button-text" @click="endGame(slotProps.data)" />
                   </template>
             </Column>      
          </DataTable>
-         <Button class="p-button-raised p-button-rounded p-button-sm p-mt-4" v-tooltip="'Créer un nouveau jeu'"  icon="pi pi-plus" @click="toggle"/>
+         <Button class="p-button-rounded p-button-text p-button-sm p-mt-2" v-tooltip="'Créer un nouveau jeu'"  icon="pi pi-plus" @click="toggle"/>
      </template>   
    </Card>
    <Dialog header="Header" v-model:visible="visible">
@@ -118,6 +119,7 @@ const { decks } = require('cards');
                console.log("Plays onSnapshot launched (CurrentGame 1)");
                this.mygames = [];
                querySnapshot.forEach((doc) => {
+                  console.log("Plays onSnapshot launched (CurrentGame 1) :"+ doc.id);
                   var strPlayers = "";
                   for (var i = 0; i < doc.data().players.length; i++) {
                      if (i == 0)
@@ -176,10 +178,10 @@ const { decks } = require('cards');
             });
          db.collection("plays")
             .where("creator", "==", this.playerUid)
-            //.where("state", "==", "prep")
+            .where("state", "in", ["start-round","end-round"])
             .onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {
                querySnapshot.forEach((doc) => {
-                  console.log("Plays onSnapshot launched (CurrentGame 2) : " + doc.metadata.hasPendingWrites);
+                  console.log("Plays onSnapshot launched (CurrentGame 2) : " + doc.metadata.hasPendingWrites + ":" + doc.id);
                   if (!doc.metadata.hasPendingWrites) {
                      if (doc.data().state == "start-round") {
                         console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
@@ -293,6 +295,10 @@ const { decks } = require('cards');
                players: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
                playersName: firebase.firestore.FieldValue.arrayRemove({id: currentUser.uid, name: currentUser.displayName.split(" ")[0]})
             })
+         },
+         endGame(play) {
+            console.log("End Game : " + play.uid);
+            db.collection("plays").doc(play.uid).update({state: 'ended'});
          },
          /*calculateScore(playId) {
             var points = [];
@@ -480,7 +486,8 @@ const { decks } = require('cards');
             for (var j = 0; j < hand.length; j++) {
                handArray.push({suit: hand[j].suit.name, rank: hand[j].rank.shortName});
             }    
-         },         selectPlay(){
+         },
+         selectPlay(){
             if (this.selectedPlay.uid) {
                db.collection("plays").doc(this.selectedPlay.uid)
                   .get().then((doc) => {
