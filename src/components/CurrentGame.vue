@@ -118,6 +118,7 @@ const { decks } = require('cards');
                console.log("Plays onSnapshot launched (CurrentGame 1)");
                this.mygames = [];
                querySnapshot.forEach((doc) => {
+                  console.log("Plays onSnapshot launched (CurrentGame 1) :"+ doc.id);
                   var strPlayers = "";
                   for (var i = 0; i < doc.data().players.length; i++) {
                      if (i == 0)
@@ -176,10 +177,10 @@ const { decks } = require('cards');
             });
          db.collection("plays")
             .where("creator", "==", this.playerUid)
-            //.where("state", "==", "prep")
+            .where("state", "in", ["start-round","end-round"])
             .onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {
                querySnapshot.forEach((doc) => {
-                  console.log("Plays onSnapshot launched (CurrentGame 2) : " + doc.metadata.hasPendingWrites);
+                  console.log("Plays onSnapshot launched (CurrentGame 2) : " + doc.metadata.hasPendingWrites + ":" + doc.id);
                   if (!doc.metadata.hasPendingWrites) {
                      if (doc.data().state == "start-round") {
                         console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
