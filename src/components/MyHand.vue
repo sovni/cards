@@ -440,12 +440,16 @@ require('cards');
                                 atout: suit
                             });
                             if (doc.data().bidContract != "gardesans" && doc.data().bidContract != "gardecontre") {
+                                var dog = [];
                                 for (var k=0;k<doc.data().deck.length;k++) {
                                     var nextCard;
                                     nextCard = doc.data().deck[k];
-                                    this.handDocRef.update({handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)});
+                                    dog.push(nextCard);
+                                    this.handDocRef.update({
+                                        handOn: firebase.firestore.FieldValue.arrayUnion(nextCard)
+                                    });
                                 }
-                                this.roundDocRef.update({state: "choice-3", deck: []});
+                                this.roundDocRef.update({state: "choice-3", deck: [], dog: dog});
                             }
                             else{
                                 this.playDocRef.get().then((playDoc) => {
