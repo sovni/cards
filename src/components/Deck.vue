@@ -80,8 +80,18 @@ require('cards');
                 console.log("Watch props.roundState function called:" + newVal + ":"+oldVal+":"+this.state);
                 if (this.state == "choice-1" || this.state == "choice-2") {
                     console.log("Deck: round : " + this.myround);
-                    this.mydeck = this.choice;
+                    if (this.game == "belote")
+                        this.mydeck = this.choice;
                 }            
+                else if (this.game == "tarot" && this.state == "choice-3") {
+                    if (this.roundDocRef == null) {
+                        this.roundDocRef = db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround);
+                    }
+                    this.roundDocRef.get().then((doc) => {
+                        this.mydeck = doc.data().dog;
+                    });
+                }
+                    //this.mydeck = this.dog;
             },
             choice: function(newVal, oldVal) {
                 console.log("Watch props.choice function called:" + newVal + ":"+oldVal+":"+this.choice);
@@ -122,25 +132,29 @@ require('cards');
                 }
                 //var box = {};
                 var style="";
-        
-                var pindex = (this.playersIndex[index] - this.playerIndex);
-                console.log("pindex: " + pindex + ":" + this.playersIndex[index] +" - index: " + index);
-                pindex = (pindex + this.nbPlayer)%this.nbPlayer;
+                if (this.state == "choice-3") {
+                    style = "width:"+width+"px; left:"+ (index*width) + "px;top:0px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
+                }
+                else {
+                    var pindex = (this.playersIndex[index] - this.playerIndex);
+                    console.log("pindex: " + pindex + ":" + this.playersIndex[index] +" - index: " + index);
+                    pindex = (pindex + this.nbPlayer)%this.nbPlayer;
 
-                console.log("pindex: " + pindex + ":" + this.playersIndex[index] +" - index: " + index);
-                console.log("nb players : " + this.nbPlayer);
-                if (pindex == 0)
-                    style = "width:"+width+"px; left:"+ p0left + "px;top:" + p0top + "px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
-                else if (pindex == 1)
-                    style = "width:"+width+"px; left:" + p1left + "px;top:" + p1top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
-                else if (pindex == 2 && this.nbPlayer == 4)
-                    style = "width:"+width+"px; left:"+ p2left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
-                else if (pindex == 2 && this.nbPlayer == 5)
-                    style = "width:"+width+"px; left:"+ p2left + "px;top:0px; transform:" + "rotate(195deg)" + " translateZ(0);";
-                else if (pindex == 3 && this.nbPlayer == 5)
-                    style = "width:"+width+"px; left:"+ p3left + "px;top:0px; transform:" + "rotate(165deg)" + " translateZ(0);";
-                else if (pindex == 4 || (pindex == 3 && this.nbPlayer == 4))
-                    style = "width:"+width+"px; left:25px;top:" + p4top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
+                    console.log("pindex: " + pindex + ":" + this.playersIndex[index] +" - index: " + index);
+                    console.log("nb players : " + this.nbPlayer);
+                    if (pindex == 0)
+                        style = "width:"+width+"px; left:"+ p0left + "px;top:" + p0top + "px;";// transform:" + "rotate(" + rotationAngle + "deg)" + " translateZ(0);";
+                    else if (pindex == 1)
+                        style = "width:"+width+"px; left:" + p1left + "px;top:" + p1top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
+                    else if (pindex == 2 && this.nbPlayer == 4)
+                        style = "width:"+width+"px; left:"+ p2left + "px;top:0px;";// transform:" + "rotate(180deg)" + " translateZ(0);";
+                    else if (pindex == 2 && this.nbPlayer == 5)
+                        style = "width:"+width+"px; left:"+ p2left + "px;top:0px; transform:" + "rotate(195deg)" + " translateZ(0);";
+                    else if (pindex == 3 && this.nbPlayer == 5)
+                        style = "width:"+width+"px; left:"+ p3left + "px;top:0px; transform:" + "rotate(165deg)" + " translateZ(0);";
+                    else if (pindex == 4 || (pindex == 3 && this.nbPlayer == 4))
+                        style = "width:"+width+"px; left:25px;top:" + p4top +"px; transform:" + "rotate(90deg)" + " translateZ(0);";
+                }
                 console.log("style : " + style);
                 return style;
                 //var coords = this.calculateCoords(n, this.cradius, width, height, "N", this.cspacing, box);    

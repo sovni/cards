@@ -343,6 +343,7 @@ const { decks } = require('cards');
                dealer: dealer,
                state: "distrib-1",
                choice: [],
+               dog: [],
                deck: [],
                tricks:[],
                scores: [],
