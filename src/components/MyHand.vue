@@ -754,7 +754,7 @@ require('cards');
                 for (var i=0;i<cards.length;i++) {
                     var value = this.GetCardValue(cards[i], atout);
                     console.log("card value: " + value + " (" + cards[i].suit + cards[i].rank + ")");
-                    if ((this.game == "belote" && cards[i].suit == atout) || (this.game == "tarot" && cards[i].suit == "trump")) {
+                    if ((this.game == "belote" && cards[i].suit == atout) || (this.game == "tarot" && cards[i].suit == "trump" && cards[i].rank != "0")) {
                         if (value > bestAtout) {
                             winnerIndex = i;
                             console.log("best card" + i);
