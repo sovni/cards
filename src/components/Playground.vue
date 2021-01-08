@@ -184,7 +184,7 @@
                   <div class="p-col-6 p-text-center p-text-bold" v-if="lastBid == 'gardesans'">Garde Sans</div>
                   <div class="p-col-6 p-text-center p-text-bold" v-if="lastBid == 'gardecontre'">Garde Contre</div>
                   <div class="p-col-6 p-text-center p-text-bold">Résultat</div>
-                  <div class="p-col-6 p-text-center p-text-bold">{{ (lastResult >= 0) ? 'GAGNE' : 'PERDU' }}</div>
+                  <div class="p-col-6 p-text-center p-text-bold">{{ (isLastWin()) ? 'GAGNE' : 'PERDU' }}</div>
                   <div class="p-col-6 p-text-center p-text-bold">Nombre de bouts</div>
                   <div class="p-col-6 p-text-center p-text-bold">{{ lastNbBouts }}</div>
                   <div class="p-col-6 p-text-center p-text-bold">Points</div>
@@ -482,6 +482,20 @@ import Card from 'primevue/card';
  
       },
       methods: {
+         isLastWin() {
+            var result = 0;
+
+            if (this.lastNbBouts == 0 && this.lastResult >= 56)
+               result = 1;
+            else if (this.lastNbBouts == 1 && this.lastResult >= 51)
+               result = 1;
+            else if (this.lastNbBouts == 2 && this.lastResult >= 41)
+               result = 1;
+            else if (this.lastNbBouts == 3 && this.lastResult >= 36)
+               result = 1;
+
+            return result;
+         }
       }
    }       
 </script>
