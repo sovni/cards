@@ -41,7 +41,7 @@
 
             <div class="p-col-3"  style="height:250px">
             <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
             <div class="p-col-6"  style="height:250px">
                <!--<div class="p-d-flex p-jc-center">-->
@@ -50,7 +50,7 @@
             </div>
             <div class="p-col-3"  style="height:250px">
             <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
             </div>
 
             <div class="p-grid p-col-12 nested-grid">
@@ -204,9 +204,9 @@
                Score
             </template>
             <template v-slot:content >
-               <!--<div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center"> -->
+               <!--<div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center">-->
                <div class="p-text-center">
-                  <Chart type="horizontalBar" :data="scoresData" :options="scoresTarotOptions"/>
+                  <Chart type="horizontalBar" ref="scoreRef" :data="scoresTarotData" :options="scoresTarotOptions"/>
                </div>
             </template>   
          </Card>
@@ -297,7 +297,7 @@ import Card from 'primevue/card';
                },
                scoresTarotOptions: {
                   legend: false,
-                  responsive: false,
+                  responsive: true,
                   hoverMode: 'index',
                   scales: {
                      xAxes: [
@@ -405,8 +405,12 @@ import Card from 'primevue/card';
                      //this.lastScore[i].name = doc.data().playersName[i].name;
                      //this.lastScore[i].score = doc.data().score[i];
                   }
-                  this.scoresData = {labels: chartLabels, datasets: [{label: 'Scores',backgroundColor: ['#EC407A','#AB47BC','#42A5F5','#7E57C2','#66BB6A'], data: chartScores}]};
-
+                  console.log("Scores :" + chartScores);
+                  this.scoresTarotData = {labels: chartLabels, datasets: [{label: 'Scores',backgroundColor: ['#EC407A','#AB47BC','#42A5F5','#7E57C2','#66BB6A'], data: chartScores}]};
+                  if (this.$refs != null && this.$refs.scoreRef != null) {
+                     this.$refs.scoreRef.refresh();
+                     this.$refs.scoreRef.reinit();
+                  }
                   if (typeof doc.data().lastBid != "undefined") {
                      this.lastBid = doc.data().lastBid;
                      this.lastNbBouts = doc.data().lastNbBouts;
