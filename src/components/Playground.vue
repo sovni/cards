@@ -204,9 +204,9 @@
                Score
             </template>
             <template v-slot:content >
-               <!--<div v-if="scores[0] != null && (scores[0] != 0 || scores[1] != 0)" class="p-text-center">-->
-               <div class="p-text-center">
-                  <Chart type="horizontalBar" ref="scoreRef" :data="scoresTarotData" :options="scoresTarotOptions"/>
+               <!--<div v-if="tarotScores[0] != null && (tarotScores[0] != 0 || tarotScores[1] != 0)" class="p-text-center">-->
+               <div v-if="tarotScores[0] != null" class="p-text-center">
+                  <Chart type="horizontalBar" :data="scoresTarotData" :options="scoresTarotOptions"/>
                </div>
             </template>   
          </Card>
@@ -258,6 +258,7 @@ import Card from 'primevue/card';
                cardWidth: 78,
                myCardWidth: 140,
                scores: [0,0],
+               tarotScores: [0,0,0,0,0],
                playDocRef: null,
                playDocSubs: null,
                roundDocRef: null,
@@ -393,24 +394,18 @@ import Card from 'primevue/card';
                   this.cardWidth = 70;
                   this.myCardWidth = 120;
                   var chartLabels = [];
-                  var chartScores = [];
 
                   for (i=0;i<doc.data().playersName.length;i++) {
                      //if (doc.data().playersName[i].name.length > 3)
                      //   chartLabels.push(doc.data().playersName[i].name.substring(0,3) + "...");
                      //else
                         chartLabels.push(doc.data().playersName[i].name);
-                     chartScores.push(doc.data().score[i]);
+                     this.tarotScores[i] = doc.data().score[i];
                      this.lastScore[i] = {name: doc.data().playersName[i].name, score:doc.data().lastScore[i]}
                      //this.lastScore[i].name = doc.data().playersName[i].name;
                      //this.lastScore[i].score = doc.data().score[i];
                   }
-                  console.log("Scores :" + chartScores);
-                  this.scoresTarotData = {labels: chartLabels, datasets: [{label: 'Scores',backgroundColor: ['#EC407A','#AB47BC','#42A5F5','#7E57C2','#66BB6A'], data: chartScores}]};
-                  if (this.$refs != null && this.$refs.scoreRef != null) {
-                     this.$refs.scoreRef.refresh();
-                     this.$refs.scoreRef.reinit();
-                  }
+                  this.scoresTarotData = {labels: chartLabels, datasets: [{label: 'Scores',backgroundColor: ['#EC407A','#AB47BC','#42A5F5','#7E57C2','#66BB6A'], data: this.tarotScores}]};
                   if (typeof doc.data().lastBid != "undefined") {
                      this.lastBid = doc.data().lastBid;
                      this.lastNbBouts = doc.data().lastNbBouts;
