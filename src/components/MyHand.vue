@@ -114,7 +114,6 @@ require('cards');
                             this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
                             this.watchRound();
                             this.myhand = this.OrderHand(doc.data().handOn, this.atout);
-
                     });
                     if (this.game == "tarot")
                         this.cradius = 250;
