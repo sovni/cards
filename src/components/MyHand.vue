@@ -295,33 +295,35 @@ require('cards');
                         });
                     }
                     else if (doc.data().active == this.myindex && doc.data().state == "choice-3") {
-                        this.handDocRef.update({
-                            handOn: firebase.firestore.FieldValue.arrayRemove(playedCard)
-                        });
-                        var nbDeck = doc.data().deck.length;
-                        this.roundDocRef.update({
-                            deck: firebase.firestore.FieldValue.arrayUnion(playedCard)
-                        });
-                        if (nbDeck == 2) {
-                            this.playDocRef.get().then((playDoc) => {
-                                var active;
-                                active = (doc.data().dealer+1)%playDoc.data().players.length;
-                                this.roundDocRef.update({state:"trick", active: active, starter: active});
-                                this.roundDocRef.collection("tricks").add({
-                                    roundId: this.roundId,
-                                    players: [],
-                                    playerIndex: [],
-                                    cards: []
-                                })
-                                .then((docRef) => {
-                                    console.log("Trick created with ID: ", docRef.id);
-                                    this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                    this.$emit("start-trick", docRef.id);
-                                })
-                                .catch(function(error) {
-                                    console.error("Error adding document: ", error);
-                                });
-                            });                            
+                        if (playedCard.rank != "trump" && playedCard.rank != "K") {
+                            this.handDocRef.update({
+                                handOn: firebase.firestore.FieldValue.arrayRemove(playedCard)
+                            });
+                            var nbDeck = doc.data().deck.length;
+                            this.roundDocRef.update({
+                                deck: firebase.firestore.FieldValue.arrayUnion(playedCard)
+                            });
+                            if (nbDeck == 2) {
+                                this.playDocRef.get().then((playDoc) => {
+                                    var active;
+                                    active = (doc.data().dealer+1)%playDoc.data().players.length;
+                                    this.roundDocRef.update({state:"trick", active: active, starter: active});
+                                    this.roundDocRef.collection("tricks").add({
+                                        roundId: this.roundId,
+                                        players: [],
+                                        playerIndex: [],
+                                        cards: []
+                                    })
+                                    .then((docRef) => {
+                                        console.log("Trick created with ID: ", docRef.id);
+                                        this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                        this.$emit("start-trick", docRef.id);
+                                    })
+                                    .catch(function(error) {
+                                        console.error("Error adding document: ", error);
+                                    });
+                                });                            
+                            }
                         }
                     }
                 });
