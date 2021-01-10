@@ -45,9 +45,7 @@
                     <Button label="Bonne partie !" class="p-button-sm p-button-success p-m-1 p-button-rounded"  @click="addMessage('Bonne partie !')"/>
                     <Button label="C'te chance !" class="p-button-sm p-button-warning p-m-1 p-button-rounded"  @click="addMessage('C\'te chance !')"/>
                     <Button label="Tu es sûr de toi là ?" class="p-button-sm p-button-warning p-m-1 p-button-rounded"  @click="addMessage('Tu es sûr de toi là ?')"/>
-                    <Button label="Tu me fends le coeur" class="p-button-sm p-button-danger p-m-1 p-button-rounded"  @click="addMessage('!!! ATTENTION !!!! TENTATIVE DE TRICHE DE CE JOUEUR !!!')"/>
-                    <Button label="Oulaaa, ça pique" class="p-button-sm p-button-danger p-m-1 p-button-rounded"  @click="addMessage('!!! ATTENTION !!!! TENTATIVE DE TRICHE DE CE JOUEUR !!!')"/>
-                    <Button label="Me laisse pas sur le carreau" class="p-button-sm p-button-danger p-m-1 p-button-rounded"  @click="addMessage('!!! ATTENTION !!!! TENTATIVE DE TRICHE DE CE JOUEUR !!!')"/>
+                    <Button label="Tu me fends le coeur" class="p-button-sm p-button-danger p-m-1 p-button-rounded"  @click="cheatAttempt"/>
                 </div> 
             </div>
         </template>   
@@ -104,6 +102,10 @@ import Divider from 'primevue/divider';
                 firebase.database().ref('chat/' + this.playId + '/messages').push(message);
                 this.showMessage = "";
             }
+        },
+        cheatAttempt() {
+            this.$toast.add({severity:'error', summary: 'Bien tenté... mais non', group: "top-right", life: 3000});
+
         },
         addMessage(txt) {
             if (this.playId != -1) {
