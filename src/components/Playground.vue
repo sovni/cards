@@ -188,7 +188,7 @@
                   <div class="p-col-6 p-text-center p-text-bold">Nombre de bouts</div>
                   <div class="p-col-6 p-text-center p-text-bold">{{ lastNbBouts }}</div>
                   <div class="p-col-6 p-text-center p-text-bold">Points</div>
-                  <div class="p-col-6 p-text-center p-text-bold">{{ lastResult }}</div>
+                  <div class="p-col-6 p-text-center p-text-bold">{{ displayResult() }}</div>
                </div>
                <div class="p-col-12"/>
                <div class="p-col-12 p-card p-grid  atout" v-for="pscore of lastScore" :key="pscore.name">
@@ -493,6 +493,36 @@ import Card from 'primevue/card';
             else if (this.lastNbBouts == 3 && this.lastResult >= 36)
                result = 1;
 
+            return result;
+         },
+         displayResult() {
+            var result;
+
+            result = this.lastResult;
+            if (this.lastNbBouts == 0) {
+               if (this.lastResult >= 56)
+                  result += " (> 56)";
+               else
+                  result += " (< 56)";
+            }
+            else if (this.lastNbBouts == 1) {
+               if (this.lastResult >= 51)
+                  result += " (> 51)";
+               else
+                  result += " (< 51)";
+            }
+            else if (this.lastNbBouts == 2) {
+               if (this.lastResult >= 41)
+                  result += " (> 41)";
+               else
+                  result += " (< 41)";
+            }
+            else if (this.lastNbBouts == 3) {
+               if (this.lastResult >= 36)
+                  result += " (> 36)";
+               else
+                  result += " (< 36)";
+            }            
             return result;
          }
       }

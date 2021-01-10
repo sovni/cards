@@ -114,7 +114,6 @@ require('cards');
                             this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
                             this.watchRound();
                             this.myhand = this.OrderHand(doc.data().handOn, this.atout);
-
                     });
                     if (this.game == "tarot")
                         this.cradius = 250;
@@ -537,15 +536,23 @@ require('cards');
                 if (trick.length == 0) {
                     if (this.game == "tarot" && indexTrick == 1) {
                         if (playedCard.suit == atout && playedCard.rank != 'K')
+                            this.$toast.add({severity:'success', summary: 'Ne pas jouer la couleur demandée au 1er tour !', group: "bottom-center", life: 3000});
                             return false;
                     }
                     return true;
                 }
-                
+                                
                 if (this.game == "tarot") {
                     atout = "trump";
                     if (playedCard.suit == "trump" && playedCard.rank == "0")
                         return true;
+                    if (this.myhand.length == 2) {
+                        if ((this.myhand[0].suit == "trump" && this.myhand[0].rank == "0") ||
+                            (this.myhand[1].suit == "trump" && this.myhand[1].rank == "0")) {
+                            this.$toast.add({severity:'success', summary: 'L\'excuse ne doit pas être jouée au dernier tour !', group: "bottom-center", life: 3000});
+                            return false;
+                        }
+                    }
                 }
 
                 suitPlayed = trick[0].suit;
@@ -710,10 +717,16 @@ require('cards');
                         else if (boutTotal == 3)
                             score = bidPoints - 36;
                         
-                        if (score > 0)
+                        if (score > 0) {
+                            score = Math.round(score);
                             result = 25 + score;
-                        else
+                        }
+                        else {
+                            var resRound = Math.round(score);
+                            if (resRound > score)
+                                score = resRound - 1;
                             result = -25 + score;
+                        }
                         switch (doc.data().bidContract) {
                             case "petite" :
                                 break;
