@@ -537,6 +537,7 @@ require('cards');
                 if (trick.length == 0) {
                     if (this.game == "tarot" && indexTrick == 1) {
                         if (playedCard.suit == atout && playedCard.rank != 'K')
+                            this.$toast.add({severity:'success', summary: 'Ne pas jouer la couleur demandée au 1er tour !', group: "bottom-center", life: 3000});
                             return false;
                     }
                     return true;
