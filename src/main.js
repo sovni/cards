@@ -12,6 +12,7 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import './style/cards.min.css'
 import mitt from 'mitt';
+import ToastService from 'primevue/toastservice';
 
 const emitter = mitt();
 
@@ -39,7 +40,7 @@ firebase.analytics();
 let app = '';
 firebase.auth().onAuthStateChanged(function() {
   if(!app){
-    app = createApp(App).use(router).use(store);
+    app = createApp(App).use(ToastService).use(router).use(store);
     app.config.globalProperties.emitter = emitter;
     app.mount('#app');
   }

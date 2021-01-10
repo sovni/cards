@@ -45,7 +45,6 @@
             <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
         </div>
     </div>
-
 </template>
 <style>
 img.card{width:70px;border:0;vertical-align:initial;box-sizing:initial}.hand,img.card{margin:0;padding:0}.active-hand img.card{cursor:pointer}.hhand{display:inline-block}.hhand img.card{padding-top:10px}.hhand.active-hand img.card:hover{padding-top:0;padding-bottom:10px}.vhand{display:block}.vhand img.card{padding-right:10px}.vhand.active-hand img.card:hover{padding-right:0;padding-left:10px}.hhand-compact{display:inline-block}.hhand-compact img.card:first-child{margin-left:0;padding-top:10px}.hhand-compact img.card{margin-left:-52px;padding-top:10px}.hhand-compact.active-hand img.card:hover{padding-top:0;padding-bottom:10px}.vhand-compact{display:inline-block;vertical-align:top}.vhand-compact img.card:first-child{display:block;margin-top:0;padding-right:10px}.vhand-compact img.card{display:block;margin-top:-80px;padding-right:10px}.active-hand .vhand-compact img.card:hover,.vhand-compact.active-hand img.card:hover{display:block;padding-right:0;padding-left:10px}.fan{display:inline-block;vertical-align:top;position:relative;padding-bottom:1em}.fan img.card{position:absolute;width:90px}
@@ -191,6 +190,7 @@ require('cards');
                 var trickDoc;
                 var active;
 
+
                 playedCard = {rank:event.rank, suit:event.suit};
                 console.log("receive card play on hand event : " + event.suit + ":" + event.rank + "hand:" + event.hand);   
 
@@ -295,35 +295,42 @@ require('cards');
                         });
                     }
                     else if (doc.data().active == this.myindex && doc.data().state == "choice-3") {
-                        this.handDocRef.update({
-                            handOn: firebase.firestore.FieldValue.arrayRemove(playedCard)
-                        });
-                        var nbDeck = doc.data().deck.length;
-                        this.roundDocRef.update({
-                            deck: firebase.firestore.FieldValue.arrayUnion(playedCard)
-                        });
-                        if (nbDeck == 2) {
-                            this.playDocRef.get().then((playDoc) => {
-                                var active;
-                                active = (doc.data().dealer+1)%playDoc.data().players.length;
-                                this.roundDocRef.update({state:"trick", active: active, starter: active});
-                                this.roundDocRef.collection("tricks").add({
-                                    roundId: this.roundId,
-                                    players: [],
-                                    playerIndex: [],
-                                    cards: []
-                                })
-                                .then((docRef) => {
-                                    console.log("Trick created with ID: ", docRef.id);
-                                    this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
-                                    this.$emit("start-trick", docRef.id);
-                                })
-                                .catch(function(error) {
-                                    console.error("Error adding document: ", error);
-                                });
-                            });                            
+                        if (playedCard.rank != "trump" && playedCard.rank != "K") {
+                            this.handDocRef.update({
+                                handOn: firebase.firestore.FieldValue.arrayRemove(playedCard)
+                            });
+                            var nbDeck = doc.data().deck.length;
+                            this.roundDocRef.update({
+                                deck: firebase.firestore.FieldValue.arrayUnion(playedCard)
+                            });
+                            if (nbDeck == 2) {
+                                this.playDocRef.get().then((playDoc) => {
+                                    var active;
+                                    active = (doc.data().dealer+1)%playDoc.data().players.length;
+                                    this.roundDocRef.update({state:"trick", active: active, starter: active});
+                                    this.roundDocRef.collection("tricks").add({
+                                        roundId: this.roundId,
+                                        players: [],
+                                        playerIndex: [],
+                                        cards: []
+                                    })
+                                    .then((docRef) => {
+                                        console.log("Trick created with ID: ", docRef.id);
+                                        this.roundDocRef.update({tricks:firebase.firestore.FieldValue.arrayUnion(docRef.id), currentTrick:docRef.id});
+                                        this.$emit("start-trick", docRef.id);
+                                    })
+                                    .catch(function(error) {
+                                        console.error("Error adding document: ", error);
+                                    });
+                                });                            
+                            }
                         }
                     }
+                    else {
+                        console.log("wait your turn");
+                        this.$toast.add({severity:'success', summary: 'Veuillez attendre votre tour', group: "bottom-center", life: 3000});
+                    }
+                    
                 });
             },
             contract(bid) {
@@ -558,6 +565,7 @@ require('cards');
                         if (this.GetCardValue(playedCard, atout) > bestAtoutTrick)
                             allowed = true;
                         else if (this.bestAtout(this.myhand, atout) > bestAtoutTrick) {
+                            this.$toast.add({severity:'success', summary: 'Il faut monter à l\'atout !', group: "bottom-center", life: 3000});
                             console.log("Il faut monter à l'atout !!");
                             allowed = false;
                         }
@@ -567,11 +575,13 @@ require('cards');
                 }
                 else if (this.hasSuit(suitPlayed)) {
                     allowed = false;
+                    this.$toast.add({severity:'success', summary: 'Il faut jouer la couleur demandée !', group: "bottom-center", life: 3000});
                     console.log("Il faut jouer de la couleur demandée !!");
                 }
                 else if (suitPlayed == atout) {
                     if (this.hasSuit(atout)) {
                         allowed = false;
+                        this.$toast.add({severity:'success', summary: 'Il faut jouer de l\'atout  !', group: "bottom-center", life: 3000});
                         console.log("Il faut jouer de l'atout !!");
                     }
                     else
@@ -587,10 +597,12 @@ require('cards');
                     bestAtoutTrick = this.bestAtout(trick, atout);
                     if (this.GetCardValue(playedCard, atout) < bestAtoutTrick && bestAtout > bestAtoutTrick) {
                         allowed = false;
+                        this.$toast.add({severity:'success', summary: 'Il faut monter à l\'atout  !', group: "bottom-center", life: 3000});
                         console.log("Il faut monter à l'atout !!")
                     }
                     else if (playedCard.suit != atout && this.hasSuit(atout)) {
                         allowed = false;
+                        this.$toast.add({severity:'success', summary: 'Il faut jouer atout  !', group: "bottom-center", life: 3000});
                         console.log("Il faut jouer atout !!")
                     }
                     else
