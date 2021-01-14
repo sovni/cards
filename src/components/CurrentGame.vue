@@ -291,10 +291,18 @@ const { decks } = require('cards');
          leaveGame(play) {
             console.log("Leave Game : " + play.uid);
             var currentUser = firebase.auth().currentUser;
-            db.collection("plays").doc(play.uid).update({
-               players: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
-               playersName: firebase.firestore.FieldValue.arrayRemove({id: currentUser.uid, name: currentUser.displayName.split(" ")[0]})
-            })
+            db.collection("plays").doc(play.uid)
+               .get().then((doc) => {
+                  console.log("Creator : " + doc.data().creator + " current : " + currentUser);
+                  if (doc.data().creator == currentUser.uid)
+                     db.collection("plays").doc(play.uid).delete();
+                  else {
+                     db.collection("plays").doc(play.uid).update({
+                        players: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
+                        playersName: firebase.firestore.FieldValue.arrayRemove({id: currentUser.uid, name: currentUser.displayName.split(" ")[0]})
+                     });
+                  }
+               });
          },
          endGame(play) {
             console.log("End Game : " + play.uid);
