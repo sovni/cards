@@ -32,7 +32,9 @@
             </div>
             <div class="p-col" />
             <div class="p-col-4 p-text-bold"  style="text-align: center;">
-               {{playersName[2]}}
+              <Badge v-if="playersName[2] != '' && playersStatus[2] == 'online'" severity="success" value=""></Badge>
+              <Badge v-if="playersName[2] != '' && playersStatus[2] == 'offline'" severity="danger" value=""></Badge>
+              {{playersName[2]}}
             </div>
             <div class="p-col" />
             <div class="p-col-3"  style="width:200px;text-align: center;">
@@ -56,6 +58,8 @@
             <div class="p-grid p-col-12 nested-grid">
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: left;">
+                     <Badge v-if="playersName[3] != '' && playersStatus[3] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[3] != '' && playersStatus[3] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[3] }}
                   </div>
                   <div class="p-col-12 p-m-0 p-p-0" style="height:320px">
@@ -74,6 +78,8 @@
                </div>
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: right;">
+                     <Badge v-if="playersName[1] != '' && playersStatus[1] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[1] != '' && playersStatus[1] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[1] }}
                   </div>
                   <div class="p-col-12 p-m-0 p-p-0" style="height:320px">
@@ -127,10 +133,14 @@
 
             <div class="p-col-2"  style="text-align: center;" />
             <div class="p-col-3 p-text-bold"  style="text-align: center;">
+               <Badge v-if="playersName[3] != '' && playersStatus[3] == 'online'" severity="success" value=""></Badge>
+               <Badge v-if="playersName[3] != '' && playersStatus[3] == 'offline'" severity="danger" value=""></Badge>
                {{playersName[3]}}
             </div>
             <div class="p-col-2" />
             <div class="p-col-3 p-text-bold"  style="text-align: center;">
+               <Badge v-if="playersName[2] != '' && playersStatus[2] == 'online'" severity="success" value=""></Badge>
+               <Badge v-if="playersName[2] != '' && playersStatus[2] == 'offline'" severity="danger" value=""></Badge>
                {{playersName[2]}}
             </div>
             <div class="p-col-2"  style="text-align: center;" />
@@ -153,6 +163,8 @@
             <div class="p-grid p-col-12 nested-grid">
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: left;">
+                     <Badge v-if="playersName[4] != '' && playersStatus[4] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[4] != '' && playersStatus[4] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[4] }}
                   </div>
                </div>
@@ -163,6 +175,8 @@
                </div>
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: right;">
+                     <Badge v-if="playersName[1] != '' && playersStatus[1] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[1] != '' && playersStatus[1] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[1] }}
                   </div>
                </div>           
@@ -240,6 +254,7 @@ import '../plugins/firebase'
 import db from '../plugins/firebase';
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
+import Badge from 'primevue/badge';
 
    export default {
       name: 'Playground',
@@ -250,6 +265,7 @@ import Card from 'primevue/card';
                handPlayersIndex: [-1,-1,-1,-1,-1],
                players: ["","","","",""],
                playersName: ["","","","",""],
+               playersStatus: ["","","","",""],
                playersIndex: [0,0,0,0,0],
                playId: -1,
                roundId: -1,
@@ -324,7 +340,8 @@ import Card from 'primevue/card';
          MyHand,
          Deck,
          Chart,
-         Card
+         Card,
+         Badge
       },
       created(){
       },
@@ -341,6 +358,7 @@ import Card from 'primevue/card';
             this.handPlayersIndex = [-1,-1,-1,-1,-1];
             this.players = ["","","","",""];
             this.playersName = ["","","","",""];
+            this.playersStatus = ["","","","",""];
             this.playersIndex = [0,0,0,0,0];
             this.lastScore = [];
             this.lastTrick = [];
@@ -457,6 +475,21 @@ import Card from 'primevue/card';
                               this.playersIndex[j] = (active+j)%doc.data().nbPlayers;
                            }
                         }
+                        for (k=0;k<this.players.length;k++) {
+                           console.log("Player Status launch check: " + this.players[k]);
+                           var playerStatusRef = firebase.database().ref('status/' + this.players[k]);
+                           playerStatusRef.on('value', (snapshot) => {
+                              const data = snapshot.val();
+                              console.log("Player Status : " + data.uid + " :" + data.state);
+                              for (var m=0;m<this.players.length;m++) {
+                                 if (this.players[m] == data.uid) {
+                                    console.log("Player Status set (" + m + ") : " + data.uid + " :" + data.state);
+                                    this.playersStatus[m] = data.state;
+                                    break;
+                                 }
+                              }
+                           });                  
+                        }
                   });
                   this.roundDocSubs = this.roundDocRef.onSnapshot((rdoc) => {
                      console.log("Rounds onSnapshot launched (Playground 2)");
@@ -476,6 +509,8 @@ import Card from 'primevue/card';
                         this.lastTrick = [];
                   });
                }
+
+
             });
          });
  
