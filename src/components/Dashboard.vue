@@ -50,12 +50,14 @@ import GameChat from './GameChat'
          // or online.
          var isOfflineForDatabase = {
             state: 'offline',
+            playId: '',
             uid: this.playerUid,
             last_changed: firebase.database.ServerValue.TIMESTAMP,
          };
 
          var isOnlineForDatabase = {
             state: 'online',
+            playId: '',
             uid: this.playerUid,
             last_changed: firebase.database.ServerValue.TIMESTAMP,
          };

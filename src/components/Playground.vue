@@ -33,6 +33,7 @@
             <div class="p-col" />
             <div class="p-col-4 p-text-bold"  style="text-align: center;">
               <Badge v-if="playersName[2] != '' && playersStatus[2] == 'online'" severity="success" value=""></Badge>
+              <Badge v-if="playersName[2] != '' && playersStatus[2] == 'onlinebut'" severity="warning" value=""></Badge>
               <Badge v-if="playersName[2] != '' && playersStatus[2] == 'offline'" severity="danger" value=""></Badge>
               {{playersName[2]}}
             </div>
@@ -59,6 +60,7 @@
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: left;">
                      <Badge v-if="playersName[3] != '' && playersStatus[3] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[3] != '' && playersStatus[3] == 'onlinebut'" severity="warning" value=""></Badge>
                      <Badge v-if="playersName[3] != '' && playersStatus[3] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[3] }}
                   </div>
@@ -79,6 +81,7 @@
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: right;">
                      <Badge v-if="playersName[1] != '' && playersStatus[1] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[1] != '' && playersStatus[1] == 'onlinebut'" severity="warning" value=""></Badge>
                      <Badge v-if="playersName[1] != '' && playersStatus[1] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[1] }}
                   </div>
@@ -134,12 +137,14 @@
             <div class="p-col-2"  style="text-align: center;" />
             <div class="p-col-3 p-text-bold"  style="text-align: center;">
                <Badge v-if="playersName[3] != '' && playersStatus[3] == 'online'" severity="success" value=""></Badge>
+               <Badge v-if="playersName[3] != '' && playersStatus[3] == 'onlinebut'" severity="warning" value=""></Badge>
                <Badge v-if="playersName[3] != '' && playersStatus[3] == 'offline'" severity="danger" value=""></Badge>
                {{playersName[3]}}
             </div>
             <div class="p-col-2" />
             <div class="p-col-3 p-text-bold"  style="text-align: center;">
                <Badge v-if="playersName[2] != '' && playersStatus[2] == 'online'" severity="success" value=""></Badge>
+               <Badge v-if="playersName[2] != '' && playersStatus[2] == 'onlinebut'" severity="warning" value=""></Badge>
                <Badge v-if="playersName[2] != '' && playersStatus[2] == 'offline'" severity="danger" value=""></Badge>
                {{playersName[2]}}
             </div>
@@ -164,6 +169,7 @@
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: left;">
                      <Badge v-if="playersName[4] != '' && playersStatus[4] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[4] != '' && playersStatus[4] == 'onlinebut'" severity="warning" value=""></Badge>
                      <Badge v-if="playersName[4] != '' && playersStatus[4] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[4] }}
                   </div>
@@ -176,6 +182,7 @@
                <div class="p-col-2">
                   <div class="p-col-12 p-text-bold"  style="text-align: right;">
                      <Badge v-if="playersName[1] != '' && playersStatus[1] == 'online'" severity="success" value=""></Badge>
+                     <Badge v-if="playersName[1] != '' && playersStatus[1] == 'onlinebut'" severity="warning" value=""></Badge>
                      <Badge v-if="playersName[1] != '' && playersStatus[1] == 'offline'" severity="danger" value=""></Badge>
                      {{ playersName[1] }}
                   </div>
@@ -370,6 +377,9 @@ import Badge from 'primevue/badge';
             this.bidContract = "";
             this.playId = uid;
             this.playDocRef = db.collection("plays").doc(this.playId);
+            var userStatusDatabaseRef = firebase.database().ref('/status/' + this.playerUid);
+            userStatusDatabaseRef.update({playId : this.playId});
+
             this.playDocSubs = this.playDocRef.onSnapshot((doc) => {
                console.log("Plays onSnapshot launched (Playground 1)");
                //this.roundId = doc.data().round;
@@ -484,7 +494,10 @@ import Badge from 'primevue/badge';
                               for (var m=0;m<this.players.length;m++) {
                                  if (this.players[m] == data.uid) {
                                     console.log("Player Status set (" + m + ") : " + data.uid + " :" + data.state);
-                                    this.playersStatus[m] = data.state;
+                                    if (data.state == "online" && data.playId != this.playId)
+                                       this.playersStatus[m] = "onlinebut";
+                                    else
+                                       this.playersStatus[m] = data.state;
                                     break;
                                  }
                               }
