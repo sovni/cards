@@ -185,9 +185,9 @@ const { decks } = require('cards');
                   if (!doc.metadata.hasPendingWrites) {
                      if (doc.data().state == "start-round") {
                         console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
+                        db.collection("plays").doc(doc.id).update({state:"playing"});
                         this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length,doc.data().game);
                         console.log("distribute cards round 1");
-                        db.collection("plays").doc(doc.id).update({state:"playing"});
                      }          
                      else if (doc.data().state == "end-round") {
                         var points = doc.data().score;
