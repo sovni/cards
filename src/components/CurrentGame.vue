@@ -273,6 +273,7 @@ const { decks } = require('cards');
                   state: "created",
                   creator: this.playerUid,
                   score: [0,0,0,0,0],
+                  lastScore: [0,0,0,0,0],
                   maxScore: this.gamePoints,
                   playedRounds: 0,
                   maxRounds: this.gameRounds,
