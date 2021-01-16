@@ -3,6 +3,7 @@
       <Menubar :model="items" >
          <template #end>
             {{ getUserName() }}
+            <AutoComplete v-model="friends" :suggestions="filteredFriends" field="username" @complete="searchFriends($event)" placeholder="Hint: type 'v' or 'f'" />
          </template>
       </Menubar>
    </header>
@@ -11,12 +12,16 @@
 <script>
    import firebase from 'firebase'
    import Menubar from 'primevue/menubar';
+   import AutoComplete from 'primevue/autocomplete';
+   import db from '../plugins/firebase';
 
    export default {
       name: "Header-component",
       data() {
         return {
             currentUser: '',
+            friends: null,
+            filteredFriends: null,
             items: [
                {
                    label:'Home',
@@ -51,15 +56,19 @@
                          command: () => {this.logout();},
                          visible: () => this.currentUser
                       }                                            
-
                    ]
                }
             ]
         }
       },    
       components: {
-         Menubar
-      },   
+         Menubar,
+         AutoComplete
+      },
+      mounted() {
+            this.currentUser = firebase.auth().currentUser;
+
+      },
       methods: {
          logout(){
             firebase.auth().signOut().then(() => {
@@ -76,7 +85,20 @@
             if (!this.currentUser)
                return "";
             return this.currentUser.displayName.split(" ")[0];
-         }
+         },
+         searchFriends(event) {
+            console.log("Friend search : " + event.query)
+            this.filteredFriends = [];//this.countryService.search(event.query);
+            if (this.currentUser) {
+               db.collection("users").onSnapshot((querySnapshot) => {
+                  querySnapshot.forEach((doc) => {
+                     console.log("username : " + doc.data().username);
+                     this.filteredFriends.push(doc.data());
+                     //if (doc.data().username)
+                  });
+               });
+            }
+         }         
       }
    }
 </script>

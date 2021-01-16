@@ -6,8 +6,10 @@
       </div>
 
       <Playground class="p-m-2"  :playerUid="playerUid" :playerName="playerName"/>
-      <GameChat class="p-m-2"  :playerId="playerUid"/>
-
+      <div class="p-d-inline-flex p-flex-row p-flex-lg-column p-m-0">
+         <GameChat class="p-m-2" :playerId="playerUid"/>
+         <Friends class="p-m-2" :playerId="playerUid"/>
+      </div>
    </div>
 
 </template>
@@ -20,6 +22,7 @@ import Playground from './Playground'
 import Gamelist from './Gamelist'
 import CurrentGame from './CurrentGame'
 import GameChat from './GameChat'
+import Friends from './Friends'
 
 
    export default {
@@ -35,7 +38,8 @@ import GameChat from './GameChat'
          Playground,
          Gamelist,
          CurrentGame,
-         GameChat
+         GameChat,
+         Friends
       },
       created() {
          var currentUser = firebase.auth().currentUser;
