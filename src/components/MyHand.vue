@@ -705,11 +705,13 @@ require('cards');
                         var boutTotal = bouts[doc.data().bidIndex];
                         if (doc.data().bidPartnerIndex != -1)
                             boutTotal += bouts[doc.data().bidPartnerIndex];
-                        if (doc.data().bidIndex == doc.data().bidExcuse || doc.data().bidPartnerIndex == doc.data().bidExcuse)
-                            boutTotal += 1;
                         bidPoints = points[doc.data().bidIndex];  
                         if (doc.data().bidPartnerIndex != -1)
                             bidPoints += points[doc.data().bidPartnerIndex];
+                        if (doc.data().bidIndex == doc.data().bidExcuse || doc.data().bidPartnerIndex == doc.data().bidExcuse) {
+                            boutTotal += 1;
+                            bidPoints += 4;
+                        }
 
                         if (boutTotal == 0)
                             score = bidPoints - 56;
@@ -1133,7 +1135,7 @@ require('cards');
                                 value = 4.5;
                                 break;
                             case "0":
-                                value = 4.5;
+                                value = 0.5;
                                 break;
                             default :     
                                 value = 0.5;
