@@ -33,8 +33,7 @@
 import firebase from 'firebase';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-
-//import db from '../plugins/firebase';
+import db from '../plugins/firebase';
 
    export default {
       name: 'Login',
@@ -75,11 +74,23 @@ import Button from 'primevue/button';
                //this.usertoken = result.credential.accessToken;
                // The signed-in user info.
                console.log(result);
-               //this.username = result.user.displayName.split(" ")[0];
-               //this.useremail = result.user.email;
-               //console.log("Login done : " + this.useremail);
+               this.username = result.user.displayName.split(" ")[0];
+               this.useremail = result.user.email;
+               console.log("Login done : " + this.useremail);
                // ...
                this.$router.replace({ name: "Dashboard" });
+               db.collection("users").where("email", "==", this.username).get().then((doc) => {            
+                  console.log("user found :" + doc.data().username);
+               })
+               .catch((error) => {
+                     console.log("user not found  : " + error);
+                     db.collection('users').add({
+                        firstname: this.username,
+                        lastname: '',
+                        username: this.username,
+                        email: this.useremail,
+                     });
+               });
             }).catch(function(error) {
                // Handle Errors here.
                //var errorCode = error.code;
