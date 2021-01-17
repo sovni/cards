@@ -16,7 +16,7 @@
                                 <span class="mg-text">{{ message.username }}</span>
                                 <p class="pt-0">{{ message.text }}</p>
                             </div>-->
-                            <div  v-for="message in messages" :key="message">
+                            <div  v-for="message in messages" :key="message.id">
                                 <Divider align="center">
                                     <span class="p-tag">{{ message.username }}</span>
                                 </Divider>
@@ -119,7 +119,7 @@ import Divider from 'primevue/divider';
             //let viewMessage = this;
             this.playId = uid;
             //viewMessage.messages = [];
-            /*this.messages = [];
+            this.messages = [];
             this.name = this.getUserName();
 
             const itemsRef = firebase.database().ref('chat/' + this.playId + '/messages');
@@ -139,7 +139,7 @@ import Divider from 'primevue/divider';
                     //if (Array.isArray(chatMessages) && chatMessages.length > 0)
                     //this.messages = chatMessages;
                 }
-            });*/
+            });
         });    
     }
 };

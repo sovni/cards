@@ -150,6 +150,9 @@ require('cards');
                 this.watchRound();   
             }            
         },
+        mounted() {
+            this.watchPlay();
+        },
         methods: {
             watchPlay() {
                 console.log("watchPlay: playstate =" + this.playState + " dealer=" + this.dealer + " myindex=" + this.myindex)
