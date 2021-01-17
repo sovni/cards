@@ -43,7 +43,7 @@ require('cards');
         },
         watch: { 
             playId: function(newVal, oldVal) { // watch it
-                console.log("Watch props.playId function called:" + newVal + ":"+oldVal+":"+this.playId);
+                console.log("Watch Hand props.playId function called:" + newVal + ":"+oldVal+":"+this.playId);
                 if (this.playId != null) {
                     this.playDocRef = db.collection("plays").doc(this.playId);
                 }
@@ -51,7 +51,7 @@ require('cards');
                     this.playDocRef = null;
             },
             handId: function(newVal, oldVal) { // watch it
-                console.log("Watch props.handid function called:" + newVal + ":"+oldVal+":"+this.handId);
+                console.log("Watch Hand props.handid function called:" + newVal + ":"+oldVal+":"+this.handId);
                 console.log("play id:" + this.playId + "/ round id:" + this.roundId);
                 if (this.handDocSubs != null) {
                     this.handDocSubs();
@@ -74,8 +74,11 @@ require('cards');
                         this.cspacing = 0.12;
                     }
                 }
-                else
+                else {
                     this.handDocRef = null;
+                    this.myhand = [];
+                    this.myindex = -1;
+                }
             },
             handOn: function() {
                 console.log("Watch props.handOn function called:" +this.handOn);

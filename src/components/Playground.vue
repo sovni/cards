@@ -18,7 +18,7 @@
             </div>
             <div class="p-col-1" />
             <div class="p-col-4"  style="height:150px">
-            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame"/>
             </div>
             <div class="p-col-1" />
             <div v-if="playId != -1" class="p-col-3 p-card atout"  style="height:150px">
@@ -44,7 +44,7 @@
 
             <div class="p-col-3"  style="height:250px">
             <!--<MyHand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <Hand :handId="hands[3]" :handOn="handsOn[3]"  :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame"/>
             </div>
             <div class="p-col-6"  style="height:250px">
                <!--<div class="p-d-flex p-jc-center">-->
@@ -53,7 +53,7 @@
             </div>
             <div class="p-col-3"  style="height:250px">
             <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame"/>
+            <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame"/>
             </div>
 
             <div class="p-grid p-col-12 nested-grid">
@@ -75,7 +75,7 @@
                </div>
                <div class="p-col-8">
                   <div class="p-col-12"  style="height:320px">
-                  <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>
+                  <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame"/>
                   </div>
                </div>
                <div class="p-col-2">
@@ -111,7 +111,7 @@
 
          <div class="p-grid" v-if="currentGame == 'tarot'">
             <div class="p-col-3"  style="height:150px">
-               <Hand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame" :bidContract="bidContract"/>
+               <Hand :handId="hands[3]" :handOn="handsOn[3]" :playerIndex="handPlayersIndex[3]" :playerId="players[3]" :indexUser="3" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame" :bidContract="bidContract"/>
             </div>
             <div class="p-col" />
             <div v-if="playId != -1" class="p-col-4 p-card atout p-grid" style="height:150px">
@@ -131,7 +131,7 @@
 
             <div class="p-col" />
             <div class="p-col-3" style="height:150px">
-               <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame" :bidContract="bidContract"/>
+               <Hand :handId="hands[2]" :handOn="handsOn[2]" :playerIndex="handPlayersIndex[2]" :playerId="players[2]" :indexUser="2" :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame" :bidContract="bidContract"/>
             </div>
 
             <div class="p-col-2"  style="text-align: center;" />
@@ -152,7 +152,7 @@
 
             <div class="p-col-3"  style="height:250px">
                <!--<MyHand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="4"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-               <Hand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="4"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame" :bidContract="bidContract"/>
+               <Hand :handId="hands[4]" :handOn="handsOn[4]"  :playerIndex="handPlayersIndex[4]" :playerId="players[4]" :indexUser="4"  :roundId="roundId" :cwidth="cardWidth" :activePlayer="activePlayer" :playId="playId"  :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame" :bidContract="bidContract"/>
             </div>
             <div class="p-col-6"  style="height:250px">
                <!--<div class="p-d-flex p-jc-center">-->
@@ -161,7 +161,7 @@
             </div>
             <div class="p-col-3"  style="height:250px">
                <!--<MyHand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame"/>-->
-               <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :game="currentGame" :bidContract="bidContract"/>
+               <Hand :handId="hands[1]" :handOn="handsOn[1]"  :playerIndex="handPlayersIndex[1]" :playerId="players[1]" :indexUser="1" :roundId="roundId"  :activePlayer="activePlayer" :cwidth="cardWidth" :playId="playId"  :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame" :bidContract="bidContract"/>
             </div>
 
 
@@ -176,7 +176,7 @@
                </div>
                <div class="p-col-8">
                   <div class="p-col-12"  style="height:320px">
-                     <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState" :game="currentGame" :bidContract="bidContract"/>
+                     <MyHand :handId="hands[0]" :handOn="handsOn[0]" :playerIndex="handPlayersIndex[0]" :playerId="players[0]"  :indexUser="0" :roundId="roundId" :activePlayer="activePlayer" :cwidth="myCardWidth" :playId="playId" :atout="atout" :state="roundState" :playState="playState" :dealer="dealer" :game="currentGame" :bidContract="bidContract"/>
                   </div>
                </div>
                <div class="p-col-2">
@@ -293,6 +293,8 @@ import Badge from 'primevue/badge';
                bidContract: '',
                activePlayer: -1,
                roundState: '',
+               playState: '',
+               dealer: -1,
                lastScore: [],
                lastTrick: [],
                lastBid: '',
@@ -375,10 +377,11 @@ import Badge from 'primevue/badge';
             this.atout = "";
             this.bidPlayer = "";
             this.bidContract = "";
-            this.playId = uid;
-            this.playDocRef = db.collection("plays").doc(this.playId);
+            this.playState = '';
+            //this.playId = uid;
+            this.playDocRef = db.collection("plays").doc(uid);
             var userStatusDatabaseRef = firebase.database().ref('/status/' + this.playerUid);
-            userStatusDatabaseRef.update({playId : this.playId});
+            userStatusDatabaseRef.update({playId : uid});
 
             this.playDocSubs = this.playDocRef.onSnapshot((doc) => {
                console.log("Plays onSnapshot launched (Playground 1)");
@@ -394,6 +397,18 @@ import Badge from 'primevue/badge';
                console.log("player id : " + playerId);
                console.log("players " + doc.data().players);
                this.currentGame = doc.data().game;
+               this.playState = doc.data().state;
+               this.dealer = doc.data().dealer;
+               for (var k=0;k<doc.data().players.length;k++) {
+                  if (doc.data().players[k] == playerId) {
+                     this.handPlayersIndex[0] = k;
+                     break;
+                  }
+               }
+               console.log("Play id change 1 : " + this.playId);
+               this.playId = uid;
+               console.log("Play id change 2 : " + this.playId);
+
                if (this.currentGame == "belote") {
                   this.cardWidth = 78;
                   this.myCardWidth = 140;
@@ -451,76 +466,82 @@ import Badge from 'primevue/badge';
                      this.handDocSubs = null;
                   }
                   this.roundId = doc.data().round;
-                  this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
-                  this.handDocSubs = this.roundDocRef.collection("hands")
-                     .onSnapshot((querySnapshot) => {
-                           console.log("Hands onSnapshot launched (Playground 2)");
-                           querySnapshot.forEach((rdoc) => {
-                              i = rdoc.data().playerIndex;
-                              console.log("doc : " + rdoc.data().handOn)
-                              handArray[i] = rdoc.id;// data().handOn;
-                              handOnArray[i] = rdoc.data().handOn;
-                              playerIndexArray[i] = rdoc.data().playerIndex;
-                              playerArray[i] = rdoc.data().player;
-                              if (rdoc.data().player == firebase.auth().currentUser.uid) {
-                                 active=i;
-                                 round = rdoc.data().round;
-                              }
-                              i++;
-                           });
-                        console.log("round : " + round);
-                        for (var j=0;j<doc.data().nbPlayers;j++) {
-                           var hand = handArray[(active+j)%doc.data().nbPlayers];
-                           this.handPlayersIndex[j] = playerIndexArray[(active+j)%doc.data().nbPlayers];
-                           this.handsOn[j] = handOnArray[(active+j)%doc.data().nbPlayers];
-                           if (this.hands[j] != hand) {
-                              this.hands[j] = hand;
-                              this.players[j] = playerArray[(active+j)%doc.data().nbPlayers];
-                              for (var k=0;k<doc.data().playersName.length;k++) {
-                                 if (doc.data().playersName[k].id == this.players[j])  {
-                                    this.playersName[j] = doc.data().playersName[k].name;
-                                    break;
+                  console.log("round id : " + this.roundId)
+                  if (this.roundId != undefined) {
+                     this.roundDocRef = this.playDocRef.collection("rounds").doc(this.roundId);
+                     this.handDocSubs = this.roundDocRef.collection("hands")
+                        .onSnapshot((querySnapshot) => {
+                              console.log("Hands onSnapshot launched (Playground 2)");
+                              querySnapshot.forEach((rdoc) => {
+                                 i = rdoc.data().playerIndex;
+                                 console.log("doc : " + rdoc.data().handOn)
+                                 handArray[i] = rdoc.id;// data().handOn;
+                                 handOnArray[i] = rdoc.data().handOn;
+                                 playerIndexArray[i] = rdoc.data().playerIndex;
+                                 playerArray[i] = rdoc.data().player;
+                                 if (rdoc.data().player == firebase.auth().currentUser.uid) {
+                                    active=i;
+                                    round = rdoc.data().round;
                                  }
+                                 i++;
+                              });
+                           console.log("round : " + round);
+                           for (var j=0;j<doc.data().nbPlayers;j++) {
+                              var hand = handArray[(active+j)%doc.data().nbPlayers];
+                              this.handPlayersIndex[j] = playerIndexArray[(active+j)%doc.data().nbPlayers];
+                              this.handsOn[j] = handOnArray[(active+j)%doc.data().nbPlayers];
+                              if (this.hands[j] != hand) {
+                                 this.hands[j] = hand;
+                                 this.players[j] = playerArray[(active+j)%doc.data().nbPlayers];
+                                 for (var k=0;k<doc.data().playersName.length;k++) {
+                                    if (doc.data().playersName[k].id == this.players[j])  {
+                                       this.playersName[j] = doc.data().playersName[k].name;
+                                       break;
+                                    }
+                                 }
+                                 this.playersIndex[j] = (active+j)%doc.data().nbPlayers;
                               }
-                              this.playersIndex[j] = (active+j)%doc.data().nbPlayers;
                            }
-                        }
-                        for (k=0;k<this.players.length;k++) {
-                           console.log("Player Status launch check: " + this.players[k]);
-                           var playerStatusRef = firebase.database().ref('status/' + this.players[k]);
-                           playerStatusRef.on('value', (snapshot) => {
-                              const data = snapshot.val();
-                              console.log("Player Status : " + data.uid + " :" + data.state);
-                              for (var m=0;m<this.players.length;m++) {
-                                 if (this.players[m] == data.uid) {
-                                    console.log("Player Status set (" + m + ") : " + data.uid + " :" + data.state);
-                                    if (data.state == "online" && data.playId != this.playId)
-                                       this.playersStatus[m] = "onlinebut";
-                                    else
-                                       this.playersStatus[m] = data.state;
-                                    break;
+                           for (k=0;k<this.players.length;k++) {
+                              console.log("Player Status launch check: " + this.players[k]);
+                              var playerStatusRef = firebase.database().ref('status/' + this.players[k]);
+                              playerStatusRef.on('value', (snapshot) => {
+                                 const data = snapshot.val();
+                                 if (data != null) {
+                                    console.log("Player Status : " + data.uid + " :" + data.state);
+                                    for (var m=0;m<this.players.length;m++) {
+                                       if (this.players[m] == data.uid) {
+                                          console.log("Player Status set (" + m + ") : " + data.uid + " :" + data.state);
+                                          if (data.state == "online" && data.playId != this.playId)
+                                             this.playersStatus[m] = "onlinebut";
+                                          else
+                                             this.playersStatus[m] = data.state;
+                                          break;
+                                       }
+                                    }
                                  }
-                              }
-                           });                  
-                        }
-                  });
-                  this.roundDocSubs = this.roundDocRef.onSnapshot((rdoc) => {
-                     console.log("Rounds onSnapshot launched (Playground 2)");
-                     if (rdoc.data().tricks.length > 0)
-                        this.trickId = rdoc.data().currentTrick;
-                     this.activePlayer = rdoc.data().active;
-                     this.atout = rdoc.data().atout;
-                     this.choice = rdoc.data().choice;
-                     this.roundState = rdoc.data().state;
-                     this.bidPlayer = rdoc.data().bidPlayer;
-                     this.bidContract = rdoc.data().bidContract;
-                     if (this.bidContract == undefined || this.bidContract == null)
-                        this.bidContract = "";
-                     if (typeof rdoc.data().lastTrick != "undefined" && rdoc.data().lastTrick.length > 0)
-                        this.lastTrick = rdoc.data().lastTrick;
-                     else
-                        this.lastTrick = [];
-                  });
+                              });                  
+                           }
+                     });
+                     this.roundDocSubs = this.roundDocRef.onSnapshot((rdoc) => {
+                        console.log("Rounds onSnapshot launched (Playground 2)");
+
+                        if (rdoc.data().tricks.length > 0)
+                           this.trickId = rdoc.data().currentTrick;
+                        this.activePlayer = rdoc.data().active;
+                        this.atout = rdoc.data().atout;
+                        this.choice = rdoc.data().choice;
+                        this.roundState = rdoc.data().state;
+                        this.bidPlayer = rdoc.data().bidPlayer;
+                        this.bidContract = rdoc.data().bidContract;
+                        if (this.bidContract == undefined || this.bidContract == null)
+                           this.bidContract = "";
+                        if (typeof rdoc.data().lastTrick != "undefined" && rdoc.data().lastTrick.length > 0)
+                           this.lastTrick = rdoc.data().lastTrick;
+                        else
+                           this.lastTrick = [];
+                     });
+                  }
                }
 
 

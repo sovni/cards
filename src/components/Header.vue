@@ -3,7 +3,16 @@
       <Menubar :model="items" >
          <template #end>
             {{ getUserName() }}
-            <AutoComplete v-model="friends" :suggestions="filteredFriends" field="username" @complete="searchFriends($event)" placeholder="Hint: type 'v' or 'f'" />
+            <AutoComplete v-model="selectedFriend" :suggestions="filteredFriends" @complete="searchFriends($event)" placeholder="amis..." field="username" >
+               <template #item="slotProps">
+                  <div class="p-d-flex">
+                        <!--<Button :icon="pi pi-plus" :v-tooltip="'Suivre'" :class="p-button-rounded p-button-text" @click="addFriend(slotProps.item.username)" />-->
+                        <!--<Button icon="pi pi-plus" class=" p-button-sm" @click="addFriend(slotProps.item.username)"/>-->
+                        <i class="pi pi-plus" style="fontSize: 0.5rem;v-align: center;"></i>
+                        <div>{{slotProps.item.username}}</div>
+                  </div>
+               </template>
+            </AutoComplete>
          </template>
       </Menubar>
    </header>
@@ -14,13 +23,15 @@
    import Menubar from 'primevue/menubar';
    import AutoComplete from 'primevue/autocomplete';
    import db from '../plugins/firebase';
+   //import Button from 'primevue/button';
 
    export default {
       name: "Header-component",
       data() {
         return {
             currentUser: '',
-            friends: null,
+            friends: [],
+            selectedFriend: [],
             filteredFriends: null,
             items: [
                {
@@ -63,11 +74,20 @@
       },    
       components: {
          Menubar,
+         //Button,
          AutoComplete
       },
       mounted() {
             this.currentUser = firebase.auth().currentUser;
+            db.collection("users").onSnapshot((querySnapshot) => {
+               querySnapshot.forEach((doc) => {
+                  console.log("username : " + doc.data().username);
+                  //this.friends.push({username: doc.data().username});
+                  this.friends.push(doc.data());
 
+                  //if (doc.data().username)
+               });
+            });
       },
       methods: {
          logout(){
@@ -86,8 +106,25 @@
                return "";
             return this.currentUser.displayName.split(" ")[0];
          },
+         addFriend(username) {
+            console.log("Add friend request : " + username);
+         },
          searchFriends(event) {
-            console.log("Friend search : " + event.query)
+            setTimeout(() => {
+                if (!event.query.trim().length) {
+                    this.filteredFriends = [...this.friends];
+                }
+                else {
+                    this.filteredFriends = this.friends.filter((friend) => {
+                        return friend.username.toLowerCase().startsWith(event.query.toLowerCase());
+                    });
+                    console.log("Filter : " + this.filteredFriends);
+                }
+            }, 250);
+
+
+
+            /*console.log("Friend search : " + event.query)
             this.filteredFriends = [];//this.countryService.search(event.query);
             if (this.currentUser) {
                db.collection("users").onSnapshot((querySnapshot) => {
@@ -97,7 +134,7 @@
                      //if (doc.data().username)
                   });
                });
-            }
+            }*/
          }         
       }
    }

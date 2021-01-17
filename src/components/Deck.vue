@@ -42,7 +42,7 @@ require('cards');
                     this.roundDocSubs();
                     this.roundDocSubs = null;
                 }
-                if (this.myround != -1) {
+                if (this.myround != -1 && this.myround != undefined) {
                     this.roundDocRef = db.collection("plays").doc(this.playId).collection("rounds").doc(this.myround);
                     /*this.roundDocSubs = this.roundDocRef.onSnapshot((doc) => {
                             console.log("Rounds onSnapshot launched (Deck 1)");
