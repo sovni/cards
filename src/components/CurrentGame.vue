@@ -111,6 +111,16 @@ const { decks } = require('cards');
       created(){
       },
       mounted(){
+         this.emitter.on("distrib-cards", (playId) => {
+            console.log("Receive distrib event for play : " + playId);
+            db.collection("plays").doc(playId)
+               .get().then((doc) => {
+                  console.log("Cdistribute card for : " +doc.id, " => ", doc.data());
+                  //db.collection("plays").doc(doc.id).update({state:"playing"});
+                  this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length,doc.data().game);
+                  console.log("distribute cards round 1");                  
+               });
+         });
          db.collection("plays")
             //.where("creator", "==", this.playerUid)
             .where("players", "array-contains", this.playerUid)
@@ -166,7 +176,7 @@ const { decks } = require('cards');
                   else {
                      this.mygames.push({"uid": doc.id, "name": doc.data().game, "players": doc.data().players.length+"/"+doc.data().nbPlayers, "state": doc.data().state, "names": strPlayers});
                      if (doc.data().players.length == doc.data().nbPlayers) {
-                        db.collection("plays").doc(doc.id).update({state:"start-round"});
+                        db.collection("plays").doc(doc.id).update({state:"start-round",dealer: 0});
                      }                     
                   }
                   if (doc.data().players.length == 0)
@@ -185,9 +195,10 @@ const { decks } = require('cards');
                   if (!doc.metadata.hasPendingWrites) {
                      if (doc.data().state == "start-round") {
                         console.log("CurrentGame start-round state : " +doc.id, " => ", doc.data());
-                        db.collection("plays").doc(doc.id).update({state:"playing"});
-                        this.drawCards(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length,doc.data().game);
-                        console.log("distribute cards round 1");
+                        //db.collection("plays").doc(doc.id).update({state:"playing"});
+                        //db.collection("plays").doc(doc.id).update({state:"playing"});
+                        //this.drawCardsSync(doc.id, doc.data().players,doc.data().roundIndex%doc.data().players.length,doc.data().game);
+                        //console.log("distribute cards round 1");
                      }          
                      else if (doc.data().state == "end-round") {
                         var points = doc.data().score;
@@ -213,7 +224,7 @@ const { decks } = require('cards');
                            if (playEnd)
                               db.collection("plays").doc(doc.id).update({state:"final", playedRounds: playedRounds, score:points});
                            else
-                              db.collection("plays").doc(doc.id).update({state:"start-round", roundIndex: roundIndex, playedRounds: playedRounds, score:points});
+                              db.collection("plays").doc(doc.id).update({state:"start-round", dealer: roundIndex%doc.data().nbPlayers, roundIndex: roundIndex, playedRounds: playedRounds, score:points});
                         });
 
                         //this.calculateScore(doc.id);
@@ -334,6 +345,18 @@ const { decks } = require('cards');
 
 
          },*/
+         drawCardsSync(playId, players, dealer, game) {
+            setTimeout(() => {
+              db.collection("plays").doc(playId)
+                  .get().then((doc) => {
+                     if (doc.data().state == 'start-round')
+                        this.drawCards(playId, players, dealer, game);
+                     else if (doc.data().state == 'playing')
+                        console.log("another client already draw cards : do nothing");
+                  });
+            }, Math.random() * 100);
+            //}, Math.random() * 2000);
+         },
          drawCards(playId, players, dealer, game) {
             var deck;
             this.roundId = -1;
@@ -343,14 +366,14 @@ const { decks } = require('cards');
                deck = new decks.TarotDeck("modern");
             deck.shuffleAll();
             console.log("Draw cards " + playId);
-            db.collection("plays").doc(playId).update({state:"distrib-1"});
+            db.collection("plays").doc(playId).update({state:"playing"});
 
             db.collection("plays").doc(playId).collection("rounds").add({
                play: playId,
                nbPlayers: players.length,
                active: (dealer+1)%players.length,
                dealer: dealer,
-               state: "distrib-1",
+               state: "playing",
                choice: [],
                dog: [],
                deck: [],

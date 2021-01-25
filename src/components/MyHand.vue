@@ -17,7 +17,9 @@
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" style="z-index:10;" label="&hearts;" @click="take('cups')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" style="z-index:10;" label="&clubs;" @click="take('wands')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger"  style="z-index:10;" label="&diams;" @click="take('coins')"/>
+            <Button v-if="distrib" class="p-button-raised p-button-rounded p-button-danger"  style="z-index:10;" label="Distribuer" @click="distribCards()"/>
             <Button v-if="myturn" class="p-button-raised p-button-rounded" style="z-index:10;" icon="pi pi-arrow-circle-up" />
+            <div v-if="waitdistrib" class="p-text-center">En attente de distribution des cartes...</div>
         </div>
         <div class="p-col-12" >  
         <!--<div class="hhand active-hand fan"  style="width:400px;height:200px;">-->
@@ -42,6 +44,7 @@
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&hearts;" @click="take('cups')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-secondary" label="&clubs;" @click="take('wands')"/>
             <Button v-if="choosebis && game == 'tarot'" class="p-button-raised p-button-rounded p-button-danger" label="&diams;" @click="take('coins')"/>
+            <Button v-if="distrib" class="p-button-raised p-button-rounded p-button-danger"  style="z-index:10;" label="Distribuer" @click="distribCards()"/>
             <Button v-if="myturn" class="p-button-raised p-button-rounded" icon="pi pi-arrow-circle-up" />
         </div>
     </div>
@@ -76,11 +79,13 @@ require('cards');
                 roundDocRef: null,
                 roundDocSubs: null,
                 trickDocRef: null,
-                currentBid: "'"
+                currentBid: '',
+                distrib: false,
+                waitdistrib: false
                 //atout: ""    
             }
         },
-        props: ['handId','playerId', 'indexUser','playId','cwidth','roundId','activePlayer','atout','state','game','bidContract'],      
+        props: ['handId','playerId', 'playerIndex','indexUser','playId','cwidth','roundId','activePlayer','atout','state','playState','dealer','game','bidContract'],      
         components: {
             CBCard,
             Button
@@ -90,6 +95,7 @@ require('cards');
                 console.log("Watch props.playId function called:" + newVal + ":"+oldVal+":"+this.playId);
                 if (this.playId != null) {
                     this.playDocRef = db.collection("plays").doc(this.playId);
+                    this.watchPlay();
                 }
                 else   
                     this.playDocRef = null;
@@ -120,8 +126,12 @@ require('cards');
                     else   
                         this.cradius = 166;
                 }
-                else
+                else {
                     this.handDocRef = null;
+                    this.myhand = [];
+                    this.myindex = -1;
+                }
+                this.watchPlay();
             },
             playerId: function() {
                 //if (firebase.auth().currentUser.uid == this.playerId) {
@@ -131,16 +141,42 @@ require('cards');
                 //    this.activeUser = false;
                 //}
             },
+            dealer: function(newVal, oldVal) {
+                console.log("Watch props.dealer function called:" + newVal + ":"+oldVal+":"+this.dealer);
+                this.watchPlay();
+            },
             activePlayer: function(newVal, oldVal) {
                 console.log("Watch props.activePlayer function called:" + newVal + ":"+oldVal+":"+this.activePlayer + ":myindex="+this.myindex);
+                this.watchPlay();
                 this.watchRound();   
             },
             state: function(newVal, oldVal) {
                 console.log("Watch props.roundState function called:" + newVal + ":"+oldVal+":"+this.state+ ":myindex="+this.myindex);
+                this.watchPlay();
                 this.watchRound();   
             }            
         },
+        mounted() {
+            this.watchPlay();
+        },
         methods: {
+            watchPlay() {
+                console.log("watchPlay: playstate =" + this.playState + " dealer=" + this.dealer + " playerIndex=" + this.playerIndex)
+                if (this.playState == "start-round") {
+                    if (this.dealer == this.playerIndex) {
+                        this.distrib = true;
+                        this.waitdistrib = false;
+                    }
+                    else {
+                        this.waitdistrib = true;
+                        this.distrib = false;
+                    }
+                }
+                else {
+                    this.distrib = false;
+                    this.waitdistrib = false;
+                }
+            },
             watchRound() {
                 if (this.state == "choice-1") {
                     this.choosebis = false;
@@ -529,6 +565,9 @@ require('cards');
                         this.roundDocRef.update({active: index});
                     }
                 });
+            },
+            distribCards() {
+                this.emitter.emit("distrib-cards", this.playId);
             },
             checkPlayAllowed(playedCard, trick, atout, indexTrick) {
                 var allowed = true;

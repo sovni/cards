@@ -16,7 +16,7 @@
                                 <span class="mg-text">{{ message.username }}</span>
                                 <p class="pt-0">{{ message.text }}</p>
                             </div>-->
-                            <div  v-for="message in messages" :key="message">
+                            <div  v-for="message in messages" :key="message.id">
                                 <Divider align="center">
                                     <span class="p-tag">{{ message.username }}</span>
                                 </Divider>
@@ -116,24 +116,28 @@ import Divider from 'primevue/divider';
         }},
     mounted() {
         this.emitter.on("select-play", (uid) => {
-            let viewMessage = this;
+            //let viewMessage = this;
             this.playId = uid;
-            viewMessage.messages = [];
+            //viewMessage.messages = [];
+            this.messages = [];
             this.name = this.getUserName();
 
             const itemsRef = firebase.database().ref('chat/' + this.playId + '/messages');
             itemsRef.on("value", snapshot => {
                 let data = snapshot.val();
-                let messages = [];
+                //let messages = [];
                 if (data != null) {
                     Object.keys(data).forEach(key => {
-                        messages.unshift({
+                        console.log("message : " + key + ":"+data[key].username+":"+data[key].text);
+                        this.messages.unshift({
                         id: key,
                         username: data[key].username,
                         text: data[key].text
                         });
                     });
-                    viewMessage.messages = messages;
+                    //viewMessage.messages = messages;
+                    //if (Array.isArray(chatMessages) && chatMessages.length > 0)
+                    //this.messages = chatMessages;
                 }
             });
         });    

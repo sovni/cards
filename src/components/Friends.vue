@@ -11,11 +11,11 @@ import Dropdown from 'primevue/dropdown';
       name: 'Friends',
       data() {
             return {
-                selectedFriend: null,
+                selectedFriends: null,
                 friends : [
-                    {name: 'Name1', uid: 'tttt'},
+                    /*{name: 'Name1', uid: 'tttt'},
                     {name: 'Name2', uid: 'tttt'},
-                    {name: 'Name3', uid: 'tttt'}
+                    {name: 'Name3', uid: 'tttt'}*/
                 ]
             }
       },      
