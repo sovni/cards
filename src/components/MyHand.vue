@@ -141,12 +141,18 @@ require('cards');
                 //    this.activeUser = false;
                 //}
             },
+            dealer: function(newVal, oldVal) {
+                console.log("Watch props.dealer function called:" + newVal + ":"+oldVal+":"+this.dealer);
+                this.watchPlay();
+            },
             activePlayer: function(newVal, oldVal) {
                 console.log("Watch props.activePlayer function called:" + newVal + ":"+oldVal+":"+this.activePlayer + ":myindex="+this.myindex);
+                this.watchPlay();
                 this.watchRound();   
             },
             state: function(newVal, oldVal) {
                 console.log("Watch props.roundState function called:" + newVal + ":"+oldVal+":"+this.state+ ":myindex="+this.myindex);
+                this.watchPlay();
                 this.watchRound();   
             }            
         },
@@ -155,7 +161,7 @@ require('cards');
         },
         methods: {
             watchPlay() {
-                console.log("watchPlay: playstate =" + this.playState + " dealer=" + this.dealer + " myindex=" + this.myindex)
+                console.log("watchPlay: playstate =" + this.playState + " dealer=" + this.dealer + " playerIndex=" + this.playerIndex)
                 if (this.playState == "start-round") {
                     if (this.dealer == this.playerIndex) {
                         this.distrib = true;
