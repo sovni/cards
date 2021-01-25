@@ -408,33 +408,12 @@ const { decks } = require('cards');
                         handNext: [],
                         handOff: []
                      });
-                  }
-                  /*for (i = 0; i < players.length; i++) {
-                     db.collection("plays").doc(playId)
-                     .collection("rounds").doc(this.roundId)
-                     .collection("hands").doc(this.roundId+players[(i+dealer)%players.length]).set({
-                        play: playId,
-                        round: this.roundId,
-                        player: players[(i+dealer)%players.length],
-                        playerIndex: (i+dealer)%players.length,
-                        handOn: this.getHand(deck, 3),
-                        handNext: [],
-                        handOff: []
-                     });
-                  }
-                  console.log("Second draw turn");
-                  for (i = 0; i < players.length; i++) {
-                     this.drawHand(playId, deck, 2, players[(i+dealer)%players.length]);
-                  }*/          
+                  }         
                   console.log("Draw atout and store remaining hands");
                   db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
                      choice: this.getHand(deck, 1),
                      deck: this.getHand(deck, 11), state: "choice-1"
                   });
-                  /*console.log("Store remaining deck");
-                  db.collection("plays").doc(playId).collection("rounds").doc(this.roundId).update({
-                     deck: this.getHand(deck, 11), state: "choice-1"
-                  });*/
                }
                else if (game == "tarot") {
                   tmpHands=[];
