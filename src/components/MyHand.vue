@@ -251,13 +251,36 @@ require('cards');
                                 allowed = this.checkPlayAllowed(playedCard, tdoc.data().cards, doc.data().atout, doc.data().tricks.length);
 
                             if (allowed) {
+
+                                this.played = true;
+
+                                if (this.game == "belote" && playedCard.suit == doc.data().atout && (playedCard.rank == "K" || playedCard.rank == "Q")) {
+                                    if (typeof doc.data().belote !== 'undefined') {
+                                        if (doc.data().belote == this.playerIndex) {
+                                            this.roundDocRef.update({rebelote: this.playerIndex});
+                                            const message = {text: 'Rebelote', player: this.playerId};
+                                            firebase.database().ref('event/' + this.playId + '/messages').push(message);
+                                        }
+                                    }
+                                    else {
+                                        var bere = 0;
+                                        for (var i=0;i<this.myhand.length;i++) {
+                                            if (this.myhand[i].suit == doc.data().atout && (this.myhand[i].rank == "K" || this.myhand[i].rank == "Q")) {
+                                                bere++;
+                                            }
+                                        }
+                                        if (bere == 2) {
+                                            this.roundDocRef.update({belote: this.playerIndex});
+                                            const message = {text: 'Belote', player: this.playerId};
+                                            firebase.database().ref('event/' + this.playId + '/messages').push(message);
+                                        }
+                                    }                                    
+                                }
                                 this.handDocRef.update({
                                     handOn: firebase.firestore.FieldValue.arrayRemove(playedCard),
                                     handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)
-                                }); 
-                                this.played = true;
-
-                                //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
+                                });
+                                 //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
                                 if (this.game == "tarot" && playedCard.suit == "trump" && playedCard.rank == "0")
                                     this.roundDocRef.update({bidExcuse: this.myindex});
 
@@ -713,33 +736,46 @@ require('cards');
             CalculateRoundScore() {
                 var points = [];
                 var bouts = [];
+                var nbTricks = [];
 
                 this.roundDocRef.get().then((doc) => {
                    for (var i=0;i<doc.data().nbPlayers;i++) {
                         points[i] = 0;
                         bouts[i] = 0;
+                        nbTricks[i] = 0;
                     }
                     for (i=0;i<doc.data().scores.length;i++) {
                         points[doc.data().scores[i].winnerIndex] += doc.data().scores[i].points;
                         bouts[doc.data().scores[i].winnerIndex] += doc.data().scores[i].bouts;
+                        nbTricks[doc.data().scores[i].winnerIndex] += 1;
                         if (i==doc.data().scores.length-1 && this.game == "belote")
                             points[doc.data().scores[i].winnerIndex] += 10;
                     }
                     if (this.game == "belote") {
+                        if (typeof doc.data().rebelote !== 'undefined') {
+                            points[doc.data().rebelote%2] += 20;
+                        }  
                         points[0] = points[0] + points[2];
                         points[1] = points[1] + points[3];
-                        if (points[0] == 0 && points[1] == 162)
+                        if (nbTricks[0] == 0 && nbTricks[2] == 0)
                             points[1] = 252;
-                        else if (points[0] == 162 && points[1] == 0)
+                        else if (nbTricks[1] == 0 && nbTricks[3] == 0)
                             points[0] = 252;
                         else if (points[0] > points[1] && (doc.data().bidIndex == 1 || doc.data().bidIndex == 3)) {
                             points[0] = 162;
                             points[1] = 0;
+                            if (typeof doc.data().rebelote !== 'undefined') {
+                                points[doc.data().rebelote%2] += 20;
+                            }
                         }
                         else if (points[1] > points[0] && (doc.data().bidIndex == 0 || doc.data().bidIndex == 2)) {
                             points[1] = 162;
                             points[0] = 0;
+                            if (typeof doc.data().rebelote !== 'undefined') {
+                                points[doc.data().rebelote%2] += 20;
+                            }
                         }
+ 
                         this.roundDocRef.update({score:[points[0], points[1]], state:"end-round"});
                         this.playDocRef.update({lastScore:[points[0], points[1]], state:"end-round"});
                     }
