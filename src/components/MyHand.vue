@@ -81,7 +81,8 @@ require('cards');
                 trickDocRef: null,
                 currentBid: '',
                 distrib: false,
-                waitdistrib: false
+                waitdistrib: false,
+                played: false
                 //atout: ""    
             }
         },
@@ -211,6 +212,9 @@ require('cards');
                 else
                     this.myturn = false;
 
+                if (this.activePlayer != this.myindex)
+                    this.played = false;
+
             },
             OrderHand(cards, atout) {
                 var hand = [];
@@ -230,7 +234,7 @@ require('cards');
                 console.log("receive card play on hand event : " + event.suit + ":" + event.rank + "hand:" + event.hand);   
 
                 this.roundDocRef.get().then((doc) => {
-                    if (doc.data().active == this.myindex && doc.data().state == "trick") {
+                    if (doc.data().active == this.myindex && doc.data().state == "trick" && this.played == false) {
                         var trick;
     
                         trick = doc.data().currentTrick;
@@ -251,6 +255,8 @@ require('cards');
                                     handOn: firebase.firestore.FieldValue.arrayRemove(playedCard),
                                     handOff: firebase.firestore.FieldValue.arrayUnion(playedCard)
                                 }); 
+                                this.played = true;
+
                                 //db.collection("plays").doc(this.playId).collection("rounds").doc(this.roundId).update({deck: firebase.firestore.FieldValue.arrayUnion(playedCard)});
                                 if (this.game == "tarot" && playedCard.suit == "trump" && playedCard.rank == "0")
                                     this.roundDocRef.update({bidExcuse: this.myindex});
